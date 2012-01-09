@@ -908,8 +908,7 @@ HTML_STYLESHEET        = html/style.css
 # files. In the HTML_STYLESHEET file, use the file name only. Also note that
 # the files will be copied as-is; there are no commands or markers available.
 
-HTML_EXTRA_FILES       = html/acg_icon.gif \
-                         html/acg_icon.ico
+HTML_EXTRA_FILES       = html/logo_i8.ico
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output.
 # Doxygen will adjust the colors in the style sheet and background images
