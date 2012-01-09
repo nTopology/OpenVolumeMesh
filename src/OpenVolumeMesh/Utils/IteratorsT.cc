@@ -7,6 +7,7 @@
 
 #define ITERATORST_CC
 
+#include <iostream>
 #include <set>
 
 #include "Iterators.hh"

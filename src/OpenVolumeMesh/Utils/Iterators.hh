@@ -8,6 +8,7 @@
 #ifndef ITERATORS_HH_
 #define ITERATORS_HH_
 
+#include <vector>
 #include <iterator>
 
 // Forward declaration

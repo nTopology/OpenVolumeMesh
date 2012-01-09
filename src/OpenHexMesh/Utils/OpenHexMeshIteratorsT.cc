@@ -7,6 +7,8 @@
 
 #define OPENHEXMESHITERATORST_CC
 
+#include <set>
+
 #include "OpenHexMeshIterators.hh"
 
 //================================================================================================

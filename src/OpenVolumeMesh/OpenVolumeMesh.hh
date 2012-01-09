@@ -12,7 +12,6 @@
 
 #include <vector>
 #include <set>
-#include <OpenFlipper/common/Types.hh>
 
 #include "Utils/OpenVolumeMeshHandle.hh"
 #include "Utils/OpenVolumeMeshBaseKernel.hh"

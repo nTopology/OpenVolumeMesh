@@ -5,7 +5,7 @@
  *      Author: kremer
  */
 
-#define OPENVOLUMEMESHT_CC
+#define OPENHEXMESHT_CC
 
 #include "OpenHexMesh.hh"
 
