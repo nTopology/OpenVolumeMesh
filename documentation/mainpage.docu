@@ -5,7 +5,7 @@
 
 Welcome to the %OpenVolumeMesh documentation. %OpenVolumeMesh is a generic data structure
 for the comfortable handling of arbitrary polyhedral meshes. Its concepts are closely related
-to OpenMesh (www.openmesh.org). In particular, %OpenVolumeMesh carries the general idea
+to OpenMesh (http://www.openmesh.org). In particular, %OpenVolumeMesh carries the general idea
 of storing edges as so-called (directed) half-edges over to the face definitions.
 Furthermore, in %OpenVolumeMesh the data is arranged in a \e top-down hierarchy,
 meaning that each entity of dimension n is defined through a (ordered) tuple of entities of
@@ -43,6 +43,7 @@ Tutorials:
 
 \li \ref tutorial_01
 \li \ref tutorial_02
-\li \ref tutorial_02
+\li \ref tutorial_03
+\li \ref tutorial_04
 
 **/
