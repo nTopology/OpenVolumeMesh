@@ -1,12 +1,49 @@
-/*
- * HandleType.hh
- *
- *  Created on: 27.06.2011
- *      Author: mike
- */
+/*===========================================================================*\
+ *                                                                           *
+ *                            OpenVolumeMesh                                 *
+ *        Copyright (C) 2011 by Computer Graphics Group, RWTH Aachen         *
+ *                           www.openmesh.org                                *
+ *                                                                           *
+ *---------------------------------------------------------------------------*
+ *  This file is part of OpenVolumeMesh.                                     *
+ *                                                                           *
+ *  OpenVolumeMesh is free software: you can redistribute it and/or modify   *
+ *  it under the terms of the GNU Lesser General Public License as           *
+ *  published by the Free Software Foundation, either version 3 of           *
+ *  the License, or (at your option) any later version with the              *
+ *  following exceptions:                                                    *
+ *                                                                           *
+ *  If other files instantiate templates or use macros                       *
+ *  or inline functions from this file, or you compile this file and         *
+ *  link it with other files to produce an executable, this file does        *
+ *  not by itself cause the resulting executable to be covered by the        *
+ *  GNU Lesser General Public License. This exception does not however       *
+ *  invalidate any other reasons why the executable file might be            *
+ *  covered by the GNU Lesser General Public License.                        *
+ *                                                                           *
+ *  OpenVolumeMesh is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+ *  GNU Lesser General Public License for more details.                      *
+ *                                                                           *
+ *  You should have received a copy of the GNU LesserGeneral Public          *
+ *  License along with OpenVolumeMesh.  If not,                              *
+ *  see <http://www.gnu.org/licenses/>.                                      *
+ *                                                                           *
+\*===========================================================================*/
+
+/*===========================================================================*\
+ *                                                                           *
+ *   $Revision: 1 $                                                          *
+ *   $Date: 2011-01-09 12:46:45 +0100 (Mo, 09. Jan 2011) $                   *
+ *   $LastChangedBy: kremer $                                                *
+ *                                                                           *
+\*===========================================================================*/
 
 #ifndef OPENVOLUMEMESHHANDLE_HH_
 #define OPENVOLUMEMESHHANDLE_HH_
+
+namespace OpenVolumeMesh {
 
 // Define handle types in order to distinguish different entities by their indices
 class OpenVolumeMeshHandle {
@@ -50,5 +87,7 @@ class FaceHandle     : public OpenVolumeMeshHandle { public: FaceHandle(int _idx
 class CellHandle     : public OpenVolumeMeshHandle { public: CellHandle(int _idx = -1)     : OpenVolumeMeshHandle(_idx) {} };
 class HalfEdgeHandle : public OpenVolumeMeshHandle { public: HalfEdgeHandle(int _idx = -1) : OpenVolumeMeshHandle(_idx) {} };
 class HalfFaceHandle : public OpenVolumeMeshHandle { public: HalfFaceHandle(int _idx = -1) : OpenVolumeMeshHandle(_idx) {} };
+
+} // Namespace OpenVolumeMesh
 
 #endif /* OPENVOLUMEMESHHANDLE_HH_ */

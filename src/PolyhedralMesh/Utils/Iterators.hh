@@ -1,15 +1,52 @@
-/*
- * Iterators.hh
- *
- *  Created on: 24.06.2011
- *      Author: mike
- */
+/*===========================================================================*\
+ *                                                                           *
+ *                            OpenVolumeMesh                                 *
+ *        Copyright (C) 2011 by Computer Graphics Group, RWTH Aachen         *
+ *                           www.openmesh.org                                *
+ *                                                                           *
+ *---------------------------------------------------------------------------*
+ *  This file is part of OpenVolumeMesh.                                     *
+ *                                                                           *
+ *  OpenVolumeMesh is free software: you can redistribute it and/or modify   *
+ *  it under the terms of the GNU Lesser General Public License as           *
+ *  published by the Free Software Foundation, either version 3 of           *
+ *  the License, or (at your option) any later version with the              *
+ *  following exceptions:                                                    *
+ *                                                                           *
+ *  If other files instantiate templates or use macros                       *
+ *  or inline functions from this file, or you compile this file and         *
+ *  link it with other files to produce an executable, this file does        *
+ *  not by itself cause the resulting executable to be covered by the        *
+ *  GNU Lesser General Public License. This exception does not however       *
+ *  invalidate any other reasons why the executable file might be            *
+ *  covered by the GNU Lesser General Public License.                        *
+ *                                                                           *
+ *  OpenVolumeMesh is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+ *  GNU Lesser General Public License for more details.                      *
+ *                                                                           *
+ *  You should have received a copy of the GNU LesserGeneral Public          *
+ *  License along with OpenVolumeMesh.  If not,                              *
+ *  see <http://www.gnu.org/licenses/>.                                      *
+ *                                                                           *
+\*===========================================================================*/
+
+/*===========================================================================*\
+ *                                                                           *
+ *   $Revision: 1 $                                                          *
+ *   $Date: 2011-01-09 12:46:45 +0100 (Mo, 09. Jan 2011) $                   *
+ *   $LastChangedBy: kremer $                                                *
+ *                                                                           *
+\*===========================================================================*/
 
 #ifndef ITERATORS_HH_
 #define ITERATORS_HH_
 
 #include <vector>
 #include <iterator>
+
+namespace OpenVolumeMesh {
 
 // Forward declaration
 template <class VecT>
@@ -32,7 +69,7 @@ public:
 		valid_(true), cur_handle_(_ch), ref_handle_(_ih), mesh_(_mesh) {}
 
 	// STL compliance (needs to have default constructor)
-	BaseIterator() : valid_(false) {}
+	BaseIterator() : valid_(false), mesh_(0) {}
 	virtual ~BaseIterator() {}
 	bool operator== (const BaseIterator& _c) const {
 		return (this->cur_handle_ == _c.cur_handle() &&
@@ -890,6 +927,8 @@ private:
 };
 
 //===========================================================================
+
+} // Namespace OpenVolumeMesh
 
 #if defined(INCLUDE_TEMPLATES) && !defined(ITERATORST_CC)
 #include "IteratorsT.cc"
