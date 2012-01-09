@@ -31,7 +31,7 @@ for GoogleTest which is (optionally) needed for building the unit tests. As per 
 the unit tests are excluded from the build but can turned on as desired. Find information
 on how to build %OpenVolumeMesh in Section \ref building_openvolumemesh.
 
-Overview:
+\b Overview:
 
 \li \ref concepts
 \li \ref iterators_and_circulators
@@ -39,7 +39,7 @@ Overview:
 \li \ref property_system
 \li \ref building_openvolumemesh
 
-Tutorials:
+\b Tutorials:
 
 \li \ref tutorial_01
 \li \ref tutorial_02
