@@ -1,6 +1,8 @@
 /** 
 \mainpage OpenVolumeMesh Documentation
 
+\image html volume_mesh.png
+
 Welcome to the %OpenVolumeMesh documentation. %OpenVolumeMesh is a generic data structure
 for the comfortable handling of arbitrary polyhedral meshes. Its concepts are closely related
 to OpenMesh (www.openmesh.org). In particular, %OpenVolumeMesh carries the general idea
