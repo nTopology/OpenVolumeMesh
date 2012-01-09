@@ -55,7 +55,7 @@ namespace OpenVolumeMesh {
 
 template <class VecT>
 VertexOHalfedgeIter<VecT>::VertexOHalfedgeIter(const VertexHandle& _ref_h,
-		const OpenVolumeMesh<VecT>* _mesh) :
+		const PolyhedralMesh<VecT>* _mesh) :
 BaseIter(_mesh, _ref_h),
 cur_index_(0) {
 
@@ -117,7 +117,7 @@ VertexOHalfedgeIter<VecT>& VertexOHalfedgeIter<VecT>::operator++() {
 
 template <class VecT>
 HalfEdgeHalfFaceIter<VecT>::HalfEdgeHalfFaceIter(const HalfEdgeHandle& _ref_h,
-        const OpenVolumeMesh<VecT>* _mesh) :
+        const PolyhedralMesh<VecT>* _mesh) :
 BaseIter(_mesh, _ref_h),
 cur_index_(0) {
 
@@ -179,7 +179,7 @@ HalfEdgeHalfFaceIter<VecT>& HalfEdgeHalfFaceIter<VecT>::operator++() {
 
 template <class VecT>
 VertexCellIter<VecT>::VertexCellIter(const VertexHandle& _ref_h,
-        const OpenVolumeMesh<VecT>* _mesh) :
+        const PolyhedralMesh<VecT>* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
 	if(!_mesh->has_bottom_up_adjacencies()) {
@@ -204,7 +204,7 @@ BaseIter(_mesh, _ref_h) {
     			hf_it != incidentHalfFaces.end(); ++hf_it) {
     		if((unsigned int)*hf_it < BaseIter::mesh()->incident_cell_per_hf_.size()) {
     			CellHandle c_idx = BaseIter::mesh()->incident_cell_per_hf_[*hf_it];
-    			if(c_idx != OpenVolumeMesh<VecT>::InvalidCellHandle)
+    			if(c_idx != PolyhedralMesh<VecT>::InvalidCellHandle)
     				cells_.insert(c_idx);
     		}
     	}
@@ -246,7 +246,7 @@ VertexCellIter<VecT>& VertexCellIter<VecT>::operator++() {
 
 template <class VecT>
 HalfedgeCellIter<VecT>::HalfedgeCellIter(const HalfEdgeHandle& _ref_h,
-        const OpenVolumeMesh<VecT>* _mesh) :
+        const PolyhedralMesh<VecT>* _mesh) :
 BaseIter(_mesh, _ref_h),
 cur_index_(0) {
 
@@ -315,7 +315,7 @@ HalfedgeCellIter<VecT>& HalfedgeCellIter<VecT>::operator++() {
 
 template <class VecT>
 CellVertexIter<VecT>::CellVertexIter(const CellHandle& _ref_h,
-        const OpenVolumeMesh<VecT>* _mesh) :
+        const PolyhedralMesh<VecT>* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
     typename std::vector<HalfFaceHandle>::const_iterator hf_iter = BaseIter::mesh()->cell(_ref_h).halffaces().begin();
@@ -364,7 +364,7 @@ CellVertexIter<VecT>& CellVertexIter<VecT>::operator++() {
 
 template <class VecT>
 CellCellIter<VecT>::CellCellIter(const CellHandle& _ref_h,
-        const OpenVolumeMesh<VecT>* _mesh) :
+        const PolyhedralMesh<VecT>* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
     if(!_mesh->has_bottom_up_adjacencies()) {
@@ -378,7 +378,7 @@ BaseIter(_mesh, _ref_h) {
 
 		HalfFaceHandle opp_hf = BaseIter::mesh()->opposite_halfface_handle(*hf_iter);
 		CellHandle ch = BaseIter::mesh()->incident_cell_per_hf_[opp_hf];
-		if(ch != OpenVolumeMesh<VecT>::InvalidCellHandle) {
+		if(ch != PolyhedralMesh<VecT>::InvalidCellHandle) {
 			adjacent_cells_.insert(ch);
 		}
 	}
@@ -419,8 +419,8 @@ CellCellIter<VecT>& CellCellIter<VecT>::operator++() {
 ////================================================================================================
 
 template <class VecT>
-BoundaryFaceIter<VecT>::BoundaryFaceIter(const OpenVolumeMesh<VecT>* _mesh) :
-BaseIter(_mesh, OpenVolumeMesh<VecT>::InvalidFaceHandle) {
+BoundaryFaceIter<VecT>::BoundaryFaceIter(const PolyhedralMesh<VecT>* _mesh) :
+BaseIter(_mesh, PolyhedralMesh<VecT>::InvalidFaceHandle) {
 
 	if(!_mesh->has_bottom_up_adjacencies()) {
         std::cerr << "This iterator needs bottom-up adjacencies!" << std::endl;
@@ -464,15 +464,15 @@ BoundaryFaceIter<VecT>& BoundaryFaceIter<VecT>::operator++() {
 ////================================================================================================
 
 template <class VecT>
-VertexIter<VecT>::VertexIter(const OpenVolumeMesh<VecT>* _mesh, const VertexHandle& _vh) :
-BaseIter(_mesh, OpenVolumeMesh<VecT>::InvalidVertexHandle, _vh),
+VertexIter<VecT>::VertexIter(const PolyhedralMesh<VecT>* _mesh, const VertexHandle& _vh) :
+BaseIter(_mesh, PolyhedralMesh<VecT>::InvalidVertexHandle, _vh),
 cur_index_(_vh.idx()) {
 
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->vertices_.size()) {
 		BaseIter::valid(false);
 	}
 	if(BaseIter::valid()) {
-		BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::VertexHandle(cur_index_));
+		BaseIter::cur_handle(typename PolyhedralMesh<VecT>::VertexHandle(cur_index_));
 	}
 }
 
@@ -483,7 +483,7 @@ VertexIter<VecT>& VertexIter<VecT>::operator--() {
 	if(cur_index_ < 0) {
 		BaseIter::valid(false);
 	}
-	BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::VertexHandle(cur_index_));
+	BaseIter::cur_handle(typename PolyhedralMesh<VecT>::VertexHandle(cur_index_));
 	return *this;
 }
 
@@ -494,7 +494,7 @@ VertexIter<VecT>& VertexIter<VecT>::operator++() {
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->vertices_.size()) {
 		BaseIter::valid(false);
 	}
-	BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::VertexHandle(cur_index_));
+	BaseIter::cur_handle(typename PolyhedralMesh<VecT>::VertexHandle(cur_index_));
 	return *this;
 }
 
@@ -503,15 +503,15 @@ VertexIter<VecT>& VertexIter<VecT>::operator++() {
 ////================================================================================================
 
 template <class VecT>
-EdgeIter<VecT>::EdgeIter(const OpenVolumeMesh<VecT>* _mesh, const EdgeHandle& _eh) :
-BaseIter(_mesh, OpenVolumeMesh<VecT>::InvalidEdgeHandle, _eh),
+EdgeIter<VecT>::EdgeIter(const PolyhedralMesh<VecT>* _mesh, const EdgeHandle& _eh) :
+BaseIter(_mesh, PolyhedralMesh<VecT>::InvalidEdgeHandle, _eh),
 cur_index_(_eh.idx()) {
 
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->edges_.size()) {
 		BaseIter::valid(false);
 	}
 	if(BaseIter::valid()) {
-		BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::EdgeHandle(cur_index_));
+		BaseIter::cur_handle(typename PolyhedralMesh<VecT>::EdgeHandle(cur_index_));
 	}
 }
 
@@ -522,7 +522,7 @@ EdgeIter<VecT>& EdgeIter<VecT>::operator--() {
 	if(cur_index_ < 0) {
 		BaseIter::valid(false);
 	}
-	BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::EdgeHandle(cur_index_));
+	BaseIter::cur_handle(typename PolyhedralMesh<VecT>::EdgeHandle(cur_index_));
 	return *this;
 }
 
@@ -533,7 +533,7 @@ EdgeIter<VecT>& EdgeIter<VecT>::operator++() {
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->edges_.size()) {
 		BaseIter::valid(false);
 	}
-	BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::EdgeHandle(cur_index_));
+	BaseIter::cur_handle(typename PolyhedralMesh<VecT>::EdgeHandle(cur_index_));
 	return *this;
 }
 
@@ -542,15 +542,15 @@ EdgeIter<VecT>& EdgeIter<VecT>::operator++() {
 ////================================================================================================
 
 template <class VecT>
-HalfEdgeIter<VecT>::HalfEdgeIter(const OpenVolumeMesh<VecT>* _mesh, const HalfEdgeHandle& _heh) :
-BaseIter(_mesh, OpenVolumeMesh<VecT>::InvalidHalfEdgeHandle, _heh),
+HalfEdgeIter<VecT>::HalfEdgeIter(const PolyhedralMesh<VecT>* _mesh, const HalfEdgeHandle& _heh) :
+BaseIter(_mesh, PolyhedralMesh<VecT>::InvalidHalfEdgeHandle, _heh),
 cur_index_(_heh.idx()) {
 
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->edges_.size() * 2) {
 		BaseIter::valid(false);
 	}
 	if(BaseIter::valid()) {
-		BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::HalfEdgeHandle(cur_index_));
+		BaseIter::cur_handle(typename PolyhedralMesh<VecT>::HalfEdgeHandle(cur_index_));
 	}
 }
 
@@ -561,7 +561,7 @@ HalfEdgeIter<VecT>& HalfEdgeIter<VecT>::operator--() {
 	if(cur_index_ < 0) {
 		BaseIter::valid(false);
 	}
-	BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::HalfEdgeHandle(cur_index_));
+	BaseIter::cur_handle(typename PolyhedralMesh<VecT>::HalfEdgeHandle(cur_index_));
 	return *this;
 }
 
@@ -572,7 +572,7 @@ HalfEdgeIter<VecT>& HalfEdgeIter<VecT>::operator++() {
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->edges_.size() * 2) {
 		BaseIter::valid(false);
 	}
-	BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::HalfEdgeHandle(cur_index_));
+	BaseIter::cur_handle(typename PolyhedralMesh<VecT>::HalfEdgeHandle(cur_index_));
 	return *this;
 }
 
@@ -581,15 +581,15 @@ HalfEdgeIter<VecT>& HalfEdgeIter<VecT>::operator++() {
 ////================================================================================================
 
 template <class VecT>
-FaceIter<VecT>::FaceIter(const OpenVolumeMesh<VecT>* _mesh, const FaceHandle& _fh) :
-BaseIter(_mesh, OpenVolumeMesh<VecT>::InvalidFaceHandle, _fh),
+FaceIter<VecT>::FaceIter(const PolyhedralMesh<VecT>* _mesh, const FaceHandle& _fh) :
+BaseIter(_mesh, PolyhedralMesh<VecT>::InvalidFaceHandle, _fh),
 cur_index_(_fh.idx()) {
 
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->faces_.size()) {
 		BaseIter::valid(false);
 	}
 	if(BaseIter::valid()) {
-		BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::FaceHandle(cur_index_));
+		BaseIter::cur_handle(typename PolyhedralMesh<VecT>::FaceHandle(cur_index_));
 	}
 }
 
@@ -600,7 +600,7 @@ FaceIter<VecT>& FaceIter<VecT>::operator--() {
 	if(cur_index_ < 0) {
 		BaseIter::valid(false);
 	}
-	BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::FaceHandle(cur_index_));
+	BaseIter::cur_handle(typename PolyhedralMesh<VecT>::FaceHandle(cur_index_));
 	return *this;
 }
 
@@ -611,7 +611,7 @@ FaceIter<VecT>& FaceIter<VecT>::operator++() {
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->faces_.size()) {
 		BaseIter::valid(false);
 	}
-	BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::FaceHandle(cur_index_));
+	BaseIter::cur_handle(typename PolyhedralMesh<VecT>::FaceHandle(cur_index_));
 	return *this;
 }
 
@@ -620,15 +620,15 @@ FaceIter<VecT>& FaceIter<VecT>::operator++() {
 ////================================================================================================
 
 template <class VecT>
-HalfFaceIter<VecT>::HalfFaceIter(const OpenVolumeMesh<VecT>* _mesh, const HalfFaceHandle& _hfh) :
-BaseIter(_mesh, OpenVolumeMesh<VecT>::InvalidHalfFaceHandle, _hfh),
+HalfFaceIter<VecT>::HalfFaceIter(const PolyhedralMesh<VecT>* _mesh, const HalfFaceHandle& _hfh) :
+BaseIter(_mesh, PolyhedralMesh<VecT>::InvalidHalfFaceHandle, _hfh),
 cur_index_(_hfh.idx()) {
 
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->faces_.size() * 2) {
 		BaseIter::valid(false);
 	}
 	if(BaseIter::valid()) {
-		BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::HalfFaceHandle(cur_index_));
+		BaseIter::cur_handle(typename PolyhedralMesh<VecT>::HalfFaceHandle(cur_index_));
 	}
 }
 
@@ -639,7 +639,7 @@ HalfFaceIter<VecT>& HalfFaceIter<VecT>::operator--() {
 	if(cur_index_ < 0) {
 		BaseIter::valid(false);
 	}
-	BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::HalfFaceHandle(cur_index_));
+	BaseIter::cur_handle(typename PolyhedralMesh<VecT>::HalfFaceHandle(cur_index_));
 	return *this;
 }
 
@@ -650,7 +650,7 @@ HalfFaceIter<VecT>& HalfFaceIter<VecT>::operator++() {
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->faces_.size() * 2) {
 		BaseIter::valid(false);
 	}
-	BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::HalfFaceHandle(cur_index_));
+	BaseIter::cur_handle(typename PolyhedralMesh<VecT>::HalfFaceHandle(cur_index_));
 	return *this;
 }
 
@@ -659,15 +659,15 @@ HalfFaceIter<VecT>& HalfFaceIter<VecT>::operator++() {
 ////================================================================================================
 
 template <class VecT>
-CellIter<VecT>::CellIter(const OpenVolumeMesh<VecT>* _mesh, const CellHandle& _ch) :
-BaseIter(_mesh, OpenVolumeMesh<VecT>::InvalidCellHandle, _ch),
+CellIter<VecT>::CellIter(const PolyhedralMesh<VecT>* _mesh, const CellHandle& _ch) :
+BaseIter(_mesh, PolyhedralMesh<VecT>::InvalidCellHandle, _ch),
 cur_index_(_ch.idx()) {
 
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->cells_.size()) {
 		BaseIter::valid(false);
 	}
 	if(BaseIter::valid()) {
-		BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::CellHandle(cur_index_));
+		BaseIter::cur_handle(typename PolyhedralMesh<VecT>::CellHandle(cur_index_));
 	}
 }
 
@@ -678,7 +678,7 @@ CellIter<VecT>& CellIter<VecT>::operator--() {
 	if(cur_index_ < 0) {
 		BaseIter::valid(false);
 	}
-	BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::CellHandle(cur_index_));
+	BaseIter::cur_handle(typename PolyhedralMesh<VecT>::CellHandle(cur_index_));
 	return *this;
 }
 
@@ -689,7 +689,7 @@ CellIter<VecT>& CellIter<VecT>::operator++() {
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->cells_.size()) {
 		BaseIter::valid(false);
 	}
-	BaseIter::cur_handle(typename OpenVolumeMesh<VecT>::CellHandle(cur_index_));
+	BaseIter::cur_handle(typename PolyhedralMesh<VecT>::CellHandle(cur_index_));
 	return *this;
 }
 

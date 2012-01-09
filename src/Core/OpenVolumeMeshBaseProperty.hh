@@ -62,7 +62,7 @@ class OpenVolumeMeshBaseProperty {
 public:
 
 	/// Indicates an error when a size is returned by a member.
-	static const size_t UnknownSize = std::numeric_limits<size_t>::max();
+	static const size_t UnknownSize;
 
 public:
 
@@ -148,6 +148,9 @@ private:
 	std::string name_;
 	bool persistent_;
 };
+
+// Initialize constant
+const size_t OpenVolumeMeshBaseProperty::UnknownSize = std::numeric_limits<size_t>::max();
 
 } // Namespace OpenVolumeMesh
 

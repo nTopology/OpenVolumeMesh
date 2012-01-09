@@ -1,24 +1,61 @@
-//=============================================================================
-//
-//  CLASS OpenVolumeMesh Data Structure
-//
-//=============================================================================
+/*===========================================================================*\
+ *                                                                           *
+ *                            OpenVolumeMesh                                 *
+ *        Copyright (C) 2011 by Computer Graphics Group, RWTH Aachen         *
+ *                           www.openmesh.org                                *
+ *                                                                           *
+ *---------------------------------------------------------------------------*
+ *  This file is part of OpenVolumeMesh.                                     *
+ *                                                                           *
+ *  OpenVolumeMesh is free software: you can redistribute it and/or modify   *
+ *  it under the terms of the GNU Lesser General Public License as           *
+ *  published by the Free Software Foundation, either version 3 of           *
+ *  the License, or (at your option) any later version with the              *
+ *  following exceptions:                                                    *
+ *                                                                           *
+ *  If other files instantiate templates or use macros                       *
+ *  or inline functions from this file, or you compile this file and         *
+ *  link it with other files to produce an executable, this file does        *
+ *  not by itself cause the resulting executable to be covered by the        *
+ *  GNU Lesser General Public License. This exception does not however       *
+ *  invalidate any other reasons why the executable file might be            *
+ *  covered by the GNU Lesser General Public License.                        *
+ *                                                                           *
+ *  OpenVolumeMesh is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+ *  GNU Lesser General Public License for more details.                      *
+ *                                                                           *
+ *  You should have received a copy of the GNU LesserGeneral Public          *
+ *  License along with OpenVolumeMesh.  If not,                              *
+ *  see <http://www.gnu.org/licenses/>.                                      *
+ *                                                                           *
+\*===========================================================================*/
 
-#ifndef OPENVOLUMEMESH_HH
-#define OPENVOLUMEMESH_HH
+/*===========================================================================*\
+ *                                                                           *
+ *   $Revision: 1 $                                                          *
+ *   $Date: 2011-01-09 12:46:45 +0100 (Mo, 09. Jan 2011) $                   *
+ *   $LastChangedBy: kremer $                                                *
+ *                                                                           *
+\*===========================================================================*/
 
+#ifndef POLYHEDRALMESH_HH
+#define POLYHEDRALMESH_HH
 
 //== INCLUDES =================================================================
 
 #include <vector>
 #include <set>
 
-#include "Utils/OpenVolumeMeshHandle.hh"
-#include "Utils/OpenVolumeMeshBaseKernel.hh"
-#include "Utils/OpenVolumeMeshStatus.hh"
+#include "../Core/OpenVolumeMeshHandle.hh"
+#include "../Core/OpenVolumeMeshBaseKernel.hh"
+#include "../Core/OpenVolumeMeshStatus.hh"
 #include "Utils/Iterators.hh"
 
-//== FORWARDDECLARATIONS ======================================================
+namespace OpenVolumeMesh {
+
+//== FORWARD DECLARATIONS ======================================================
 
 template <typename VecT>
 class OpenVolumeMeshVertex;
@@ -29,12 +66,9 @@ class OpenVolumeMeshFace;
 template <typename VecT>
 class OpenVolumeMeshCell;
 
-//== FORWARD DECLARATIONS =====================================================
-
-
 //== CLASS DEFINITION =========================================================
 
-/** \class OpenVolumeMesh OpenVolumeMesh.hh
+/** \class PolyhedralMesh PolyhedralMesh.hh
 
     This is a general index based data structure for easy storage and processing
     of volume meshes. Meshes are built defining entities of higher dimensions
@@ -98,7 +132,7 @@ class OpenVolumeMeshCell;
 //***************************************************************************
 
 template <typename VecT>
-class OpenVolumeMesh: public OpenVolumeMeshBaseKernel {
+class PolyhedralMesh: public OpenVolumeMeshBaseKernel {
 public:
     //=====================================================================
     // Defines
@@ -132,8 +166,8 @@ public:
     // Constructors/Destructor
     //=====================================================================
 
-    OpenVolumeMesh();
-    virtual ~OpenVolumeMesh() {};
+    PolyhedralMesh();
+    virtual ~PolyhedralMesh() {};
 
     //=====================================================================
     // Iterators
@@ -155,17 +189,17 @@ public:
 
     typedef class VertexOHalfedgeIter<VecT> 	VertexOHalfedgeIter;
     typedef class HalfEdgeHalfFaceIter<VecT> 	HalfEdgeHalfFaceIter;
-    typedef class VertexCellIter<VecT> 		VertexCellIter;
-    typedef class HalfedgeCellIter<VecT> 		HalfedgeCellIter;
-    typedef class CellVertexIter<VecT> 		CellVertexIter;
-    typedef class CellCellIter<VecT> 			CellCellIter;
-    typedef class BoundaryFaceIter<VecT> 		BoundaryFaceIter;
-    typedef class VertexIter<VecT> 			VertexIter;
-    typedef class EdgeIter<VecT> 				EdgeIter;
-    typedef class HalfEdgeIter<VecT> 			HalfEdgeIter;
-    typedef class FaceIter<VecT> 				FaceIter;
-    typedef class HalfFaceIter<VecT> 			HalfFaceIter;
-    typedef class CellIter<VecT> 				CellIter;
+    typedef class VertexCellIter<VecT> 		    VertexCellIter;
+    typedef class HalfedgeCellIter<VecT> 		  HalfedgeCellIter;
+    typedef class CellVertexIter<VecT> 		    CellVertexIter;
+    typedef class CellCellIter<VecT> 			    CellCellIter;
+    typedef class BoundaryFaceIter<VecT> 		  BoundaryFaceIter;
+    typedef class VertexIter<VecT> 			      VertexIter;
+    typedef class EdgeIter<VecT> 				      EdgeIter;
+    typedef class HalfEdgeIter<VecT> 			    HalfEdgeIter;
+    typedef class FaceIter<VecT> 				      FaceIter;
+    typedef class HalfFaceIter<VecT> 			    HalfFaceIter;
+    typedef class CellIter<VecT> 				      CellIter;
 
     VertexOHalfedgeIter voh_iter(const VertexHandle& _idx) const {
     	return VertexOHalfedgeIter(_idx, this);
@@ -749,17 +783,17 @@ protected:
 
 // Initialize constants
 template <typename VecT>
-const typename OpenVolumeMesh<VecT>::VertexHandle   OpenVolumeMesh<VecT>::InvalidVertexHandle(-1);
+const typename PolyhedralMesh<VecT>::VertexHandle   PolyhedralMesh<VecT>::InvalidVertexHandle(-1);
 template <typename VecT>
-const typename OpenVolumeMesh<VecT>::EdgeHandle     OpenVolumeMesh<VecT>::InvalidEdgeHandle(-1);
+const typename PolyhedralMesh<VecT>::EdgeHandle     PolyhedralMesh<VecT>::InvalidEdgeHandle(-1);
 template <typename VecT>
-const typename OpenVolumeMesh<VecT>::FaceHandle     OpenVolumeMesh<VecT>::InvalidFaceHandle(-1);
+const typename PolyhedralMesh<VecT>::FaceHandle     PolyhedralMesh<VecT>::InvalidFaceHandle(-1);
 template <typename VecT>
-const typename OpenVolumeMesh<VecT>::CellHandle     OpenVolumeMesh<VecT>::InvalidCellHandle(-1);
+const typename PolyhedralMesh<VecT>::CellHandle     PolyhedralMesh<VecT>::InvalidCellHandle(-1);
 template <typename VecT>
-const typename OpenVolumeMesh<VecT>::HalfEdgeHandle OpenVolumeMesh<VecT>::InvalidHalfEdgeHandle(-1);
+const typename PolyhedralMesh<VecT>::HalfEdgeHandle PolyhedralMesh<VecT>::InvalidHalfEdgeHandle(-1);
 template <typename VecT>
-const typename OpenVolumeMesh<VecT>::HalfFaceHandle OpenVolumeMesh<VecT>::InvalidHalfFaceHandle(-1);
+const typename PolyhedralMesh<VecT>::HalfFaceHandle PolyhedralMesh<VecT>::InvalidHalfFaceHandle(-1);
 
 //***************************************************************************
 
@@ -902,12 +936,12 @@ std::ostream& operator<<(std::ostream& _os, const OpenVolumeMeshCell<VecT>& _cel
     return _os;
 }
 
+} // Namespace OpenVolumeMesh
+
 //=============================================================================
-#if defined(INCLUDE_TEMPLATES) && !defined(OPENVOLUMEMESHT_CC)
-#include "OpenVolumeMeshT.cc"
+#if defined(INCLUDE_TEMPLATES) && !defined(POLYHEDRALMESHT_CC)
+#include "PolyhedralMeshT.cc"
 #endif
 //=============================================================================
 
-//***************************************************************************
-
-#endif // OPENVOLUMEMESH_HH
+#endif // POLYHEDRALMESH_HH

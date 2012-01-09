@@ -1,18 +1,54 @@
-/*
- * OpenHexMeshIterators.hh
- *
- *  Created on: 27.06.2011
- *      Author: mike
- */
+/*===========================================================================*\
+ *                                                                           *
+ *                            OpenVolumeMesh                                 *
+ *        Copyright (C) 2011 by Computer Graphics Group, RWTH Aachen         *
+ *                           www.openmesh.org                                *
+ *                                                                           *
+ *---------------------------------------------------------------------------*
+ *  This file is part of OpenVolumeMesh.                                     *
+ *                                                                           *
+ *  OpenVolumeMesh is free software: you can redistribute it and/or modify   *
+ *  it under the terms of the GNU Lesser General Public License as           *
+ *  published by the Free Software Foundation, either version 3 of           *
+ *  the License, or (at your option) any later version with the              *
+ *  following exceptions:                                                    *
+ *                                                                           *
+ *  If other files instantiate templates or use macros                       *
+ *  or inline functions from this file, or you compile this file and         *
+ *  link it with other files to produce an executable, this file does        *
+ *  not by itself cause the resulting executable to be covered by the        *
+ *  GNU Lesser General Public License. This exception does not however       *
+ *  invalidate any other reasons why the executable file might be            *
+ *  covered by the GNU Lesser General Public License.                        *
+ *                                                                           *
+ *  OpenVolumeMesh is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+ *  GNU Lesser General Public License for more details.                      *
+ *                                                                           *
+ *  You should have received a copy of the GNU LesserGeneral Public          *
+ *  License along with OpenVolumeMesh.  If not,                              *
+ *  see <http://www.gnu.org/licenses/>.                                      *
+ *                                                                           *
+\*===========================================================================*/
 
-#ifndef OPENHEXMESHITERATORS_HH_
-#define OPENHEXMESHITERATORS_HH_
+/*===========================================================================*\
+ *                                                                           *
+ *   $Revision: 1 $                                                          *
+ *   $Date: 2011-01-09 12:46:45 +0100 (Mo, 09. Jan 2011) $                   *
+ *   $LastChangedBy: kremer $                                                *
+ *                                                                           *
+\*===========================================================================*/
 
-//#include "../OpenHexMesh.hh"
+#ifndef HEXAHEDRALMESHITERATORS_HH
+#define HEXAHEDRALMESHITERATORS_HH
+
+namespace OpenVolumeMesh {
+
 template <class VecT>
-class OpenHexMesh;
+class HexahedralMesh;
 
-#include "../../OpenVolumeMesh/Utils/Iterators.hh"
+#include "../../PolyhedralMesh/Utils/Iterators.hh"
 
 template <class VecT>
 class CellSheetCellIter : public BaseIterator<VecT,
@@ -26,7 +62,7 @@ private:
 	typedef typename OpenVolumeMesh<VecT>::HalfFaceHandle HalfFaceHandle;
 public:
 	CellSheetCellIter(const CellHandle& _ref_h, const unsigned char _orthDir,
-			const OpenHexMesh<VecT>* _mesh);
+			const HexahedralMesh<VecT>* _mesh);
 
 	CellSheetCellIter& operator=(const CellSheetCellIter& _c) {
 		BaseIter::operator=(_c);
@@ -94,7 +130,7 @@ private:
 	typedef typename OpenVolumeMesh<VecT>::EdgeHandle     EdgeHandle;
 public:
 	HalfFaceSheetHalfFaceIter(const HalfFaceHandle& _ref_h,
-			const OpenHexMesh<VecT>* _mesh);
+			const HexahedralMesh<VecT>* _mesh);
 	HalfFaceSheetHalfFaceIter& operator=(const HalfFaceSheetHalfFaceIter& _c) {
 		BaseIter::operator=(_c);
 		adjacent_halffaces_ = _c.adjacent_halffaces_;
@@ -165,7 +201,7 @@ private:
     typedef typename OpenVolumeMesh<VecT>::EdgeHandle     EdgeHandle;
 public:
     OutsideNeighborHalfFaceIter(const HalfFaceHandle& _ref_h,
-            const OpenHexMesh<VecT>* _mesh);
+            const HexahedralMesh<VecT>* _mesh);
     OutsideNeighborHalfFaceIter& operator=(const OutsideNeighborHalfFaceIter& _c) {
         BaseIter::operator=(_c);
         neighbor_halffaces_ = _c.adjacent_halffaces_;
@@ -223,8 +259,10 @@ private:
     typename std::vector<EdgeHandle>::const_iterator edge_it_;
 };
 
-#if defined(INCLUDE_TEMPLATES) && !defined(OPENHEXMESHITERATORST_CC)
-#include "OpenHexMeshIteratorsT.cc"
+#if defined(INCLUDE_TEMPLATES) && !defined(HEXAHEDRALMESHITERATORST_CC)
+#include "IteratorsT.cc"
 #endif
 
-#endif /* OPENHEXMESHITERATORS_HH_ */
+} // Namespace OpenVolumeMesh
+
+#endif /* HEXAHEDRALMESHITERATORS_HH */

@@ -50,7 +50,7 @@ namespace OpenVolumeMesh {
 
 // Forward declaration
 template <class VecT>
-class OpenVolumeMesh;
+class PolyhedralMesh;
 
 template <class VecT,
 class IH /*  Input handle type */,
@@ -60,12 +60,12 @@ public:
 
 	// STL compliance
 	typedef std::input_iterator_tag	iterator_category;
-	typedef int						distance_type;
-	typedef OH  					value_type;
-	typedef OH* 					pointer;
-	typedef OH& 					reference;
+	typedef int						          distance_type;
+	typedef OH  					          value_type;
+	typedef OH* 					          pointer;
+	typedef OH& 					          reference;
 
-	BaseIterator(const OpenVolumeMesh<VecT>* _mesh, const IH& _ih, const OH& _ch = -1) :
+	BaseIterator(const PolyhedralMesh<VecT>* _mesh, const IH& _ih, const OH& _ch = -1) :
 		valid_(true), cur_handle_(_ch), ref_handle_(_ih), mesh_(_mesh) {}
 
 	// STL compliance (needs to have default constructor)
@@ -130,7 +130,7 @@ public:
 	const IH& ref_handle() const {
 		return ref_handle_;
 	}
-	const OpenVolumeMesh<VecT>* mesh() const {
+	const PolyhedralMesh<VecT>* mesh() const {
 		return mesh_;
 	}
 
@@ -139,7 +139,7 @@ private:
 	bool valid_;
 	OH cur_handle_;
 	IH ref_handle_;
-	const OpenVolumeMesh<VecT>* mesh_;
+	const PolyhedralMesh<VecT>* mesh_;
 };
 
 //===========================================================================
@@ -147,16 +147,16 @@ private:
 template <class VecT>
 class VertexOHalfedgeIter :
 	public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::VertexHandle,
-	typename OpenVolumeMesh<VecT>::HalfEdgeHandle> {
+	typename PolyhedralMesh<VecT>::VertexHandle,
+	typename PolyhedralMesh<VecT>::HalfEdgeHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::VertexHandle,
-			typename OpenVolumeMesh<VecT>::HalfEdgeHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::VertexHandle VertexHandle;
+			typename PolyhedralMesh<VecT>::VertexHandle,
+			typename PolyhedralMesh<VecT>::HalfEdgeHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::VertexHandle VertexHandle;
 
 	VertexOHalfedgeIter(const VertexHandle& _vIdx,
-			const OpenVolumeMesh<VecT>* _mesh);
+			const PolyhedralMesh<VecT>* _mesh);
 
 	// Post increment/decrement operator
 	VertexOHalfedgeIter operator++(int) {
@@ -207,15 +207,15 @@ private:
 //===========================================================================
 
 template <class VecT> class HalfEdgeHalfFaceIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::HalfEdgeHandle,
-	typename OpenVolumeMesh<VecT>::HalfFaceHandle> {
+	typename PolyhedralMesh<VecT>::HalfEdgeHandle,
+	typename PolyhedralMesh<VecT>::HalfFaceHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::HalfEdgeHandle,
-			typename OpenVolumeMesh<VecT>::HalfFaceHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
+			typename PolyhedralMesh<VecT>::HalfEdgeHandle,
+			typename PolyhedralMesh<VecT>::HalfFaceHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
 
-	HalfEdgeHalfFaceIter(const HalfEdgeHandle& _heIdx, const OpenVolumeMesh<VecT>* _mesh);
+	HalfEdgeHalfFaceIter(const HalfEdgeHandle& _heIdx, const PolyhedralMesh<VecT>* _mesh);
 
 	// Post increment/decrement operator
 	HalfEdgeHalfFaceIter operator++(int) {
@@ -265,18 +265,18 @@ private:
 //===========================================================================
 
 template <class VecT> class VertexCellIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::VertexHandle,
-	typename OpenVolumeMesh<VecT>::CellHandle> {
+	typename PolyhedralMesh<VecT>::VertexHandle,
+	typename PolyhedralMesh<VecT>::CellHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::VertexHandle,
-			typename OpenVolumeMesh<VecT>::CellHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::VertexHandle VertexHandle;
-	typedef typename OpenVolumeMesh<VecT>::CellHandle CellHandle;
-	typedef typename OpenVolumeMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
-	typedef typename OpenVolumeMesh<VecT>::HalfFaceHandle HalfFaceHandle;
+			typename PolyhedralMesh<VecT>::VertexHandle,
+			typename PolyhedralMesh<VecT>::CellHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::VertexHandle VertexHandle;
+	typedef typename PolyhedralMesh<VecT>::CellHandle CellHandle;
+	typedef typename PolyhedralMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
+	typedef typename PolyhedralMesh<VecT>::HalfFaceHandle HalfFaceHandle;
 
-	VertexCellIter(const VertexHandle& _vIdx, const OpenVolumeMesh<VecT>* _mesh);
+	VertexCellIter(const VertexHandle& _vIdx, const PolyhedralMesh<VecT>* _mesh);
 	VertexCellIter& operator=(const VertexCellIter& _c) {
 		BaseIter::operator=(_c);
 		cells_ = cells_;
@@ -331,15 +331,15 @@ private:
 };
 
 template <class VecT> class HalfedgeCellIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::HalfEdgeHandle,
-	typename OpenVolumeMesh<VecT>::CellHandle> {
+	typename PolyhedralMesh<VecT>::HalfEdgeHandle,
+	typename PolyhedralMesh<VecT>::CellHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::HalfEdgeHandle,
-			typename OpenVolumeMesh<VecT>::CellHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
+			typename PolyhedralMesh<VecT>::HalfEdgeHandle,
+			typename PolyhedralMesh<VecT>::CellHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
 
-	HalfedgeCellIter(const HalfEdgeHandle& _heIdx, const OpenVolumeMesh<VecT>* _mesh);
+	HalfedgeCellIter(const HalfEdgeHandle& _heIdx, const PolyhedralMesh<VecT>* _mesh);
 
 	// Post increment/decrement operator
 	HalfedgeCellIter operator++(int) {
@@ -389,18 +389,18 @@ private:
 //===========================================================================
 
 template <class VecT> class CellVertexIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::CellHandle,
-	typename OpenVolumeMesh<VecT>::VertexHandle> {
+	typename PolyhedralMesh<VecT>::CellHandle,
+	typename PolyhedralMesh<VecT>::VertexHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::CellHandle,
-			typename OpenVolumeMesh<VecT>::VertexHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::CellHandle CellHandle;
-	typedef typename OpenVolumeMesh<VecT>::VertexHandle VertexHandle;
-	typedef typename OpenVolumeMesh<VecT>::HalfFaceHandle HalfFaceHandle;
-	typedef typename OpenVolumeMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
+			typename PolyhedralMesh<VecT>::CellHandle,
+			typename PolyhedralMesh<VecT>::VertexHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::CellHandle CellHandle;
+	typedef typename PolyhedralMesh<VecT>::VertexHandle VertexHandle;
+	typedef typename PolyhedralMesh<VecT>::HalfFaceHandle HalfFaceHandle;
+	typedef typename PolyhedralMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
 
-	CellVertexIter(const CellHandle& _cIdx, const OpenVolumeMesh<VecT>* _mesh);
+	CellVertexIter(const CellHandle& _cIdx, const PolyhedralMesh<VecT>* _mesh);
 	CellVertexIter& operator=(const CellVertexIter& _c) {
 		BaseIter::operator=(_c);
 		incident_vertices_ = _c.incident_vertices_;
@@ -457,16 +457,16 @@ private:
 //===========================================================================
 
 template <class VecT> class CellCellIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::CellHandle,
-	typename OpenVolumeMesh<VecT>::CellHandle> {
+	typename PolyhedralMesh<VecT>::CellHandle,
+	typename PolyhedralMesh<VecT>::CellHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::CellHandle,
-			typename OpenVolumeMesh<VecT>::CellHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::CellHandle CellHandle;
-	typedef typename OpenVolumeMesh<VecT>::HalfFaceHandle HalfFaceHandle;
+			typename PolyhedralMesh<VecT>::CellHandle,
+			typename PolyhedralMesh<VecT>::CellHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::CellHandle CellHandle;
+	typedef typename PolyhedralMesh<VecT>::HalfFaceHandle HalfFaceHandle;
 
-	CellCellIter(const CellHandle& _cIdx, const OpenVolumeMesh<VecT>* _mesh);
+	CellCellIter(const CellHandle& _cIdx, const PolyhedralMesh<VecT>* _mesh);
 	CellCellIter& operator=(const CellCellIter& _c) {
 		BaseIter::operator=(_c);
 		adjacent_cells_ = _c.adjacent_cells_;
@@ -523,15 +523,15 @@ private:
 //===========================================================================
 
 template <class VecT> class BoundaryFaceIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::FaceHandle,
-	typename OpenVolumeMesh<VecT>::FaceHandle> {
+	typename PolyhedralMesh<VecT>::FaceHandle,
+	typename PolyhedralMesh<VecT>::FaceHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::FaceHandle,
-			typename OpenVolumeMesh<VecT>::FaceHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::FaceHandle FaceHandle;
+			typename PolyhedralMesh<VecT>::FaceHandle,
+			typename PolyhedralMesh<VecT>::FaceHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::FaceHandle FaceHandle;
 
-	BoundaryFaceIter(const OpenVolumeMesh<VecT>* _mesh);
+	BoundaryFaceIter(const PolyhedralMesh<VecT>* _mesh);
 
 	// Post increment/decrement operator
 	BoundaryFaceIter operator++(int) {
@@ -581,15 +581,15 @@ private:
 //===========================================================================
 
 template <class VecT> class VertexIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::VertexHandle,
-	typename OpenVolumeMesh<VecT>::VertexHandle> {
+	typename PolyhedralMesh<VecT>::VertexHandle,
+	typename PolyhedralMesh<VecT>::VertexHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::VertexHandle,
-			typename OpenVolumeMesh<VecT>::VertexHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::VertexHandle VertexHandle;
+			typename PolyhedralMesh<VecT>::VertexHandle,
+			typename PolyhedralMesh<VecT>::VertexHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::VertexHandle VertexHandle;
 
-	VertexIter(const OpenVolumeMesh<VecT>* _mesh, const VertexHandle& _vh = VertexHandle(0));
+	VertexIter(const PolyhedralMesh<VecT>* _mesh, const VertexHandle& _vh = VertexHandle(0));
 
 	// Post increment/decrement operator
 	VertexIter operator++(int) {
@@ -639,15 +639,15 @@ private:
 //===========================================================================
 
 template <class VecT> class EdgeIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::EdgeHandle,
-	typename OpenVolumeMesh<VecT>::EdgeHandle> {
+	typename PolyhedralMesh<VecT>::EdgeHandle,
+	typename PolyhedralMesh<VecT>::EdgeHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::EdgeHandle,
-			typename OpenVolumeMesh<VecT>::EdgeHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::EdgeHandle EdgeHandle;
+			typename PolyhedralMesh<VecT>::EdgeHandle,
+			typename PolyhedralMesh<VecT>::EdgeHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::EdgeHandle EdgeHandle;
 
-	EdgeIter(const OpenVolumeMesh<VecT>* _mesh, const EdgeHandle& _eh = EdgeHandle(0));
+	EdgeIter(const PolyhedralMesh<VecT>* _mesh, const EdgeHandle& _eh = EdgeHandle(0));
 
 	// Post increment/decrement operator
 	EdgeIter operator++(int) {
@@ -697,15 +697,15 @@ private:
 //===========================================================================
 
 template <class VecT> class HalfEdgeIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::HalfEdgeHandle,
-	typename OpenVolumeMesh<VecT>::HalfEdgeHandle> {
+	typename PolyhedralMesh<VecT>::HalfEdgeHandle,
+	typename PolyhedralMesh<VecT>::HalfEdgeHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::HalfEdgeHandle,
-			typename OpenVolumeMesh<VecT>::HalfEdgeHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
+			typename PolyhedralMesh<VecT>::HalfEdgeHandle,
+			typename PolyhedralMesh<VecT>::HalfEdgeHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
 
-	HalfEdgeIter(const OpenVolumeMesh<VecT>* _mesh, const HalfEdgeHandle& _heh = HalfEdgeHandle(0));
+	HalfEdgeIter(const PolyhedralMesh<VecT>* _mesh, const HalfEdgeHandle& _heh = HalfEdgeHandle(0));
 
 	// Post increment/decrement operator
 	HalfEdgeIter operator++(int) {
@@ -755,15 +755,15 @@ private:
 //===========================================================================
 
 template <class VecT> class FaceIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::FaceHandle,
-	typename OpenVolumeMesh<VecT>::FaceHandle> {
+	typename PolyhedralMesh<VecT>::FaceHandle,
+	typename PolyhedralMesh<VecT>::FaceHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::FaceHandle,
-			typename OpenVolumeMesh<VecT>::FaceHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::FaceHandle FaceHandle;
+			typename PolyhedralMesh<VecT>::FaceHandle,
+			typename PolyhedralMesh<VecT>::FaceHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::FaceHandle FaceHandle;
 
-	FaceIter(const OpenVolumeMesh<VecT>* _mesh, const FaceHandle& _fh = FaceHandle(0));
+	FaceIter(const PolyhedralMesh<VecT>* _mesh, const FaceHandle& _fh = FaceHandle(0));
 
 	// Post increment/decrement operator
 	FaceIter operator++(int) {
@@ -813,15 +813,15 @@ private:
 //===========================================================================
 
 template <class VecT> class HalfFaceIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::HalfFaceHandle,
-	typename OpenVolumeMesh<VecT>::HalfFaceHandle> {
+	typename PolyhedralMesh<VecT>::HalfFaceHandle,
+	typename PolyhedralMesh<VecT>::HalfFaceHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::HalfFaceHandle,
-			typename OpenVolumeMesh<VecT>::HalfFaceHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::HalfFaceHandle HalfFaceHandle;
+			typename PolyhedralMesh<VecT>::HalfFaceHandle,
+			typename PolyhedralMesh<VecT>::HalfFaceHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::HalfFaceHandle HalfFaceHandle;
 
-	HalfFaceIter(const OpenVolumeMesh<VecT>* _mesh, const HalfFaceHandle& _hfh = HalfFaceHandle(0));
+	HalfFaceIter(const PolyhedralMesh<VecT>* _mesh, const HalfFaceHandle& _hfh = HalfFaceHandle(0));
 
 	// Post increment/decrement operator
 	HalfFaceIter operator++(int) {
@@ -871,15 +871,15 @@ private:
 //===========================================================================
 
 template <class VecT> class CellIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::CellHandle,
-	typename OpenVolumeMesh<VecT>::CellHandle> {
+	typename PolyhedralMesh<VecT>::CellHandle,
+	typename PolyhedralMesh<VecT>::CellHandle> {
 public:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::CellHandle,
-			typename OpenVolumeMesh<VecT>::CellHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::CellHandle CellHandle;
+			typename PolyhedralMesh<VecT>::CellHandle,
+			typename PolyhedralMesh<VecT>::CellHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::CellHandle CellHandle;
 
-	CellIter(const OpenVolumeMesh<VecT>* _mesh, const CellHandle& _ch = CellHandle(0));
+	CellIter(const PolyhedralMesh<VecT>* _mesh, const CellHandle& _ch = CellHandle(0));
 
 	// Post increment/decrement operator
 	CellIter operator++(int) {

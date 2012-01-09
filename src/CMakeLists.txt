@@ -7,7 +7,8 @@ include_directories (
 
 # source code directories
 set (directories 
-  . 
+  .
+  Core
   OpenVolumeMesh
   OpenVolumeMesh/Utils
   OpenHexMesh

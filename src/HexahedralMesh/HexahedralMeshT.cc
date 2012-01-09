@@ -1,31 +1,68 @@
-/*
- * OpenHexMeshT.cc
- *
- *  Created on: Jun 10, 2011
- *      Author: kremer
- */
+/*===========================================================================*\
+ *                                                                           *
+ *                            OpenVolumeMesh                                 *
+ *        Copyright (C) 2011 by Computer Graphics Group, RWTH Aachen         *
+ *                           www.openmesh.org                                *
+ *                                                                           *
+ *---------------------------------------------------------------------------*
+ *  This file is part of OpenVolumeMesh.                                     *
+ *                                                                           *
+ *  OpenVolumeMesh is free software: you can redistribute it and/or modify   *
+ *  it under the terms of the GNU Lesser General Public License as           *
+ *  published by the Free Software Foundation, either version 3 of           *
+ *  the License, or (at your option) any later version with the              *
+ *  following exceptions:                                                    *
+ *                                                                           *
+ *  If other files instantiate templates or use macros                       *
+ *  or inline functions from this file, or you compile this file and         *
+ *  link it with other files to produce an executable, this file does        *
+ *  not by itself cause the resulting executable to be covered by the        *
+ *  GNU Lesser General Public License. This exception does not however       *
+ *  invalidate any other reasons why the executable file might be            *
+ *  covered by the GNU Lesser General Public License.                        *
+ *                                                                           *
+ *  OpenVolumeMesh is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+ *  GNU Lesser General Public License for more details.                      *
+ *                                                                           *
+ *  You should have received a copy of the GNU LesserGeneral Public          *
+ *  License along with OpenVolumeMesh.  If not,                              *
+ *  see <http://www.gnu.org/licenses/>.                                      *
+ *                                                                           *
+\*===========================================================================*/
+
+/*===========================================================================*\
+ *                                                                           *
+ *   $Revision: 1 $                                                          *
+ *   $Date: 2011-01-09 12:46:45 +0100 (Mo, 09. Jan 2011) $                   *
+ *   $LastChangedBy: kremer $                                                *
+ *                                                                           *
+\*===========================================================================*/
 
 #define OPENHEXMESHT_CC
 
-#include "OpenHexMesh.hh"
+#include "HexahedralMesh.hh"
+
+namespace OpenVolumeMesh {
 
 template <typename VecT>
-OpenHexMesh<VecT>::OpenHexMesh() {
+HexahedralMesh<VecT>::HexahedralMesh() {
 
 }
 
 //========================================================================================
 
 template <typename VecT>
-OpenHexMesh<VecT>::~OpenHexMesh() {
+HexahedralMesh<VecT>::~HexahedralMesh() {
 
 }
 
 //========================================================================================
 
 template <typename VecT>
-typename OpenHexMesh<VecT>::FaceHandle
-OpenHexMesh<VecT>::add_face(const std::vector<HalfEdgeHandle>& _halfedges, bool _topologyCheck) {
+typename HexahedralMesh<VecT>::FaceHandle
+HexahedralMesh<VecT>::add_face(const std::vector<HalfEdgeHandle>& _halfedges, bool _topologyCheck) {
 
     if(_halfedges.size() != 4) {
         std::cerr << "Face valence is not four! Aborting." << std::endl;
@@ -38,8 +75,8 @@ OpenHexMesh<VecT>::add_face(const std::vector<HalfEdgeHandle>& _halfedges, bool 
 //========================================================================================
 
 template <typename VecT>
-typename OpenHexMesh<VecT>::FaceHandle
-OpenHexMesh<VecT>::add_face(const std::vector<VertexHandle>& _vertices) {
+typename HexahedralMesh<VecT>::FaceHandle
+HexahedralMesh<VecT>::add_face(const std::vector<VertexHandle>& _vertices) {
 
     if(_vertices.size() != 4) {
         std::cerr << "Face valence is not four! Aborting." << std::endl;
@@ -52,8 +89,8 @@ OpenHexMesh<VecT>::add_face(const std::vector<VertexHandle>& _vertices) {
 //========================================================================================
 
 template <typename VecT>
-typename OpenHexMesh<VecT>::CellHandle
-OpenHexMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck, bool _reorderFaces) {
+typename HexahedralMesh<VecT>::CellHandle
+HexahedralMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck, bool _reorderFaces) {
 
     if(_halffaces.size() != 6) {
         std::cerr << "Cell valence is not six! Aborting." << std::endl;
@@ -206,8 +243,8 @@ OpenHexMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool 
 //========================================================================================
 
 template <typename VecT>
-const typename OpenHexMesh<VecT>::HalfFaceHandle&
-OpenHexMesh<VecT>::get_adjacent_halfface(const HalfFaceHandle& _hfh, const HalfEdgeHandle& _heh,
+const typename HexahedralMesh<VecT>::HalfFaceHandle&
+HexahedralMesh<VecT>::get_adjacent_halfface(const HalfFaceHandle& _hfh, const HalfEdgeHandle& _heh,
         const std::vector<HalfFaceHandle>& _halffaces) const {
 
     // Search for halfface that is incident to the opposite
@@ -226,3 +263,5 @@ OpenHexMesh<VecT>::get_adjacent_halfface(const HalfFaceHandle& _hfh, const HalfE
 
     return OpenVolumeMesh<VecT>::InvalidHalfFaceHandle;
 }
+
+} // Namespace OpenVolumeMesh

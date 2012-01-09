@@ -1,13 +1,57 @@
-#define OPENVOLUMEMESHT_CC
+/*===========================================================================*\
+ *                                                                           *
+ *                            OpenVolumeMesh                                 *
+ *        Copyright (C) 2011 by Computer Graphics Group, RWTH Aachen         *
+ *                           www.openmesh.org                                *
+ *                                                                           *
+ *---------------------------------------------------------------------------*
+ *  This file is part of OpenVolumeMesh.                                     *
+ *                                                                           *
+ *  OpenVolumeMesh is free software: you can redistribute it and/or modify   *
+ *  it under the terms of the GNU Lesser General Public License as           *
+ *  published by the Free Software Foundation, either version 3 of           *
+ *  the License, or (at your option) any later version with the              *
+ *  following exceptions:                                                    *
+ *                                                                           *
+ *  If other files instantiate templates or use macros                       *
+ *  or inline functions from this file, or you compile this file and         *
+ *  link it with other files to produce an executable, this file does        *
+ *  not by itself cause the resulting executable to be covered by the        *
+ *  GNU Lesser General Public License. This exception does not however       *
+ *  invalidate any other reasons why the executable file might be            *
+ *  covered by the GNU Lesser General Public License.                        *
+ *                                                                           *
+ *  OpenVolumeMesh is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+ *  GNU Lesser General Public License for more details.                      *
+ *                                                                           *
+ *  You should have received a copy of the GNU LesserGeneral Public          *
+ *  License along with OpenVolumeMesh.  If not,                              *
+ *  see <http://www.gnu.org/licenses/>.                                      *
+ *                                                                           *
+\*===========================================================================*/
+
+/*===========================================================================*\
+ *                                                                           *
+ *   $Revision: 1 $                                                          *
+ *   $Date: 2011-01-09 12:46:45 +0100 (Mo, 09. Jan 2011) $                   *
+ *   $LastChangedBy: kremer $                                                *
+ *                                                                           *
+\*===========================================================================*/
+
+#define POLYHEDRALMESHT_CC
 
 #include <set>
 
-#include "OpenVolumeMesh.hh"
+#include "PolyhedralMesh.hh"
+
+namespace OpenVolumeMesh {
 
 //========================================================================================
 
 template <typename VecT>
-OpenVolumeMesh<VecT>::OpenVolumeMesh() :
+PolyhedralMesh<VecT>::PolyhedralMesh() :
 has_bottom_up_adjacencies_(false),
 has_face_normals_(false),
 has_vertex_status_(false),
@@ -23,7 +67,7 @@ has_cell_status_(false) {
 
 /// Build adjacency list in top-down-order
 template <typename VecT>
-void OpenVolumeMesh<VecT>::update_adjacencies() {
+void PolyhedralMesh<VecT>::update_adjacencies() {
 
     // Clear adjacencies
     outgoing_hes_per_vertex_.clear();
@@ -193,8 +237,8 @@ void OpenVolumeMesh<VecT>::update_adjacencies() {
 
 /// Add vertex
 template <typename VecT>
-typename OpenVolumeMesh<VecT>::VertexHandle
-OpenVolumeMesh<VecT>::add_vertex(const VecT& _p) {
+typename PolyhedralMesh<VecT>::VertexHandle
+PolyhedralMesh<VecT>::add_vertex(const VecT& _p) {
 
     // Create vertex object
     OpenVolumeMeshVertex<VecT> v(_p);
@@ -218,8 +262,8 @@ OpenVolumeMesh<VecT>::add_vertex(const VecT& _p) {
 
 /// Add edge
 template <typename VecT>
-typename OpenVolumeMesh<VecT>::EdgeHandle
-OpenVolumeMesh<VecT>::add_edge(const VertexHandle& _fromVertex,
+typename PolyhedralMesh<VecT>::EdgeHandle
+PolyhedralMesh<VecT>::add_edge(const VertexHandle& _fromVertex,
                                  const VertexHandle& _toVertex) {
 
     if((unsigned int)_fromVertex >= vertices_.size() || (unsigned int)_toVertex >= vertices_.size()) {
@@ -262,8 +306,8 @@ OpenVolumeMesh<VecT>::add_edge(const VertexHandle& _fromVertex,
 
 /// Add face via incident edges
 template <typename VecT>
-typename OpenVolumeMesh<VecT>::FaceHandle
-OpenVolumeMesh<VecT>::add_face(const std::vector<HalfEdgeHandle>& _halfedges, bool _topologyCheck) {
+typename PolyhedralMesh<VecT>::FaceHandle
+PolyhedralMesh<VecT>::add_face(const std::vector<HalfEdgeHandle>& _halfedges, bool _topologyCheck) {
 
     // Test if all edges are valid
     for(typename std::vector<HalfEdgeHandle>::const_iterator it = _halfedges.begin();
@@ -347,8 +391,8 @@ OpenVolumeMesh<VecT>::add_face(const std::vector<HalfEdgeHandle>& _halfedges, bo
 /// Add face via incident vertices
 /// Define the _vertices in counter-clockwise order (from the "outside")
 template <typename VecT>
-typename OpenVolumeMesh<VecT>::FaceHandle
-OpenVolumeMesh<VecT>::add_face(const std::vector<VertexHandle>& _vertices) {
+typename PolyhedralMesh<VecT>::FaceHandle
+PolyhedralMesh<VecT>::add_face(const std::vector<VertexHandle>& _vertices) {
 
     // Test if all vertices exist
     for(typename std::vector<VertexHandle>::const_iterator it = _vertices.begin();
@@ -389,8 +433,8 @@ OpenVolumeMesh<VecT>::add_face(const std::vector<VertexHandle>& _vertices) {
 
 /// Add cell via incident halffaces
 template <typename VecT>
-typename OpenVolumeMesh<VecT>::CellHandle
-OpenVolumeMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck) {
+typename PolyhedralMesh<VecT>::CellHandle
+PolyhedralMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck) {
 
     // Test if _halffaces contains at least four halffaces
     if(_halffaces.size() < 4u) {
@@ -470,7 +514,7 @@ OpenVolumeMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bo
 /// Get vertex with handle _vertexHandle
 template <typename VecT>
 const OpenVolumeMeshVertex<VecT>&
-OpenVolumeMesh<VecT>::vertex(const VertexHandle& _vertexHandle) const {
+PolyhedralMesh<VecT>::vertex(const VertexHandle& _vertexHandle) const {
 
 	// Test if vertex is valid
     assert((unsigned int)_vertexHandle < vertices_.size());
@@ -484,7 +528,7 @@ OpenVolumeMesh<VecT>::vertex(const VertexHandle& _vertexHandle) const {
 /// Get edge with handle _edgeHandle
 template <typename VecT>
 const OpenVolumeMeshEdge<VecT>&
-OpenVolumeMesh<VecT>::edge(const EdgeHandle& _edgeHandle) const {
+PolyhedralMesh<VecT>::edge(const EdgeHandle& _edgeHandle) const {
 
     // Test if edge is valid
     assert((unsigned int)_edgeHandle < edges_.size());
@@ -498,7 +542,7 @@ OpenVolumeMesh<VecT>::edge(const EdgeHandle& _edgeHandle) const {
 /// Get face with handle _faceHandle
 template <typename VecT>
 const OpenVolumeMeshFace<VecT>&
-OpenVolumeMesh<VecT>::face(const FaceHandle& _faceHandle) const {
+PolyhedralMesh<VecT>::face(const FaceHandle& _faceHandle) const {
 
     // Test if face is valid
     assert((unsigned int)_faceHandle < faces_.size());
@@ -512,7 +556,7 @@ OpenVolumeMesh<VecT>::face(const FaceHandle& _faceHandle) const {
 /// Get cell with handle _cellHandle
 template <typename VecT>
 const OpenVolumeMeshCell<VecT>&
-OpenVolumeMesh<VecT>::cell(const CellHandle& _cellHandle) const {
+PolyhedralMesh<VecT>::cell(const CellHandle& _cellHandle) const {
 
     // Test if cell is valid
     assert((unsigned int)_cellHandle < cells_.size());
@@ -526,7 +570,7 @@ OpenVolumeMesh<VecT>::cell(const CellHandle& _cellHandle) const {
 /// Get vertex with handle _vertexHandle
 template <typename VecT>
 OpenVolumeMeshVertex<VecT>&
-OpenVolumeMesh<VecT>::vertex(const VertexHandle& _vertexHandle) {
+PolyhedralMesh<VecT>::vertex(const VertexHandle& _vertexHandle) {
 
     // Test if vertex is valid
     assert((unsigned int)_vertexHandle < vertices_.size());
@@ -540,7 +584,7 @@ OpenVolumeMesh<VecT>::vertex(const VertexHandle& _vertexHandle) {
 /// Get edge with handle _edgeHandle
 template <typename VecT>
 OpenVolumeMeshEdge<VecT>&
-OpenVolumeMesh<VecT>::edge(const EdgeHandle& _edgeHandle) {
+PolyhedralMesh<VecT>::edge(const EdgeHandle& _edgeHandle) {
 
     // Test if edge is valid
     assert((unsigned int)_edgeHandle < edges_.size());
@@ -554,7 +598,7 @@ OpenVolumeMesh<VecT>::edge(const EdgeHandle& _edgeHandle) {
 /// Get face with handle _faceHandle
 template <typename VecT>
 OpenVolumeMeshFace<VecT>&
-OpenVolumeMesh<VecT>::face(const FaceHandle& _faceHandle) {
+PolyhedralMesh<VecT>::face(const FaceHandle& _faceHandle) {
 
     // Test if face is valid
     assert((unsigned int)_faceHandle < faces_.size());
@@ -568,7 +612,7 @@ OpenVolumeMesh<VecT>::face(const FaceHandle& _faceHandle) {
 /// Get cell with handle _cellHandle
 template <typename VecT>
 OpenVolumeMeshCell<VecT>&
-OpenVolumeMesh<VecT>::cell(const CellHandle& _cellHandle) {
+PolyhedralMesh<VecT>::cell(const CellHandle& _cellHandle) {
 
     // Test if cell is valid
     assert((unsigned int)_cellHandle < cells_.size());
@@ -582,7 +626,7 @@ OpenVolumeMesh<VecT>::cell(const CellHandle& _cellHandle) {
 /// Get edge that corresponds to halfedge with handle _halfEdgeHandle
 template <typename VecT>
 const OpenVolumeMeshEdge<VecT>
-OpenVolumeMesh<VecT>::halfedge(const HalfEdgeHandle& _halfEdgeHandle) const {
+PolyhedralMesh<VecT>::halfedge(const HalfEdgeHandle& _halfEdgeHandle) const {
 
     // Is handle in range?
 	assert((unsigned int)_halfEdgeHandle < (edges_.size() * 2));
@@ -601,7 +645,7 @@ OpenVolumeMesh<VecT>::halfedge(const HalfEdgeHandle& _halfEdgeHandle) const {
 /// Get face that corresponds to halfface with handle _halfFaceHandle
 template <typename VecT>
 const OpenVolumeMeshFace<VecT>
-OpenVolumeMesh<VecT>::halfface(const HalfFaceHandle& _halfFaceHandle) const {
+PolyhedralMesh<VecT>::halfface(const HalfFaceHandle& _halfFaceHandle) const {
 
     // Is handle in range?
 	assert((unsigned int)_halfFaceHandle < (faces_.size() * 2));
@@ -620,7 +664,7 @@ OpenVolumeMesh<VecT>::halfface(const HalfFaceHandle& _halfFaceHandle) const {
 /// Get opposite halfedge that corresponds to halfedge with handle _halfEdgeHandle
 template <typename VecT>
 const OpenVolumeMeshEdge<VecT>
-OpenVolumeMesh<VecT>::opposite_halfedge(const HalfEdgeHandle& _halfEdgeHandle) const {
+PolyhedralMesh<VecT>::opposite_halfedge(const HalfEdgeHandle& _halfEdgeHandle) const {
 
     // Is handle in range?
     assert(_halfEdgeHandle >= 0);
@@ -639,7 +683,7 @@ OpenVolumeMesh<VecT>::opposite_halfedge(const HalfEdgeHandle& _halfEdgeHandle) c
 /// Get opposite halfface that corresponds to halfface with handle _halfFaceHandle
 template <typename VecT>
 const OpenVolumeMeshFace<VecT>
-OpenVolumeMesh<VecT>::opposite_halfface(const HalfFaceHandle& _halfFaceHandle) const {
+PolyhedralMesh<VecT>::opposite_halfface(const HalfFaceHandle& _halfFaceHandle) const {
 
     // Is handle in range?
     assert(_halfFaceHandle >= 0);
@@ -656,8 +700,8 @@ OpenVolumeMesh<VecT>::opposite_halfface(const HalfFaceHandle& _halfFaceHandle) c
 //========================================================================================
 
 template <typename VecT>
-const typename OpenVolumeMesh<VecT>::HalfEdgeHandle
-OpenVolumeMesh<VecT>::halfedge(const VertexHandle& _vh1, const VertexHandle& _vh2) const {
+const typename PolyhedralMesh<VecT>::HalfEdgeHandle
+PolyhedralMesh<VecT>::halfedge(const VertexHandle& _vh1, const VertexHandle& _vh2) const {
 
     assert(_vh1.idx() < vertices_.size());
     assert(_vh2.idx() < vertices_.size());
@@ -674,8 +718,8 @@ OpenVolumeMesh<VecT>::halfedge(const VertexHandle& _vh1, const VertexHandle& _vh
 //========================================================================================
 
 template <typename VecT>
-const typename OpenVolumeMesh<VecT>::HalfEdgeHandle
-OpenVolumeMesh<VecT>::next_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
+const typename PolyhedralMesh<VecT>::HalfEdgeHandle
+PolyhedralMesh<VecT>::next_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
 
     assert((unsigned int)_hfh < faces_.size() * 2u);
     assert((unsigned int)_heh < edges_.size() * 2u);
@@ -696,8 +740,8 @@ OpenVolumeMesh<VecT>::next_halfedge_in_halfface(const HalfEdgeHandle& _heh, cons
 //========================================================================================
 
 template <typename VecT>
-const typename OpenVolumeMesh<VecT>::HalfEdgeHandle
-OpenVolumeMesh<VecT>::prev_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
+const typename PolyhedralMesh<VecT>::HalfEdgeHandle
+PolyhedralMesh<VecT>::prev_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
 
     assert((unsigned int)_hfh < faces_.size() * 2u);
     assert((unsigned int)_heh < edges_.size() * 2u);
@@ -718,7 +762,7 @@ OpenVolumeMesh<VecT>::prev_halfedge_in_halfface(const HalfEdgeHandle& _heh, cons
 //========================================================================================
 
 template <typename VecT>
-bool OpenVolumeMesh<VecT>::set_vertex(const VertexHandle& _vertexHandle, const VecT& _position) {
+bool PolyhedralMesh<VecT>::set_vertex(const VertexHandle& _vertexHandle, const VecT& _position) {
 
     // Check if handle is in range
     if(_vertexHandle < 0 || _vertexHandle >= vertices_.size()) return false;
@@ -731,7 +775,7 @@ bool OpenVolumeMesh<VecT>::set_vertex(const VertexHandle& _vertexHandle, const V
 //========================================================================================
 
 template <typename VecT>
-bool OpenVolumeMesh<VecT>::set_edge(const EdgeHandle& _edgeHandle,
+bool PolyhedralMesh<VecT>::set_edge(const EdgeHandle& _edgeHandle,
         const VertexHandle& _fromVertex, const VertexHandle& _toVertex) {
 
     // Check if handle is in range
@@ -745,7 +789,7 @@ bool OpenVolumeMesh<VecT>::set_edge(const EdgeHandle& _edgeHandle,
 //========================================================================================
 
 template <typename VecT>
-bool OpenVolumeMesh<VecT>::set_face(const FaceHandle& _faceHandle, const std::vector<HalfEdgeHandle>& _halfedges) {
+bool PolyhedralMesh<VecT>::set_face(const FaceHandle& _faceHandle, const std::vector<HalfEdgeHandle>& _halfedges) {
 
     // Check if handle is in range
     if(_faceHandle < 0 || _faceHandle >= faces_.size()) return false;
@@ -758,7 +802,7 @@ bool OpenVolumeMesh<VecT>::set_face(const FaceHandle& _faceHandle, const std::ve
 //========================================================================================
 
 template <typename VecT>
-bool OpenVolumeMesh<VecT>::set_cell(const CellHandle& _cellHandle, const std::vector<HalfFaceHandle>& _halffaces) {
+bool PolyhedralMesh<VecT>::set_cell(const CellHandle& _cellHandle, const std::vector<HalfFaceHandle>& _halffaces) {
 
     // Check if handle is in range
     if(_cellHandle < 0 || _cellHandle >= cells_.size()) return false;
@@ -771,8 +815,8 @@ bool OpenVolumeMesh<VecT>::set_cell(const CellHandle& _cellHandle, const std::ve
 //========================================================================================
 
 template <typename VecT>
-typename OpenVolumeMesh<VecT>::HalfFaceHandle
-OpenVolumeMesh<VecT>::adjacent_halfface_in_cell(const HalfFaceHandle& _halfFaceHandle, const HalfEdgeHandle& _halfEdgeHandle) const {
+typename PolyhedralMesh<VecT>::HalfFaceHandle
+PolyhedralMesh<VecT>::adjacent_halfface_in_cell(const HalfFaceHandle& _halfFaceHandle, const HalfEdgeHandle& _halfEdgeHandle) const {
 
 	if((unsigned int)_halfFaceHandle >= incident_cell_per_hf_.size() || _halfFaceHandle < 0) {
 		return InvalidHalfFaceHandle;
@@ -814,8 +858,8 @@ OpenVolumeMesh<VecT>::adjacent_halfface_in_cell(const HalfFaceHandle& _halfFaceH
 //========================================================================================
 
 template <typename VecT>
-typename OpenVolumeMesh<VecT>::CellHandle
-OpenVolumeMesh<VecT>::incident_cell(const HalfFaceHandle& _halfFaceHandle) const {
+typename PolyhedralMesh<VecT>::CellHandle
+PolyhedralMesh<VecT>::incident_cell(const HalfFaceHandle& _halfFaceHandle) const {
 
 	if((unsigned int)_halfFaceHandle >= incident_cell_per_hf_.size() || _halfFaceHandle < 0) {
 		return InvalidCellHandle;
@@ -827,7 +871,7 @@ OpenVolumeMesh<VecT>::incident_cell(const HalfFaceHandle& _halfFaceHandle) const
 //========================================================================================
 
 template <typename VecT>
-void OpenVolumeMesh<VecT>::garbage_collection() {
+void PolyhedralMesh<VecT>::garbage_collection() {
 
     if(!has_vertex_status() || !has_edge_status() || !has_face_status() || !has_cell_status()) {
         std::cerr << "garbage_collection() requires all " <<
@@ -1006,7 +1050,7 @@ void OpenVolumeMesh<VecT>::garbage_collection() {
 //========================================================================================
 
 template <typename VecT>
-void OpenVolumeMesh<VecT>::request_face_normals() {
+void PolyhedralMesh<VecT>::request_face_normals() {
 
     // Resize face normals vector
     face_normals_.resize(faces_.size(), VecT());
@@ -1021,7 +1065,7 @@ void OpenVolumeMesh<VecT>::request_face_normals() {
 //========================================================================================
 
 template <typename VecT>
-void OpenVolumeMesh<VecT>::update_face_normals() {
+void PolyhedralMesh<VecT>::update_face_normals() {
 
     assert(face_normals_.size() == faces_.size());
 
@@ -1035,7 +1079,7 @@ void OpenVolumeMesh<VecT>::update_face_normals() {
 //========================================================================================
 
 template <typename VecT>
-void OpenVolumeMesh<VecT>::compute_face_normal(const FaceHandle& _fh) {
+void PolyhedralMesh<VecT>::compute_face_normal(const FaceHandle& _fh) {
 
     assert(face_normals_.size() == faces_.size());
 
@@ -1065,7 +1109,7 @@ void OpenVolumeMesh<VecT>::compute_face_normal(const FaceHandle& _fh) {
 //========================================================================================
 
 template <typename VecT>
-const VecT& OpenVolumeMesh<VecT>::face_normal(const FaceHandle& _fh) const {
+const VecT& PolyhedralMesh<VecT>::face_normal(const FaceHandle& _fh) const {
 
     assert((unsigned int)_fh < face_normals_.size());
 
@@ -1075,7 +1119,7 @@ const VecT& OpenVolumeMesh<VecT>::face_normal(const FaceHandle& _fh) const {
 //========================================================================================
 
 template <typename VecT>
-const VecT OpenVolumeMesh<VecT>::halfface_normal(const HalfFaceHandle& _hfh) const {
+const VecT PolyhedralMesh<VecT>::halfface_normal(const HalfFaceHandle& _hfh) const {
 
     assert((unsigned int)_hfh < face_normals_.size() * 2u);
 
@@ -1088,7 +1132,7 @@ const VecT OpenVolumeMesh<VecT>::halfface_normal(const HalfFaceHandle& _hfh) con
 //========================================================================================
 
 template <typename VecT>
-void OpenVolumeMesh<VecT>::request_vertex_status() {
+void PolyhedralMesh<VecT>::request_vertex_status() {
 
     // Resize vector
     vertex_status_.resize(vertices_.size(), OpenVolumeMeshStatus());
@@ -1099,7 +1143,7 @@ void OpenVolumeMesh<VecT>::request_vertex_status() {
 //========================================================================================
 
 template <typename VecT>
-void OpenVolumeMesh<VecT>::request_edge_status() {
+void PolyhedralMesh<VecT>::request_edge_status() {
 
     // Resize vector
     edge_status_.resize(edges_.size(), OpenVolumeMeshStatus());
@@ -1110,7 +1154,7 @@ void OpenVolumeMesh<VecT>::request_edge_status() {
 //========================================================================================
 
 template <typename VecT>
-void OpenVolumeMesh<VecT>::request_halfedge_status() {
+void PolyhedralMesh<VecT>::request_halfedge_status() {
 
     // Resize vector
     halfedge_status_.resize(edges_.size() * 2u, OpenVolumeMeshStatus());
@@ -1121,7 +1165,7 @@ void OpenVolumeMesh<VecT>::request_halfedge_status() {
 //========================================================================================
 
 template <typename VecT>
-void OpenVolumeMesh<VecT>::request_face_status() {
+void PolyhedralMesh<VecT>::request_face_status() {
 
     // Resize vector
     face_status_.resize(faces_.size(), OpenVolumeMeshStatus());
@@ -1132,7 +1176,7 @@ void OpenVolumeMesh<VecT>::request_face_status() {
 //========================================================================================
 
 template <typename VecT>
-void OpenVolumeMesh<VecT>::request_halfface_status() {
+void PolyhedralMesh<VecT>::request_halfface_status() {
 
     // Resize vector
     halfface_status_.resize(faces_.size() * 2u, OpenVolumeMeshStatus());
@@ -1143,7 +1187,7 @@ void OpenVolumeMesh<VecT>::request_halfface_status() {
 //========================================================================================
 
 template <typename VecT>
-void OpenVolumeMesh<VecT>::request_cell_status() {
+void PolyhedralMesh<VecT>::request_cell_status() {
 
     // Resize vector
     cell_status_.resize(cells_.size(), OpenVolumeMeshStatus());
@@ -1154,7 +1198,7 @@ void OpenVolumeMesh<VecT>::request_cell_status() {
 //========================================================================================
 
 template <typename VecT>
-void OpenVolumeMesh<VecT>::request_status() {
+void PolyhedralMesh<VecT>::request_status() {
 
     // Request all status types
     request_vertex_status();
@@ -1168,7 +1212,7 @@ void OpenVolumeMesh<VecT>::request_status() {
 //========================================================================================
 
 template <typename VecT>
-OpenVolumeMeshStatus& OpenVolumeMesh<VecT>::status(const VertexHandle& _vh) {
+OpenVolumeMeshStatus& PolyhedralMesh<VecT>::status(const VertexHandle& _vh) {
 
     assert((unsigned int)_vh < vertex_status_.size());
 
@@ -1178,7 +1222,7 @@ OpenVolumeMeshStatus& OpenVolumeMesh<VecT>::status(const VertexHandle& _vh) {
 //========================================================================================
 
 template <typename VecT>
-OpenVolumeMeshStatus& OpenVolumeMesh<VecT>::status(const EdgeHandle& _eh) {
+OpenVolumeMeshStatus& PolyhedralMesh<VecT>::status(const EdgeHandle& _eh) {
 
     assert((unsigned int)_eh < edge_status_.size());
 
@@ -1188,7 +1232,7 @@ OpenVolumeMeshStatus& OpenVolumeMesh<VecT>::status(const EdgeHandle& _eh) {
 //========================================================================================
 
 template <typename VecT>
-OpenVolumeMeshStatus& OpenVolumeMesh<VecT>::status(const HalfEdgeHandle& _heh) {
+OpenVolumeMeshStatus& PolyhedralMesh<VecT>::status(const HalfEdgeHandle& _heh) {
 
     assert((unsigned int)_heh < halfedge_status_.size());
 
@@ -1198,7 +1242,7 @@ OpenVolumeMeshStatus& OpenVolumeMesh<VecT>::status(const HalfEdgeHandle& _heh) {
 //========================================================================================
 
 template <typename VecT>
-OpenVolumeMeshStatus& OpenVolumeMesh<VecT>::status(const FaceHandle& _fh) {
+OpenVolumeMeshStatus& PolyhedralMesh<VecT>::status(const FaceHandle& _fh) {
 
     assert((unsigned int)_fh < face_status_.size());
 
@@ -1208,7 +1252,7 @@ OpenVolumeMeshStatus& OpenVolumeMesh<VecT>::status(const FaceHandle& _fh) {
 //========================================================================================
 
 template <typename VecT>
-OpenVolumeMeshStatus& OpenVolumeMesh<VecT>::status(const HalfFaceHandle& _hfh) {
+OpenVolumeMeshStatus& PolyhedralMesh<VecT>::status(const HalfFaceHandle& _hfh) {
 
     assert((unsigned int)_hfh < halfface_status_.size());
 
@@ -1218,9 +1262,13 @@ OpenVolumeMeshStatus& OpenVolumeMesh<VecT>::status(const HalfFaceHandle& _hfh) {
 //========================================================================================
 
 template <typename VecT>
-OpenVolumeMeshStatus& OpenVolumeMesh<VecT>::status(const CellHandle& _ch) {
+OpenVolumeMeshStatus& PolyhedralMesh<VecT>::status(const CellHandle& _ch) {
 
     assert((unsigned int)_ch < cell_status_.size());
 
     return cell_status_[_ch];
 }
+
+//========================================================================================
+
+} // Namespace OpenVolumeMesh

@@ -1,15 +1,52 @@
-/*
- * OpenHexMeshIteratorsT.cc
- *
- *  Created on: Jun 20, 2011
- *      Author: kremer
- */
+/*===========================================================================*\
+ *                                                                           *
+ *                            OpenVolumeMesh                                 *
+ *        Copyright (C) 2011 by Computer Graphics Group, RWTH Aachen         *
+ *                           www.openmesh.org                                *
+ *                                                                           *
+ *---------------------------------------------------------------------------*
+ *  This file is part of OpenVolumeMesh.                                     *
+ *                                                                           *
+ *  OpenVolumeMesh is free software: you can redistribute it and/or modify   *
+ *  it under the terms of the GNU Lesser General Public License as           *
+ *  published by the Free Software Foundation, either version 3 of           *
+ *  the License, or (at your option) any later version with the              *
+ *  following exceptions:                                                    *
+ *                                                                           *
+ *  If other files instantiate templates or use macros                       *
+ *  or inline functions from this file, or you compile this file and         *
+ *  link it with other files to produce an executable, this file does        *
+ *  not by itself cause the resulting executable to be covered by the        *
+ *  GNU Lesser General Public License. This exception does not however       *
+ *  invalidate any other reasons why the executable file might be            *
+ *  covered by the GNU Lesser General Public License.                        *
+ *                                                                           *
+ *  OpenVolumeMesh is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+ *  GNU Lesser General Public License for more details.                      *
+ *                                                                           *
+ *  You should have received a copy of the GNU LesserGeneral Public          *
+ *  License along with OpenVolumeMesh.  If not,                              *
+ *  see <http://www.gnu.org/licenses/>.                                      *
+ *                                                                           *
+\*===========================================================================*/
 
-#define OPENHEXMESHITERATORST_CC
+/*===========================================================================*\
+ *                                                                           *
+ *   $Revision: 1 $                                                          *
+ *   $Date: 2011-01-09 12:46:45 +0100 (Mo, 09. Jan 2011) $                   *
+ *   $LastChangedBy: kremer $                                                *
+ *                                                                           *
+\*===========================================================================*/
+
+#define HEXAHEDRALMESHITERATORST_CC
 
 #include <set>
 
-#include "OpenHexMeshIterators.hh"
+#include "Iterators.hh"
+
+namespace OpenVolumeMesh {
 
 //================================================================================================
 // CellSheetCellIter
@@ -17,7 +54,7 @@
 
 template <class VecT>
 CellSheetCellIter<VecT>::CellSheetCellIter(const CellHandle& _ref_h,
-        const unsigned char _orthDir, const OpenHexMesh<VecT>* _mesh) :
+        const unsigned char _orthDir, const HexahedralMesh<VecT>* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
     if(!_mesh->has_bottom_up_adjacencies()) {
@@ -32,7 +69,7 @@ BaseIter(_mesh, _ref_h) {
 			hf_it != halffaces.end(); ++hf_it) {
 		// Add those, that are perpendicular to the specified _orthDir
 		if(_mesh->orientation(*hf_it, _ref_h) != _orthDir &&
-				_mesh->orientation(*hf_it, _ref_h) != OpenHexMesh<VecT>::opposite_orientation(_orthDir)) {
+				_mesh->orientation(*hf_it, _ref_h) != HexahedralMesh<VecT>::opposite_orientation(_orthDir)) {
 			CellHandle ch = _mesh->incident_cell_per_hf_[_mesh->opposite_halfface_handle(*hf_it)];
 			if(ch != OpenVolumeMesh<VecT>::InvalidCellHandle) {
 				neighb_sheet_cell_hs_.insert(ch);
@@ -77,7 +114,7 @@ CellSheetCellIter<VecT>& CellSheetCellIter<VecT>::operator++() {
 
 template <class VecT>
 HalfFaceSheetHalfFaceIter<VecT>::HalfFaceSheetHalfFaceIter(const HalfFaceHandle& _ref_h,
-        const OpenHexMesh<VecT>* _mesh) :
+        const HexahedralMesh<VecT>* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
 	if(!_mesh->has_bottom_up_adjacencies()) {
@@ -103,13 +140,13 @@ BaseIter(_mesh, _ref_h) {
         return;
 	}
 
-	typename OpenHexMesh<VecT>::CellHandle ch = _mesh->incident_cell(_ref_h);
+	typename HexahedralMesh<VecT>::CellHandle ch = _mesh->incident_cell(_ref_h);
 	unsigned char orientation = _mesh->orientation(_ref_h, ch);
 	std::vector<HalfEdgeHandle> hes_v = _mesh->halfface(_ref_h).opposite().halfedges();
 	std::set<HalfEdgeHandle> hes;
 	hes.insert(hes_v.begin(), hes_v.end());
 
-	for(typename OpenHexMesh<VecT>::CellSheetCellIter csc_it = _mesh->csc_iter(ch, orientation);
+	for(typename HexahedralMesh<VecT>::CellSheetCellIter csc_it = _mesh->csc_iter(ch, orientation);
 			csc_it.valid(); ++csc_it) {
 
 		std::vector<HalfFaceHandle> hfs = _mesh->cell(*csc_it).halffaces();
@@ -170,7 +207,7 @@ HalfFaceSheetHalfFaceIter<VecT>& HalfFaceSheetHalfFaceIter<VecT>::operator++() {
 
 template <class VecT>
 OutsideNeighborHalfFaceIter<VecT>::OutsideNeighborHalfFaceIter(const HalfFaceHandle& _ref_h,
-        const OpenHexMesh<VecT>* _mesh) :
+        const HexahedralMesh<VecT>* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
     if(!_mesh->has_bottom_up_adjacencies()) {
@@ -228,3 +265,5 @@ OutsideNeighborHalfFaceIter<VecT>& OutsideNeighborHalfFaceIter<VecT>::operator++
     }
     return *this;
 }
+
+} // Namespace OpenVolumeMesh
