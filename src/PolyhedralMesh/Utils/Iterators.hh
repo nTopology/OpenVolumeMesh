@@ -65,7 +65,7 @@ public:
 	typedef OH* 					          pointer;
 	typedef OH& 					          reference;
 
-	BaseIterator(const PolyhedralMesh<VecT>* _mesh, const IH& _ih, const OH& _ch = -1) :
+	BaseIterator(const PolyhedralMesh<VecT>* _mesh, const IH& _ih, const OH& _ch) :
 		valid_(true), cur_handle_(_ch), ref_handle_(_ih), mesh_(_mesh) {}
 
 	// STL compliance (needs to have default constructor)
