@@ -9,10 +9,12 @@ include_directories (
 set (directories 
   .
   Core
+  Geometry
   OpenVolumeMesh
   OpenVolumeMesh/Utils
   OpenHexMesh
   OpenHexMesh/Utils
+  Unittests
 )
 
 # collect all header and source files
