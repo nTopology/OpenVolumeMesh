@@ -54,7 +54,6 @@ namespace IO {
  * \brief Read/Write mesh data from/to files
  */
 
-template <class MeshT>
 class FileManager {
 public:
 
@@ -74,6 +73,7 @@ public:
    * @param _filename The file that is to be read
    * @param _mesh     A reference to an OpenVolumeMesh instance
    */
+  template <class MeshT>
   bool readFile(const std::string& _filename, MeshT& _mesh) const;
 
   /**
@@ -86,7 +86,13 @@ public:
    * @param _filename The file that is to be stored
    * @param _mesh     A const reference to an OpenVolumeMesh instance
    */
+  template <class MeshT>
   bool writeFile(const std::string& _filename, const MeshT& _mesh) const;
+
+  /**
+   * \brief Test whether mesh is a hexahedral mesh
+   */
+
 };
 
 } // Namespace IO

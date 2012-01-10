@@ -63,16 +63,20 @@ FileManager::~FileManager() {
 //==================================================
 
 template <class MeshT>
-bool FileManager::readFile(const std::string& _filename, MeshT& _mesh) {
+bool FileManager::readFile(const std::string& _filename, MeshT& _mesh) const {
 
+  return true;
 }
 
 //==================================================
 
 template <class MeshT>
-bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) {
+bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) const {
 
+  return true;
 }
+
+//==================================================
 
 } // Namespace IO
 
