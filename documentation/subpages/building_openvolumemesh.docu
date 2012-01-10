@@ -50,4 +50,13 @@ make doc
 inside the build folder. The generated doxygen documentation files can then be found in
 \c Build/share/Doc/html.
 
+If you want to install the library as well as its header files, type:
+
+\code
+sudo make install
+\endcode
+
+This installs the requested files into the \c lib and \c include folders in \c /usr/local (this is the default
+value that can easily be changed using \c ccmake).
+
 **/

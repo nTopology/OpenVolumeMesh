@@ -15,7 +15,7 @@ if(GTEST_FOUND)
     # set additional link directories
     link_directories(${GTEST_LIBRARY_DIR} )
     # Create new target named unittests_hexmeshing
-    add_executable(unittests EXCLUDE_FROM_ALL unittests.cc)
+    add_executable(unittests EXCLUDE_FROM_ALL unittests.cc unittests_common.cc)
 	
 	if ( NOT WIN32)
       # Link against all necessary libraries

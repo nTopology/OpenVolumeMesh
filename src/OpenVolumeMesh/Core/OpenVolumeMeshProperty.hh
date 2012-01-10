@@ -135,7 +135,7 @@ public:
 
 #ifndef DOXY_IGNORE_THIS
 	struct plus {
-		size_t operator ()(size_t _b, const T& _v) {
+		size_t operator ()(size_t _b, const T& /*_v*/) {
 			return _b + sizeof(T);
 		}
 	};

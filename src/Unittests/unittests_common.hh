@@ -42,6 +42,9 @@ protected:
     // Do some final stuff with the member data here...
   }
 
+  // Generate a basic hexahedral mesh
+  void generatePolyhedralMesh(PolyhedralMesh& _mesh);
+
   // This member will be accessible in all tests
   PolyhedralMesh mesh_;
 };
@@ -77,8 +80,24 @@ protected:
     // Do some final stuff with the member data here...
   }
 
+  // Generate a basic hexahedral mesh
+  void generateHexahedralMesh(HexahedralMesh& _mesh);
+
   // This member will be accessible in all tests
   HexahedralMesh mesh_;
+};
+
+// Printer class (for STL compliance test)
+class Print {
+public:
+  Print(bool _mute = false) : mute_(_mute) {}
+  void mute(bool _mute) { mute_ = _mute; }
+  bool mute() const { return mute_; }
+  void operator()(const OpenVolumeMesh::OpenVolumeMeshHandle& _h) const {
+    if(!mute_) std::cerr << "Handle: " << _h.idx() << std::endl;
+  }
+private:
+  bool mute_;
 };
 
 #endif // INCLUDE GUARD
