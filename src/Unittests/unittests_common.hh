@@ -8,14 +8,14 @@
 #include <OpenVolumeMesh/Geometry/VectorT.hh>
 
 // Vector defines
-typedef OpenVolumeMesh::Vec3d Vec3d;
-typedef OpenVolumeMesh::Vec3f Vec3f;
+typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
+typedef OpenVolumeMesh::Geometry::Vec3f Vec3f;
 
 /*
  * Simple test setting for polyhedral meshes
  */
 
-typedef OpenVolumeMesh::PolyhedralMesh<OpenVolumeMesh::Vec3d> PolyhedralMesh;
+typedef OpenVolumeMesh::PolyhedralMesh<Vec3d> PolyhedralMesh;
 
 class PolyhedralMeshBase: public testing::Test {
 
@@ -53,7 +53,7 @@ protected:
  * Simple test setting for hexahedral meshes
  */
 
-typedef OpenVolumeMesh::HexahedralMesh<OpenVolumeMesh::Vec3d> HexahedralMesh;
+typedef OpenVolumeMesh::HexahedralMesh<Vec3d> HexahedralMesh;
 
 class HexahedralMeshBase: public testing::Test {
 

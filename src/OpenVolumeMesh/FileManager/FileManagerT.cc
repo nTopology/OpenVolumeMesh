@@ -285,6 +285,12 @@ bool FileManager::isHexahedralMesh(const std::string& _filename) const {
 
   std::ifstream iff(_filename.c_str(), std::ios::in);
 
+  if(!iff.good()) {
+    std::cerr << "Could not open file " << _filename << " for reading!" << std::endl;
+    iff.close();
+    return false;
+  }
+
   std::string s;
   unsigned int n = 0u;
 

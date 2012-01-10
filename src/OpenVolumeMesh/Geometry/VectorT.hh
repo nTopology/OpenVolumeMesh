@@ -71,9 +71,9 @@
 
 //== NAMESPACES ===============================================================
 
-
 namespace OpenVolumeMesh {
 
+namespace Geometry {
 
 //== CLASS DEFINITION =========================================================
 
@@ -334,6 +334,7 @@ typedef VectorT<float,6> Vec6f;
 typedef VectorT<double,6> Vec6d;
 
 //=============================================================================
+} // namespace Geometry
 } // namespace OpenVolumeMesh
 //=============================================================================
 #endif // OPENVOLUMEMESH_VECTOR_HH defined
