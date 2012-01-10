@@ -40,7 +40,7 @@
  *                                                                           *
 \*===========================================================================*/
 
-#define OPENHEXMESHT_CC
+#define HEXAHEDRALMESHT_CC
 
 #include "HexahedralMesh.hh"
 
@@ -66,10 +66,10 @@ HexahedralMesh<VecT>::add_face(const std::vector<HalfEdgeHandle>& _halfedges, bo
 
     if(_halfedges.size() != 4) {
         std::cerr << "Face valence is not four! Aborting." << std::endl;
-        return OpenVolumeMesh<VecT>::InvalidFaceHandle;
+        return PolyhedralMesh<VecT>::InvalidFaceHandle;
     }
 
-    return OpenVolumeMesh<VecT>::add_face(_halfedges, _topologyCheck);
+    return PolyhedralMesh<VecT>::add_face(_halfedges, _topologyCheck);
 }
 
 //========================================================================================
@@ -80,10 +80,10 @@ HexahedralMesh<VecT>::add_face(const std::vector<VertexHandle>& _vertices) {
 
     if(_vertices.size() != 4) {
         std::cerr << "Face valence is not four! Aborting." << std::endl;
-        return OpenVolumeMesh<VecT>::InvalidFaceHandle;
+        return PolyhedralMesh<VecT>::InvalidFaceHandle;
     }
 
-    return OpenVolumeMesh<VecT>::add_face(_vertices);
+    return PolyhedralMesh<VecT>::add_face(_vertices);
 }
 
 //========================================================================================
@@ -94,13 +94,13 @@ HexahedralMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bo
 
     if(_halffaces.size() != 6) {
         std::cerr << "Cell valence is not six! Aborting." << std::endl;
-        return OpenVolumeMesh<VecT>::InvalidCellHandle;
+        return PolyhedralMesh<VecT>::InvalidCellHandle;
     }
     for(typename std::vector<HalfFaceHandle>::const_iterator it = _halffaces.begin();
             it != _halffaces.end(); ++it) {
         if(halfface(*it).halfedges().size() != 4) {
             std::cerr << "Incident face does not have valence four! Aborting." << std::endl;
-            return OpenVolumeMesh<VecT>::InvalidCellHandle;
+            return PolyhedralMesh<VecT>::InvalidCellHandle;
         }
     }
 
@@ -114,7 +114,7 @@ HexahedralMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bo
     // The user wants the faces to be reordered
     if(_reorderFaces) {
 
-        ordered_halffaces.resize(6, OpenVolumeMesh<VecT>::InvalidHalfFaceHandle);
+        ordered_halffaces.resize(6, PolyhedralMesh<VecT>::InvalidHalfFaceHandle);
 
         // Create top side
         ordered_halffaces[0] = _halffaces[0];
@@ -126,7 +126,7 @@ HexahedralMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bo
                 he_it != hes.end(); ++he_it) {
 
             HalfFaceHandle ahfh = get_adjacent_halfface(ordered_halffaces[0], *he_it, _halffaces);
-            if(ahfh == OpenVolumeMesh<VecT>::InvalidHalfFaceHandle) {
+            if(ahfh == PolyhedralMesh<VecT>::InvalidHalfFaceHandle) {
                 std::cerr << "The current halfface is invalid!" << std::endl;
                 continue;
             }
@@ -143,7 +143,7 @@ HexahedralMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bo
         cur_he = next_halfedge_in_halfface(cur_he, cur_hf);
         cur_hf = get_adjacent_halfface(cur_hf, cur_he, _halffaces);
 
-        if(cur_hf != OpenVolumeMesh<VecT>::InvalidHalfFaceHandle) {
+        if(cur_hf != PolyhedralMesh<VecT>::InvalidHalfFaceHandle) {
             ordered_halffaces[1] = cur_hf;
         } else {
             std::cerr << "The current halfface is invalid!" << std::endl;
@@ -202,14 +202,14 @@ HexahedralMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bo
             offsetTop = (offsetTop + 1) % 4;
             if(ahfh != ordered_halffaces[orderTop[offsetTop]]) {
                 std::cerr << "Faces not in right order!" << std::endl;
-                return OpenVolumeMesh<VecT>::InvalidCellHandle;
+                return PolyhedralMesh<VecT>::InvalidCellHandle;
             }
         }
     }
 
     if(offsetTop == -1) {
         std::cerr << "Faces not in right order!" << std::endl;
-        return OpenVolumeMesh<VecT>::InvalidCellHandle;
+        return PolyhedralMesh<VecT>::InvalidCellHandle;
     }
 
     // Traverse halfedges bottom
@@ -227,17 +227,17 @@ HexahedralMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bo
             offsetBot = (offsetBot + 1) % 4;
             if(ahfh != ordered_halffaces[orderBot[offsetBot]]) {
                 std::cerr << "Faces not in right order!" << std::endl;
-                return OpenVolumeMesh<VecT>::InvalidCellHandle;
+                return PolyhedralMesh<VecT>::InvalidCellHandle;
             }
         }
     }
 
     if(offsetBot == -1) {
         std::cerr << "Faces not in right order!" << std::endl;
-        return OpenVolumeMesh<VecT>::InvalidCellHandle;
+        return PolyhedralMesh<VecT>::InvalidCellHandle;
     }
 
-    return OpenVolumeMesh<VecT>::add_cell(ordered_halffaces, _topologyCheck);
+    return PolyhedralMesh<VecT>::add_cell(ordered_halffaces, _topologyCheck);
 }
 
 //========================================================================================
@@ -261,7 +261,7 @@ HexahedralMesh<VecT>::get_adjacent_halfface(const HalfFaceHandle& _hfh, const Ha
         }
     }
 
-    return OpenVolumeMesh<VecT>::InvalidHalfFaceHandle;
+    return PolyhedralMesh<VecT>::InvalidHalfFaceHandle;
 }
 
 } // Namespace OpenVolumeMesh

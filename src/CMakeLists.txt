@@ -14,8 +14,10 @@ set (directories
   OpenVolumeMesh/PolyhedralMesh/Utils
   OpenVolumeMesh/HexahedralMesh
   OpenVolumeMesh/HexahedralMesh/Utils
-  Unittests
 )
+
+# Add unittests target
+add_subdirectory(Unittests)
 
 # collect all header and source files
 acg_append_files (headers "*.hh" ${directories})

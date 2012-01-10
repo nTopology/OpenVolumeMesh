@@ -71,7 +71,7 @@ BaseIter(_mesh, _ref_h) {
 		if(_mesh->orientation(*hf_it, _ref_h) != _orthDir &&
 				_mesh->orientation(*hf_it, _ref_h) != HexahedralMesh<VecT>::opposite_orientation(_orthDir)) {
 			CellHandle ch = _mesh->incident_cell_per_hf_[_mesh->opposite_halfface_handle(*hf_it)];
-			if(ch != OpenVolumeMesh<VecT>::InvalidCellHandle) {
+			if(ch != PolyhedralMesh<VecT>::InvalidCellHandle) {
 				neighb_sheet_cell_hs_.insert(ch);
 			}
 		}
@@ -222,7 +222,7 @@ BaseIter(_mesh, _ref_h) {
             he_it != halfedges.end(); ++he_it) {
 
         // Get outside halffaces
-        typename OpenVolumeMesh<VecT>::HalfEdgeHalfFaceIter hehf_it = _mesh->hehf_iter(_mesh->opposite_halfedge_handle(*he_it));
+        typename PolyhedralMesh<VecT>::HalfEdgeHalfFaceIter hehf_it = _mesh->hehf_iter(_mesh->opposite_halfedge_handle(*he_it));
         for(; hehf_it.valid(); ++hehf_it) {
 
             if(_mesh->is_boundary(*hehf_it)) {

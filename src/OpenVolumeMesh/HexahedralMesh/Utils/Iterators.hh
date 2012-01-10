@@ -43,23 +43,23 @@
 #ifndef HEXAHEDRALMESHITERATORS_HH
 #define HEXAHEDRALMESHITERATORS_HH
 
+#include "../../PolyhedralMesh/Utils/Iterators.hh"
+
 namespace OpenVolumeMesh {
 
 template <class VecT>
 class HexahedralMesh;
 
-#include "../../PolyhedralMesh/Utils/Iterators.hh"
-
 template <class VecT>
 class CellSheetCellIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::CellHandle,
-	typename OpenVolumeMesh<VecT>::CellHandle> {
+	typename PolyhedralMesh<VecT>::CellHandle,
+	typename PolyhedralMesh<VecT>::CellHandle> {
 private:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::CellHandle,
-			typename OpenVolumeMesh<VecT>::CellHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::CellHandle CellHandle;
-	typedef typename OpenVolumeMesh<VecT>::HalfFaceHandle HalfFaceHandle;
+			typename PolyhedralMesh<VecT>::CellHandle,
+			typename PolyhedralMesh<VecT>::CellHandle>        BaseIter;
+	typedef typename PolyhedralMesh<VecT>::CellHandle     CellHandle;
+	typedef typename PolyhedralMesh<VecT>::HalfFaceHandle HalfFaceHandle;
 public:
 	CellSheetCellIter(const CellHandle& _ref_h, const unsigned char _orthDir,
 			const HexahedralMesh<VecT>* _mesh);
@@ -119,15 +119,15 @@ private:
 
 template <class VecT>
 class HalfFaceSheetHalfFaceIter : public BaseIterator<VecT,
-	typename OpenVolumeMesh<VecT>::HalfFaceHandle,
-	typename OpenVolumeMesh<VecT>::HalfFaceHandle> {
+	typename PolyhedralMesh<VecT>::HalfFaceHandle,
+	typename PolyhedralMesh<VecT>::HalfFaceHandle> {
 private:
 	typedef BaseIterator<VecT,
-			typename OpenVolumeMesh<VecT>::HalfFaceHandle,
-			typename OpenVolumeMesh<VecT>::HalfFaceHandle> BaseIter;
-	typedef typename OpenVolumeMesh<VecT>::HalfFaceHandle HalfFaceHandle;
-	typedef typename OpenVolumeMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
-	typedef typename OpenVolumeMesh<VecT>::EdgeHandle     EdgeHandle;
+			typename PolyhedralMesh<VecT>::HalfFaceHandle,
+			typename PolyhedralMesh<VecT>::HalfFaceHandle> BaseIter;
+	typedef typename PolyhedralMesh<VecT>::HalfFaceHandle HalfFaceHandle;
+	typedef typename PolyhedralMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
+	typedef typename PolyhedralMesh<VecT>::EdgeHandle     EdgeHandle;
 public:
 	HalfFaceSheetHalfFaceIter(const HalfFaceHandle& _ref_h,
 			const HexahedralMesh<VecT>* _mesh);
@@ -190,15 +190,15 @@ private:
 
 template <class VecT>
 class OutsideNeighborHalfFaceIter : public BaseIterator<VecT,
-    typename OpenVolumeMesh<VecT>::HalfFaceHandle,
-    typename OpenVolumeMesh<VecT>::HalfFaceHandle> {
+    typename PolyhedralMesh<VecT>::HalfFaceHandle,
+    typename PolyhedralMesh<VecT>::HalfFaceHandle> {
 private:
     typedef BaseIterator<VecT,
-            typename OpenVolumeMesh<VecT>::HalfFaceHandle,
-            typename OpenVolumeMesh<VecT>::HalfFaceHandle> BaseIter;
-    typedef typename OpenVolumeMesh<VecT>::HalfFaceHandle HalfFaceHandle;
-    typedef typename OpenVolumeMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
-    typedef typename OpenVolumeMesh<VecT>::EdgeHandle     EdgeHandle;
+            typename PolyhedralMesh<VecT>::HalfFaceHandle,
+            typename PolyhedralMesh<VecT>::HalfFaceHandle> BaseIter;
+    typedef typename PolyhedralMesh<VecT>::HalfFaceHandle HalfFaceHandle;
+    typedef typename PolyhedralMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
+    typedef typename PolyhedralMesh<VecT>::EdgeHandle     EdgeHandle;
 public:
     OutsideNeighborHalfFaceIter(const HalfFaceHandle& _ref_h,
             const HexahedralMesh<VecT>* _mesh);
@@ -259,10 +259,10 @@ private:
     typename std::vector<EdgeHandle>::const_iterator edge_it_;
 };
 
+} // Namespace OpenVolumeMesh
+
 #if defined(INCLUDE_TEMPLATES) && !defined(HEXAHEDRALMESHITERATORST_CC)
 #include "IteratorsT.cc"
 #endif
-
-} // Namespace OpenVolumeMesh
 
 #endif /* HEXAHEDRALMESHITERATORS_HH */

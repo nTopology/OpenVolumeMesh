@@ -823,25 +823,25 @@ std::ostream& operator<<(std::ostream& _os, const OpenVolumeMeshVertex<VecT>& _v
 template <typename VecT>
 class OpenVolumeMeshEdge {
 public:
-    OpenVolumeMeshEdge(const typename OpenVolumeMesh<VecT>::VertexHandle& _fromVertex,
-                       const typename OpenVolumeMesh<VecT>::VertexHandle& _toVertex) :
+    OpenVolumeMeshEdge(const typename PolyhedralMesh<VecT>::VertexHandle& _fromVertex,
+                       const typename PolyhedralMesh<VecT>::VertexHandle& _toVertex) :
         fromVertex_(_fromVertex),
         toVertex_(_toVertex) {}
 
     virtual ~OpenVolumeMeshEdge() {}
 
-    typename OpenVolumeMesh<VecT>::VertexHandle from_vertex() const { return fromVertex_; }
-    typename OpenVolumeMesh<VecT>::VertexHandle to_vertex()   const { return toVertex_;   }
+    typename PolyhedralMesh<VecT>::VertexHandle from_vertex() const { return fromVertex_; }
+    typename PolyhedralMesh<VecT>::VertexHandle to_vertex()   const { return toVertex_;   }
 
-    void set_from_vertex(const typename OpenVolumeMesh<VecT>::VertexHandle& _vertex) { fromVertex_ = _vertex; }
-    void set_to_vertex(const typename OpenVolumeMesh<VecT>::VertexHandle& _vertex)   { toVertex_ = _vertex; }
+    void set_from_vertex(const typename PolyhedralMesh<VecT>::VertexHandle& _vertex) { fromVertex_ = _vertex; }
+    void set_to_vertex(const typename PolyhedralMesh<VecT>::VertexHandle& _vertex)   { toVertex_ = _vertex; }
 
     const OpenVolumeMeshEdge<VecT> opposite() const {
     	return OpenVolumeMeshEdge<VecT>(toVertex_, fromVertex_);
     }
 private:
-    typename OpenVolumeMesh<VecT>::VertexHandle fromVertex_;
-    typename OpenVolumeMesh<VecT>::VertexHandle toVertex_;
+    typename PolyhedralMesh<VecT>::VertexHandle fromVertex_;
+    typename PolyhedralMesh<VecT>::VertexHandle toVertex_;
 };
 
 // Stream operator for edges
@@ -855,21 +855,21 @@ std::ostream& operator<<(std::ostream& _os, const OpenVolumeMeshEdge<VecT>& _edg
 template <typename VecT>
 class OpenVolumeMeshFace {
 public:
-    OpenVolumeMeshFace(const std::vector<typename OpenVolumeMesh<VecT>::HalfEdgeHandle>& _halfedges) :
+    OpenVolumeMeshFace(const std::vector<typename PolyhedralMesh<VecT>::HalfEdgeHandle>& _halfedges) :
     halfedges_(_halfedges) {
         compute_opposite_halfedges();
     }
 
     virtual ~OpenVolumeMeshFace() {}
 
-    const std::vector<typename OpenVolumeMesh<VecT>::HalfEdgeHandle>& halfedges() const { return halfedges_; }
+    const std::vector<typename PolyhedralMesh<VecT>::HalfEdgeHandle>& halfedges() const { return halfedges_; }
 
-    void set_halfedges(const std::vector<typename OpenVolumeMesh<VecT>::HalfEdgeHandle>& _halfedges) {
+    void set_halfedges(const std::vector<typename PolyhedralMesh<VecT>::HalfEdgeHandle>& _halfedges) {
         halfedges_ = _halfedges;
         opp_halfedges_.clear();
-        for(typename std::vector<typename OpenVolumeMesh<VecT>::HalfEdgeHandle>::const_iterator it = halfedges_.begin();
+        for(typename std::vector<typename PolyhedralMesh<VecT>::HalfEdgeHandle>::const_iterator it = halfedges_.begin();
                 it != halfedges_.end(); ++it) {
-            opp_halfedges_.insert(opp_halfedges_.begin(), OpenVolumeMesh<VecT>::opposite_halfedge_handle(*it));
+            opp_halfedges_.insert(opp_halfedges_.begin(), PolyhedralMesh<VecT>::opposite_halfedge_handle(*it));
         }
     }
 
@@ -879,22 +879,22 @@ public:
 
     void compute_opposite_halfedges() {
         opp_halfedges_.clear();
-        for(typename std::vector<typename OpenVolumeMesh<VecT>::HalfEdgeHandle>::const_iterator it = halfedges_.begin();
+        for(typename std::vector<typename PolyhedralMesh<VecT>::HalfEdgeHandle>::const_iterator it = halfedges_.begin();
                 it != halfedges_.end(); ++it) {
-            opp_halfedges_.insert(opp_halfedges_.begin(), OpenVolumeMesh<VecT>::opposite_halfedge_handle(*it));
+            opp_halfedges_.insert(opp_halfedges_.begin(), PolyhedralMesh<VecT>::opposite_halfedge_handle(*it));
         }
     }
 
 private:
-    std::vector<typename OpenVolumeMesh<VecT>::HalfEdgeHandle> halfedges_;
-    std::vector<typename OpenVolumeMesh<VecT>::HalfEdgeHandle> opp_halfedges_;
+    std::vector<typename PolyhedralMesh<VecT>::HalfEdgeHandle> halfedges_;
+    std::vector<typename PolyhedralMesh<VecT>::HalfEdgeHandle> opp_halfedges_;
 };
 
 // Stream operator for faces
 template <typename VecT>
 std::ostream& operator<<(std::ostream& _os, const OpenVolumeMeshFace<VecT>& _face) {
     _os << "(";
-    for(typename std::vector<typename OpenVolumeMesh<VecT>::HalfEdgeHandle>::const_iterator it = _face.halfedges().begin();
+    for(typename std::vector<typename PolyhedralMesh<VecT>::HalfEdgeHandle>::const_iterator it = _face.halfedges().begin();
             it < _face.halfedges().end(); ++it) {
         _os << *it;
         if(it+1 < _face.halfedges().end())
@@ -909,24 +909,24 @@ std::ostream& operator<<(std::ostream& _os, const OpenVolumeMeshFace<VecT>& _fac
 template <typename VecT>
 class OpenVolumeMeshCell {
 public:
-    OpenVolumeMeshCell(const std::vector<typename OpenVolumeMesh<VecT>::HalfFaceHandle>& _halffaces) :
+    OpenVolumeMeshCell(const std::vector<typename PolyhedralMesh<VecT>::HalfFaceHandle>& _halffaces) :
         halffaces_(_halffaces) {}
 
     virtual ~OpenVolumeMeshCell() {}
 
-    const std::vector<typename OpenVolumeMesh<VecT>::HalfFaceHandle>& halffaces() const { return halffaces_; }
+    const std::vector<typename PolyhedralMesh<VecT>::HalfFaceHandle>& halffaces() const { return halffaces_; }
 
-    void set_halffaces(const std::vector<typename OpenVolumeMesh<VecT>::HalfFaceHandle>& _halffaces) { halffaces_ = _halffaces; }
+    void set_halffaces(const std::vector<typename PolyhedralMesh<VecT>::HalfFaceHandle>& _halffaces) { halffaces_ = _halffaces; }
 
 private:
-    std::vector<typename OpenVolumeMesh<VecT>::HalfFaceHandle> halffaces_;
+    std::vector<typename PolyhedralMesh<VecT>::HalfFaceHandle> halffaces_;
 };
 
 // Stream operator for cells
 template <typename VecT>
 std::ostream& operator<<(std::ostream& _os, const OpenVolumeMeshCell<VecT>& _cell) {
     _os << "(";
-    for(typename std::vector<typename OpenVolumeMesh<VecT>::HalfFaceHandle>::const_iterator it = _cell.halffaces().begin();
+    for(typename std::vector<typename PolyhedralMesh<VecT>::HalfFaceHandle>::const_iterator it = _cell.halffaces().begin();
             it < _cell.halffaces().end(); ++it) {
         _os << *it;
         if(it+1 < _cell.halffaces().end())

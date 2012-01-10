@@ -106,7 +106,7 @@ public:
     friend class HalfFaceSheetHalfFaceIter<VecT>;
     friend class OutsideNeighborHalfFaceIter<VecT>;
 
-    typedef class CellSheetCellIter<VecT> 		    CellSheetCellIter;
+    typedef class CellSheetCellIter<VecT> 		      CellSheetCellIter;
     typedef class HalfFaceSheetHalfFaceIter<VecT>   HalfFaceSheetHalfFaceIter;
     typedef class OutsideNeighborHalfFaceIter<VecT> OutsideNeighborHalfFaceIter;
 
