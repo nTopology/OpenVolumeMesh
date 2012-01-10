@@ -43,14 +43,58 @@
 #ifndef FILEMANAGER_HH_
 #define FILEMANAGER_HH_
 
+#include <string>
+
 namespace OpenVolumeMesh {
 
 namespace IO {
 
+/**
+ * \class FileManager
+ * \brief Read/Write mesh data from/to files
+ */
 
+template <class MeshT>
+class FileManager {
+public:
+
+  /// Default constructor
+  FileManager();
+
+  /// Default destructor
+  ~FileManager();
+
+  /**
+   * \brief Read a mesh from a file
+   *
+   *  Returns true if the file was successfully read. The mesh
+   *  is stored in parameter _mesh. If something goes wrong,
+   *  this function returns false.
+   *
+   * @param _filename The file that is to be read
+   * @param _mesh     A reference to an OpenVolumeMesh instance
+   */
+  bool readFile(const std::string& _filename, MeshT& _mesh) const;
+
+  /**
+   * \brief Write a mesh to a file
+   *
+   *  Returns true if the file was successfully written. The mesh
+   *  is passed as parameter _mesh. If something goes wrong,
+   *  this function returns false.
+   *
+   * @param _filename The file that is to be stored
+   * @param _mesh     A const reference to an OpenVolumeMesh instance
+   */
+  bool writeFile(const std::string& _filename, const MeshT& _mesh) const;
+};
 
 } // Namespace IO
 
 } // Namespace FileManager
+
+#if defined(INCLUDE_TEMPLATES) && !defined(FILEMANAGERT_CC)
+#include "FileManagerT.cc"
+#endif
 
 #endif /* FILEMANAGER_HH_ */

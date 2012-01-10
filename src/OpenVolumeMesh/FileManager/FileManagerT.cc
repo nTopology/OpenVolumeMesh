@@ -40,13 +40,39 @@
  *                                                                           *
 \*===========================================================================*/
 
+#define FILEMANAGERT_CC
+
 #include "FileManager.hh"
 
 namespace OpenVolumeMesh {
 
 namespace IO {
 
+//==================================================
 
+FileManager::FileManager() {
+
+}
+
+//==================================================
+
+FileManager::~FileManager() {
+
+}
+
+//==================================================
+
+template <class MeshT>
+bool FileManager::readFile(const std::string& _filename, MeshT& _mesh) {
+
+}
+
+//==================================================
+
+template <class MeshT>
+bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) {
+
+}
 
 } // Namespace IO
 
