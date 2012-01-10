@@ -24,7 +24,7 @@ endif ()
 
 add_subdirectory (src)
 # add_subdirectory (examples)
-# add_subdirectory (documentation)
+add_subdirectory (documentation)
 
 # ========================================================================
 # Bundle generation (Targets exist, now configure them)

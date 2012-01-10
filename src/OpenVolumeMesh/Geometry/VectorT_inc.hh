@@ -366,7 +366,7 @@ public:
 
 
   /// cross product: only defined for Vec3* as specialization
-  /// \see OpenMesh::cross
+  /// \see OpenVolumeMesh::cross
   inline VectorT<Scalar,3> operator%(const VectorT<Scalar,3>& _rhs) const
 #if DIM==3
   {
@@ -381,7 +381,7 @@ public:
 
 
   /// compute scalar product
-  /// \see OpenMesh::dot
+  /// \see OpenVolumeMesh::dot
   inline Scalar operator|(const vector_type& _rhs) const {
   Scalar p(0);
 #define expr(i) p += Base::values_[i] * _rhs.Base::values_[i];

@@ -120,7 +120,7 @@ template <> struct VectorDataT<float, 4>
 #define DERIVED           VectorDataT<Scalar,N>
 #define unroll(expr)      for (int i=0; i<N; ++i) expr(i)
 
-/** \class VectorT VectorT.hh <OpenMesh/Core/Math/VectorT.hh>
+/** \class VectorT VectorT.hh <OpenVolumeMesh/Geometry/VectorT.hh>
     A vector is an array of \<N\> values of type \<Scalar\>.
     The actual data is stored in an VectorDataT, this class just adds
     the necessary operators.
@@ -218,7 +218,7 @@ VectorT<double,3>::operator%(const VectorT<double,3>& _rhs) const
 //== GLOBAL FUNCTIONS =========================================================
 
 
-/// \relates OpenMesh::VectorT
+/// \relates OpenVolumeMesh::VectorT
 /// scalar * vector
 template<typename Scalar,int N>
 inline VectorT<Scalar,N> operator*(Scalar _s, const VectorT<Scalar,N>& _v) {
@@ -226,7 +226,7 @@ inline VectorT<Scalar,N> operator*(Scalar _s, const VectorT<Scalar,N>& _v) {
 }
 
 
-/// \relates OpenMesh::VectorT
+/// \relates OpenVolumeMesh::VectorT
 /// symmetric version of the dot product
 template<typename Scalar, int N>
 inline Scalar 
@@ -235,7 +235,7 @@ dot(const VectorT<Scalar,N>& _v1, const VectorT<Scalar,N>& _v2) {
 }
 
 
-/// \relates OpenMesh::VectorT
+/// \relates OpenVolumeMesh::VectorT
 /// symmetric version of the cross product
 template<typename Scalar, int N>
 inline VectorT<Scalar,N> 

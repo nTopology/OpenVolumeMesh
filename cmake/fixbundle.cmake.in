@@ -54,5 +54,5 @@ get_filename_component(_GlutDir "@GLUT_glut_LIBRARY@" PATH)
 fixup_bundle (@CMAKE_BINARY_DIR@/Build/bin/QtViewer "${_qtplugins}" "/usr/lib;${_qtdirs};${_GlutDir}")
 
 # create qt plugin configuration file
-# file(WRITE "@CMAKE_BINARY_DIR@/Build/OpenMesh.app/Contents/Resources/qt.conf" "[Paths]\nPlugins = Resources/QtPlugins")
+# file(WRITE "@CMAKE_BINARY_DIR@/Build/OpenVolumeMesh.app/Contents/Resources/qt.conf" "[Paths]\nPlugins = Resources/QtPlugins")
 
