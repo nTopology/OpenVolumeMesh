@@ -16,9 +16,6 @@ set (directories
   OpenVolumeMesh/HexahedralMesh/Utils
 )
 
-# Add unittests target
-add_subdirectory(Unittests)
-
 # collect all header and source files
 acg_append_files (headers "*.hh" ${directories})
 acg_append_files (sources "*.cc" ${directories})
@@ -27,7 +24,6 @@ acg_append_files (sources "*.cc" ${directories})
 if ( NOT ${PROJECT_NAME} MATCHES "OpenVolumeMesh")
   set(ACG_NO_LIBRARY_INSTALL true)
 endif()
-
 
 if (WIN32)
   # OpenVolumeMesh has no dll exports so we have to build a static library on windows
@@ -43,9 +39,10 @@ if (NOT APPLE AND ${PROJECT_NAME} MATCHES "OpenVolumeMesh")
 
 # Install Header Files)
 install(DIRECTORY . 
-	DESTINATION include/OpenVolumeMesh
+	DESTINATION include
         FILES_MATCHING 
 	PATTERN "*.hh"
+        PATTERN "Unittests" EXCLUDE
         PATTERN "CVS" EXCLUDE
         PATTERN ".svn" EXCLUDE
         PATTERN "tmp" EXCLUDE
@@ -54,9 +51,10 @@ install(DIRECTORY .
 
 #install Template cc files (required by headers)
 install(DIRECTORY . 
-	DESTINATION include/OpenVolumeMesh
+	DESTINATION include
         FILES_MATCHING 
 	PATTERN "*T.cc"
+        PATTERN "Unittests" EXCLUDE
         PATTERN "CVS" EXCLUDE
         PATTERN ".svn" EXCLUDE
 	PATTERN "tmp" EXCLUDE
@@ -64,5 +62,8 @@ install(DIRECTORY .
         PATTERN "Debian*" EXCLUDE)
 
 endif ()
+
+# Add unittests target
+add_subdirectory(Unittests)
 
 
