@@ -7,6 +7,7 @@ Welcome to the %OpenVolumeMesh documentation. %OpenVolumeMesh is a generic data 
 for the comfortable handling of arbitrary polyhedral meshes. Its concepts are closely related
 to OpenMesh (http://www.openmesh.org). In particular, %OpenVolumeMesh carries the general idea
 of storing edges as so-called (directed) half-edges over to the face definitions.
+So, faces are split up into so-called half-faces having opposing orientations.
 Furthermore, in %OpenVolumeMesh the data is arranged in a \e top-down hierarchy,
 meaning that each entity of dimension n is defined through a (ordered) tuple of entities of
 dimension (n-1). These are the intrinsic adjacency
