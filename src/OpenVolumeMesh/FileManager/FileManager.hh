@@ -70,11 +70,22 @@ public:
    *  is stored in parameter _mesh. If something goes wrong,
    *  this function returns false.
    *
-   * @param _filename The file that is to be read
-   * @param _mesh     A reference to an OpenVolumeMesh instance
+   * @param _filename       The file that is to be read
+   * @param _mesh           A reference to an OpenVolumeMesh instance
+   * @param _topologyCheck  Pass true if you want to perform a topology check
+   *                        each time an entity is added (slower performance)
+   * @param _computeBottomUpAdjacencies Pass true if you want the file manager
+   *                                    to directly compute the bottom-up adjacencies
+   *                                    for the mesh. (Note: These are needed for
+   *                                    some iterators to work, see documentation)
+   * @param _computeFaceNormals Pass true if you want the file manager
+   *                            to directly compute the face normals.
    */
   template <class MeshT>
-  bool readFile(const std::string& _filename, MeshT& _mesh) const;
+  bool readFile(const std::string& _filename, MeshT& _mesh,
+      bool _topologyCheck = true,
+      bool _computeBottomUpAdjacencies = true,
+      bool _computeFaceNormals = true) const;
 
   /**
    * \brief Write a mesh to a file
@@ -90,9 +101,9 @@ public:
   bool writeFile(const std::string& _filename, const MeshT& _mesh) const;
 
   /**
-   * \brief Test whether mesh is a hexahedral mesh
+   * \brief Test whether given file contains a hexahedral mesh
    */
-
+  bool isHexahedralMesh(const std::string& _filename) const;
 };
 
 } // Namespace IO
