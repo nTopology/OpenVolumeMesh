@@ -9,6 +9,7 @@ include_directories (
 set (directories 
   .
   OpenVolumeMesh/Core
+  OpenVolumeMesh/FileManager
   OpenVolumeMesh/Geometry
   OpenVolumeMesh/PolyhedralMesh
   OpenVolumeMesh/PolyhedralMesh/Utils
