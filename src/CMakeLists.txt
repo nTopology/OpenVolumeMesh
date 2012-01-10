@@ -8,12 +8,12 @@ include_directories (
 # source code directories
 set (directories 
   .
-  Core
-  Geometry
-  OpenVolumeMesh
-  OpenVolumeMesh/Utils
-  OpenHexMesh
-  OpenHexMesh/Utils
+  OpenVolumeMesh/Core
+  OpenVolumeMesh/Geometry
+  OpenVolumeMesh/PolyhedralMesh
+  OpenVolumeMesh/PolyhedralMesh/Utils
+  OpenVolumeMesh/HexahedralMesh
+  OpenVolumeMesh/HexahedralMesh/Utils
   Unittests
 )
 
@@ -34,30 +34,7 @@ else ()
     acg_add_library (OpenVolumeMesh SHAREDANDSTATIC ${sources} ${headers})
     set_target_properties (OpenVolumeMesh PROPERTIES VERSION ${OPENVOLUMEMESH_VERSION_MAJOR}.${OPENVOLUMEMESH_VERSION_MINOR}
                                                SOVERSION ${OPENVOLUMEMESH_VERSION_MAJOR}.${OPENVOLUMEMESH_VERSION_MINOR} )
-
 endif ()
-
-if ( ${PROJECT_NAME} MATCHES "OpenVolumeMesh")
-  # Add core as dependency before fixbundle 
-  if ( WIN32 OR APPLE)
-    # let bundle generation depend on targets
-    add_dependencies (fixbundle OpenVolumeMesh)
-  endif ()
-endif()
-
-
-# Install Header Files (Apple)
-if ( NOT ACG_PROJECT_MACOS_BUNDLE AND APPLE )
-    FILE(GLOB files_install_OVM         "${CMAKE_CURRENT_SOURCE_DIR}/OpenVolumeMesh/*.hh"  "${CMAKE_CURRENT_SOURCE_DIR}/OpenVolumeMesh/*T.cc" )
-    FILE(GLOB files_install_OVM_Utils   "${CMAKE_CURRENT_SOURCE_DIR}/OpenVolumeMesh/Utils/*.hh"  "${CMAKE_CURRENT_SOURCE_DIR}/OpenVolumeMesh/Utils/*T.cc" )
-    FILE(GLOB files_install_OHM         "${CMAKE_CURRENT_SOURCE_DIR}/OpenHexMesh/*.hh"  "${CMAKE_CURRENT_SOURCE_DIR}/OpenHexMesh/*T.cc" )
-    FILE(GLOB files_install_OHM_Utils   "${CMAKE_CURRENT_SOURCE_DIR}/OpenHexMesh/Utils/*.hh"  "${CMAKE_CURRENT_SOURCE_DIR}/OpenHexMesh/Utils/*T.cc" )
-    INSTALL(FILES ${files_install_OVM}          DESTINATION include/OpenVolumeMesh/OpenVolumeMesh )
-    INSTALL(FILES ${files_install_OVM_Utils}    DESTINATION include/OpenVolumeMesh/OpenVolumeMesh/Utils )
-    INSTALL(FILES ${files_install_OHM}          DESTINATION include/OpenVolumeMesh/OpenHexMesh )
-    INSTALL(FILES ${files_install_OHM_Utils}    DESTINATION include/OpenVolumeMesh/OpenHexMesh/Utils )
-endif()
-
 
 # Only install if the project name matches OpenVolumeMesh.
 if (NOT APPLE AND ${PROJECT_NAME} MATCHES "OpenVolumeMesh")
