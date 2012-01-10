@@ -2,37 +2,83 @@
 #define INCLUDE_UNITTESTS_COMMON_HH
 
 #include <gtest/gtest.h>
-#include <OpenMesh/Core/IO/MeshIO.hh>
 
-#include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
+#include <OpenVolumeMesh/PolyhedralMesh/PolyhedralMesh.hh>
+#include <OpenVolumeMesh/HexahedralMesh/HexahedralMesh.hh>
+#include <OpenVolumeMesh/Geometry/VectorT.hh>
 
-struct CustomTraits : public OpenMesh::DefaultTraits {
-};
-
-typedef OpenMesh::TriMesh_ArrayKernelT<CustomTraits> Mesh;
+// Vector defines
+typedef OpenVolumeMesh::Vec3d Vec3d;
+typedef OpenVolumeMesh::Vec3f Vec3f;
 
 /*
- * Simple test setting.
+ * Simple test setting for polyhedral meshes
  */
 
-class OpenMeshBase : public testing::Test {
+typedef OpenVolumeMesh::PolyhedralMesh<OpenVolumeMesh::Vec3d> PolyhedralMesh;
 
-    protected:
+class PolyhedralMeshBase: public testing::Test {
 
-        // This function is called before each test is run
-        virtual void SetUp() {
-            
-            // Do some initial stuff with the member data here...
-        }
+protected:
 
-        // This function is called after all tests are through
-        virtual void TearDown() {
+  typedef PolyhedralMesh::VertexHandle    VertexHandle;
+  typedef PolyhedralMesh::HalfEdgeHandle  HalfEdgeHandle;
+  typedef PolyhedralMesh::EdgeHandle      EdgeHandle;
+  typedef PolyhedralMesh::HalfFaceHandle  HalfFaceHandle;
+  typedef PolyhedralMesh::FaceHandle      FaceHandle;
+  typedef PolyhedralMesh::CellHandle      CellHandle;
 
-            // Do some final stuff with the member data here...
-        }
+  // This function is called before each test is run
+  virtual void SetUp()
+  {
 
-    // This member will be accessible in all tests
-    Mesh mesh_;  
+    // Do some initial stuff with the member data here...
+  }
+
+  // This function is called after all tests are through
+  virtual void TearDown()
+  {
+
+    // Do some final stuff with the member data here...
+  }
+
+  // This member will be accessible in all tests
+  PolyhedralMesh mesh_;
+};
+
+/*
+ * Simple test setting for hexahedral meshes
+ */
+
+typedef OpenVolumeMesh::HexahedralMesh<OpenVolumeMesh::Vec3d> HexahedralMesh;
+
+class HexahedralMeshBase: public testing::Test {
+
+protected:
+
+  typedef HexahedralMesh::VertexHandle    VertexHandle;
+  typedef HexahedralMesh::HalfEdgeHandle  HalfEdgeHandle;
+  typedef HexahedralMesh::EdgeHandle      EdgeHandle;
+  typedef HexahedralMesh::HalfFaceHandle  HalfFaceHandle;
+  typedef HexahedralMesh::FaceHandle      FaceHandle;
+  typedef HexahedralMesh::CellHandle      CellHandle;
+
+  // This function is called before each test is run
+  virtual void SetUp()
+  {
+
+    // Do some initial stuff with the member data here...
+  }
+
+  // This function is called after all tests are through
+  virtual void TearDown()
+  {
+
+    // Do some final stuff with the member data here...
+  }
+
+  // This member will be accessible in all tests
+  HexahedralMesh mesh_;
 };
 
 #endif // INCLUDE GUARD
