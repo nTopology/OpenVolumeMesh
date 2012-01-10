@@ -3,6 +3,7 @@
 #include "unittests_common.hh"
 #include "unittests_basics.hh"
 #include "unittests_iterators.hh"
+#include "unittests_files.hh"
 
 int main(int _argc, char** _argv) {
 
