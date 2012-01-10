@@ -80,6 +80,12 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
 
   std::ifstream iff(_filename.c_str(), std::ios::in);
 
+  if(!iff.good()) {
+    std::cerr << "Error: Could not open file " << _filename << " for reading!" << std::endl;
+    iff.close();
+    return false;
+  }
+
   std::string s;
 
   // read header
