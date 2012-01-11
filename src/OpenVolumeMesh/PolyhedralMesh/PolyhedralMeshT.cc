@@ -871,7 +871,7 @@ PolyhedralMesh<VecT>::incident_cell(const HalfFaceHandle& _halfFaceHandle) const
 //========================================================================================
 
 template <typename VecT>
-void PolyhedralMesh<VecT>::garbage_collection() {
+void PolyhedralMesh<VecT>::garbage_collection(bool _preserveManifoldness) {
 
     if(!has_vertex_status() || !has_edge_status() || !has_face_status() || !has_cell_status()) {
         std::cerr << "garbage_collection() requires all " <<
@@ -889,7 +889,10 @@ void PolyhedralMesh<VecT>::garbage_collection() {
      *    higher dimensional entities (steps 2 and 3 can be combined)
      * 4. Delete property and status data of h
      * ===========================================
-     * 5. At last, call update_adjacencies()
+     * 5. Call update_adjacencies() (if required)
+     * ===========================================
+     * 6. Preserve manifoldness
+     *    (optional, requires bottom-up adjacencies)
      */
 
     VertexHandle vh(0);
@@ -901,34 +904,7 @@ void PolyhedralMesh<VecT>::garbage_collection() {
             continue;
         }
 
-        // Step 1
-        v_it = vertices_.erase(v_it);
-
-        // Step 2 + 3
-        for(EdgeIter e_it = e_iter(); e_it.valid(); ++e_it) {
-
-            if(status(*e_it).deleted()) continue;
-
-            // Delete edges that are incident to vh
-            Edge& e = edge(*e_it);
-            if(e.from_vertex() == vh || e.to_vertex() == vh) {
-                status(*e_it).set_deleted(true);
-                continue;
-            }
-
-            // Replace handles with higher index
-            if(e.from_vertex().idx() > vh.idx()) {
-                e.set_from_vertex(VertexHandle(e.from_vertex().idx() - 1));
-            }
-
-            if(e.to_vertex().idx() > vh.idx()) {
-                e.set_to_vertex(VertexHandle(e.to_vertex().idx() - 1));
-            }
-        }
-
-        // Step 4
-        vertex_status_.erase(vertex_status_.begin() + vh.idx());
-        remove_vprop_element((size_t)vh.idx());
+        erase_vertex(v_it, vh, true);
     }
 
     EdgeHandle eh(0);
@@ -940,42 +916,7 @@ void PolyhedralMesh<VecT>::garbage_collection() {
             continue;
         }
 
-        // Step 1
-        e_it = edges_.erase(e_it);
-
-        // Step 2 + 3
-        for(FaceIter f_it = f_iter(); f_it.valid(); ++f_it) {
-
-            if(status(*f_it).deleted()) continue;
-
-            // Delete faces that are incident to eh
-            Face& f = face(*f_it);
-            std::vector<HalfEdgeHandle> hes = face(*f_it).halfedges();
-            for(typename std::vector<HalfEdgeHandle>::iterator he_it = hes.begin();
-                    he_it != hes.end(); ++he_it) {
-
-                EdgeHandle t_eh = edge_handle(*he_it);
-
-                if(t_eh == eh) {
-                    status(*f_it).set_deleted(true);
-                    continue;
-                }
-
-                // Replace handles with higher index
-                if(t_eh > eh) {
-                    bool orig = (*he_it == halfedge_handle(t_eh, 0));
-                    *he_it = halfedge_handle(t_eh - 1, (orig ? 0 : 1));
-                }
-            }
-            f.set_halfedges(hes);
-            f.compute_opposite_halfedges();
-        }
-
-        // Step 4
-        edge_status_.erase(edge_status_.begin() + eh.idx());
-        remove_eprop_element((size_t)eh.idx());
-        remove_heprop_element((size_t)halfedge_handle(eh, 0));
-        remove_heprop_element((size_t)halfedge_handle(eh, 1));
+        erase_edge(e_it, eh, true);
     }
 
     FaceHandle fh(0);
@@ -987,41 +928,7 @@ void PolyhedralMesh<VecT>::garbage_collection() {
             continue;
         }
 
-        // Step 1
-        f_it = faces_.erase(f_it);
-
-        // Step 2 + 3
-        for(CellIter c_it = c_iter(); c_it.valid(); ++c_it) {
-
-            if(status(*c_it).deleted()) continue;
-
-            // Delete cells that are incident to fh
-            Cell& c = cell(*c_it);
-            std::vector<HalfFaceHandle> hfs = cell(*c_it).halffaces();
-            for(typename std::vector<HalfFaceHandle>::iterator hf_it = hfs.begin();
-                    hf_it != hfs.end(); ++hf_it) {
-
-                FaceHandle t_fh = face_handle(*hf_it);
-
-                if(t_fh == fh) {
-                    status(*c_it).set_deleted(true);
-                    continue;
-                }
-
-                // Replace handles with higher index
-                if(t_fh > fh) {
-                    bool orig = (*hf_it == halfface_handle(t_fh, 0));
-                    *hf_it = halfface_handle(t_fh - 1, (orig ? 0 : 1));
-                }
-            }
-            c.set_halffaces(hfs);
-        }
-
-        // Step 4
-        face_status_.erase(face_status_.begin() + fh.idx());
-        remove_fprop_element((size_t)fh.idx());
-        remove_hfprop_element((size_t)halfface_handle(fh, 0));
-        remove_hfprop_element((size_t)halfface_handle(fh, 1));
+        erase_face(f_it, fh, true);
     }
 
     CellHandle ch(0);
@@ -1033,18 +940,222 @@ void PolyhedralMesh<VecT>::garbage_collection() {
             continue;
         }
 
-        // Step 1
-        c_it = cells_.erase(c_it);
-
-        // No step 2 and 3 needed
-
-        // Step 4
-        cell_status_.erase(cell_status_.begin() + ch.idx());
-        remove_cprop_element((size_t)ch.idx());
+        erase_cell(c_it, ch);
     }
 
     // Step 5
-    update_adjacencies();
+    if(has_bottom_up_adjacencies_) {
+        update_adjacencies();
+    }
+
+    // Step 6
+    if(_preserveManifoldness) {
+        if(has_bottom_up_adjacencies_) {
+
+            // Go over all faces and find those
+            // that are not incident to any cell
+            FaceHandle fh(0);
+            for(typename Faces::iterator f_it = faces_.begin(); f_it != faces_.end();) {
+
+                if(!status(fh).deleted()) {
+                    ++f_it;
+                    fh.idx(fh.idx() + 1);
+                    continue;
+                }
+
+                // Get half-faces
+                HalfFaceHandle hf0 = halfface_handle(fh, 0);
+                HalfFaceHandle hf1 = halfface_handle(fh, 1);
+
+                // If neither of the half-faces is incident to a cell, delete face
+                if(incident_cell(hf0) == InvalidCellHandle && incident_cell(hf1) == InvalidCellHandle) {
+
+                    erase_face(f_it, fh, false);
+                }
+            }
+
+            // Go over all edges and find those
+            // whose half-edges are not incident to any half-face
+            EdgeHandle eh(0);
+            for(typename Edges::iterator e_it = edges_.begin(); e_it != edges_.end();) {
+
+                if(!status(eh).deleted()) {
+                    ++e_it;
+                    eh.idx(eh.idx() + 1);
+                    continue;
+                }
+
+                // Get half-edges
+                HalfEdgeHandle he0 = halfedge_handle(eh, 0);
+                HalfEdgeHandle he1 = halfedge_handle(eh, 1);
+
+                // If neither of the half-edges is incident to a half-face, delete edge
+                HalfEdgeHalfFaceIter he0hf_it = hehf_iter(he0);
+                HalfEdgeHalfFaceIter he1hf_it = hehf_iter(he1);
+
+                if(!he0hf_it.valid() && !he1hf_it.valid()) {
+                    erase_edge(e_it, eh, false);
+                }
+            }
+
+            // Go over all vertices and find those
+            // that are not incident to any edge
+            VertexHandle vh(0);
+            for(typename Vertices::iterator v_it = vertices_.begin(); v_it != vertices_.end();) {
+
+                if(!status(vh).deleted()) {
+                    ++v_it;
+                    vh.idx(vh.idx() + 1);
+                    continue;
+                }
+
+                // If neither of the half-edges is incident to a half-face, delete edge
+                VertexOHalfedgeIter voh_it = voh_iter(vh);
+
+                if(!voh_it.valid()) {
+                    erase_vertex(v_it, vh, false);
+                }
+            }
+
+        } else {
+            std::cerr << "Preservation of three-manifoldness in garbage_collection() "
+                    << "requires bottom-up adjacencies!" << std::endl;
+            return;
+        }
+    }
+}
+
+//========================================================================================
+
+template <typename VecT>
+void PolyhedralMesh<VecT>::erase_vertex(typename Vertices::iterator& _v_it,
+                                        const VertexHandle& _vh, bool _fixHigherDim) {
+
+    _v_it = vertices_.erase(_v_it);
+
+    if(_fixHigherDim) {
+        for(EdgeIter e_it = e_iter(); e_it.valid(); ++e_it) {
+
+            if(status(*e_it).deleted())
+                continue;
+
+            // Delete edges that are incident to vh
+            Edge& e = edge(*e_it);
+            if(e.from_vertex() == _vh || e.to_vertex() == _vh) {
+                status(*e_it).set_deleted(true);
+                continue;
+            }
+
+            // Replace handles with higher index
+            if(e.from_vertex().idx() > _vh.idx()) {
+                e.set_from_vertex(VertexHandle(e.from_vertex().idx() - 1));
+            }
+
+            if(e.to_vertex().idx() > _vh.idx()) {
+                e.set_to_vertex(VertexHandle(e.to_vertex().idx() - 1));
+            }
+        }
+    }
+
+    vertex_status_.erase(vertex_status_.begin() + _vh.idx());
+    remove_vprop_element((size_t) _vh.idx());
+}
+
+//========================================================================================
+
+template <typename VecT>
+void PolyhedralMesh<VecT>::erase_edge(typename Edges::iterator& _e_it,
+                                      const EdgeHandle& _eh, bool _fixHigherDim) {
+
+    _e_it = edges_.erase(_e_it);
+
+    if(_fixHigherDim) {
+        for(FaceIter f_it = f_iter(); f_it.valid(); ++f_it) {
+
+            if(status(*f_it).deleted())
+                continue;
+
+            // Delete faces that are incident to _eh
+            Face& f = face(*f_it);
+            std::vector<HalfEdgeHandle> hes = face(*f_it).halfedges();
+            for(typename std::vector<HalfEdgeHandle>::iterator he_it = hes.begin(); he_it != hes.end(); ++he_it) {
+
+                EdgeHandle t_eh = edge_handle(*he_it);
+
+                if(t_eh == _eh) {
+                    status(*f_it).set_deleted(true);
+                    continue;
+                }
+
+                // Replace handles with higher index
+                if(t_eh > _eh) {
+                    bool orig = (*he_it == halfedge_handle(t_eh, 0));
+                    *he_it = halfedge_handle(t_eh - 1, (orig ? 0 : 1));
+                }
+            }
+            f.set_halfedges(hes);
+            f.compute_opposite_halfedges();
+        }
+    }
+
+    edge_status_.erase(edge_status_.begin() + _eh.idx());
+    remove_eprop_element((size_t) _eh.idx());
+    remove_heprop_element((size_t) halfedge_handle(_eh, 0));
+    remove_heprop_element((size_t) halfedge_handle(_eh, 1));
+}
+
+//========================================================================================
+
+template <typename VecT>
+void PolyhedralMesh<VecT>::erase_face(typename Faces::iterator& _f_it,
+                                      const FaceHandle& _fh, bool _fixHigherDim) {
+
+    _f_it = faces_.erase(_f_it);
+
+    if(_fixHigherDim) {
+        for(CellIter c_it = c_iter(); c_it.valid(); ++c_it) {
+
+            if(status(*c_it).deleted())
+                continue;
+
+            // Delete cells that are incident to fh
+            Cell& c = cell(*c_it);
+            std::vector<HalfFaceHandle> hfs = cell(*c_it).halffaces();
+            for(typename std::vector<HalfFaceHandle>::iterator hf_it = hfs.begin(); hf_it != hfs.end(); ++hf_it) {
+
+                FaceHandle t_fh = face_handle(*hf_it);
+
+                if(t_fh == _fh) {
+                    status(*c_it).set_deleted(true);
+                    continue;
+                }
+
+                // Replace handles with higher index
+                if(t_fh > _fh) {
+                    bool orig = (*hf_it == halfface_handle(t_fh, 0));
+                    *hf_it = halfface_handle(t_fh - 1, (orig ? 0 : 1));
+                }
+            }
+            c.set_halffaces(hfs);
+        }
+    }
+
+    face_status_.erase(face_status_.begin() + _fh.idx());
+    remove_fprop_element((size_t) _fh.idx());
+    remove_hfprop_element((size_t) halfface_handle(_fh, 0));
+    remove_hfprop_element((size_t) halfface_handle(_fh, 1));
+}
+
+//========================================================================================
+
+template <typename VecT>
+void PolyhedralMesh<VecT>::erase_cell(typename Cells::iterator& _c_it,
+                                      const CellHandle& _ch) {
+
+    _c_it = cells_.erase(_c_it);
+
+    cell_status_.erase(cell_status_.begin() + _ch.idx());
+    remove_cprop_element((size_t)_ch.idx());
 }
 
 //========================================================================================

@@ -657,6 +657,22 @@ public:
      */
     void garbage_collection(bool _preserveManifoldness = true);
 
+private:
+
+    /// Erase vertex from vector and correct edge handles
+    void erase_vertex(typename Vertices::iterator& _v_it, const VertexHandle& _vh, bool _fixHigherDim = true);
+
+    /// Erase edge from vector and correct face handles
+    void erase_edge(typename Edges::iterator& _e_it, const EdgeHandle& _eh, bool _fixHigherDim = true);
+
+    /// Erase face from vector and correct cell handles
+    void erase_face(typename Faces::iterator& _f_it, const FaceHandle& _fh, bool _fixHigherDim = true);
+
+    /// Erase cell from vector
+    void erase_cell(typename Cells::iterator& _c_it, const CellHandle& _ch);
+
+public:
+
     //=====================================================================
     // Additional properties
     //=====================================================================
