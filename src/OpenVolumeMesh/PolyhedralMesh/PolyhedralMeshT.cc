@@ -69,6 +69,35 @@ has_cell_status_(false) {
 template <typename VecT>
 void PolyhedralMesh<VecT>::update_adjacencies() {
 
+    update_vertex_caches();
+
+    update_edge_caches();
+
+    update_face_caches();
+
+    // Clear
+    boundary_faces_.clear();
+
+    // Get boundary faces
+    for(unsigned int i = 0; i < faces_.size(); ++i) {
+
+        if(incident_cell_per_hf_[halfface_handle(FaceHandle(i), 0)] == InvalidCellHandle ||
+           incident_cell_per_hf_[halfface_handle(FaceHandle(i), 1)] == InvalidCellHandle) {
+
+            // If at least one of two halffaces does not have an
+            // incident cell it is a boundary face
+            boundary_faces_.push_back(FaceHandle(i));
+        }
+    }
+
+    has_bottom_up_adjacencies_ = true;
+}
+
+//========================================================================================
+
+template <typename VecT>
+void PolyhedralMesh<VecT>::update_vertex_caches() {
+
     // Clear adjacencies
     outgoing_hes_per_vertex_.clear();
     outgoing_hes_per_vertex_.resize(vertices_.size());
@@ -91,6 +120,12 @@ void PolyhedralMesh<VecT>::update_adjacencies() {
         // Store opposite halfedge handle
         outgoing_hes_per_vertex_[to].push_back(halfedge_handle(EdgeHandle(i), 1));
     }
+}
+
+//========================================================================================
+
+template <typename VecT>
+void PolyhedralMesh<VecT>::update_edge_caches() {
 
     // Clear
     incident_hfs_per_he_.clear();
@@ -110,6 +145,12 @@ void PolyhedralMesh<VecT>::update_adjacencies() {
                     halfface_handle(FaceHandle(i), 1));
         }
     }
+}
+
+//========================================================================================
+
+template <typename VecT>
+void PolyhedralMesh<VecT>::update_face_caches() {
 
     // Clear
     incident_cell_per_hf_.clear();
@@ -148,89 +189,71 @@ void PolyhedralMesh<VecT>::update_adjacencies() {
      * intersection of two adjacent 3-dimensional cells is always
      * a 2-dimensional entity, namely a facet), such an ordering
      * always exists and will be found. If not, a correct order
-     * can not be given and the related iterators will address
-     * the related entities arbitrarily.
+     * can not be given and, as a result, the related iterators
+     * will address the related entities in an arbitrary fashion.
      */
 
     for(unsigned int i = 0; i < edges_.size(); ++i) {
 
-    	for(unsigned char s = 0; s <= 1; s++) {
+        for(unsigned char s = 0; s <= 1; s++) {
 
-    		HalfEdgeHandle cur_he = halfedge_handle(i, s);
-			std::vector<HalfFaceHandle> new_halffaces;
-			HalfFaceHandle start_hf = InvalidHalfFaceHandle;
-			HalfFaceHandle cur_hf = InvalidHalfFaceHandle;
+            HalfEdgeHandle cur_he = halfedge_handle(i, s);
+            std::vector<HalfFaceHandle> new_halffaces;
+            HalfFaceHandle start_hf = InvalidHalfFaceHandle;
+            HalfFaceHandle cur_hf = InvalidHalfFaceHandle;
 
-			// Start with one incident halfface and go
-			// into the first direction
-			if(incident_hfs_per_he_[cur_he].size() != 0) {
+            // Start with one incident halfface and go
+            // into the first direction
+            if(incident_hfs_per_he_[cur_he].size() != 0) {
 
-				// Get start halfface
-				cur_hf = *incident_hfs_per_he_[cur_he].begin();
-				start_hf = cur_hf;
+                // Get start halfface
+                cur_hf = *incident_hfs_per_he_[cur_he].begin();
+                start_hf = cur_hf;
 
-				while(cur_hf != InvalidHalfFaceHandle) {
+                while(cur_hf != InvalidHalfFaceHandle) {
 
-					// Add halfface
-					new_halffaces.push_back(cur_hf);
+                    // Add halfface
+                    new_halffaces.push_back(cur_hf);
 
-					// Go to next halfface
-					cur_hf = adjacent_halfface_in_cell(cur_hf, cur_he);
+                    // Go to next halfface
+                    cur_hf = adjacent_halfface_in_cell(cur_hf, cur_he);
 
-					if(cur_hf != InvalidHalfFaceHandle)
-						cur_hf = opposite_halfface_handle(cur_hf);
+                    if(cur_hf != InvalidHalfFaceHandle)
+                        cur_hf = opposite_halfface_handle(cur_hf);
 
-					// End when we're through
-					if(cur_hf == start_hf) break;
-				}
+                    // End when we're through
+                    if(cur_hf == start_hf) break;
+                }
 
-				// First direction has terminated
-				// If new_halffaces has the same size as old (unordered)
-				// vector of incident halffaces, we are done here
-				// If not, try the other way round
-				if(new_halffaces.size() != incident_hfs_per_he_[cur_he].size()) {
+                // First direction has terminated
+                // If new_halffaces has the same size as old (unordered)
+                // vector of incident halffaces, we are done here
+                // If not, try the other way round
+                if(new_halffaces.size() != incident_hfs_per_he_[cur_he].size()) {
 
-					// Get opposite of start halfface
-					cur_hf = start_hf;
+                    // Get opposite of start halfface
+                    cur_hf = start_hf;
 
-					 while(cur_hf != InvalidHalfFaceHandle) {
+                     while(cur_hf != InvalidHalfFaceHandle) {
 
-						 cur_hf = opposite_halfface_handle(cur_hf);
-						 cur_hf = adjacent_halfface_in_cell(cur_hf, cur_he);
+                         cur_hf = opposite_halfface_handle(cur_hf);
+                         cur_hf = adjacent_halfface_in_cell(cur_hf, cur_he);
 
-						 if(cur_hf == start_hf) break;
+                         if(cur_hf == start_hf) break;
 
-						 if(cur_hf != InvalidHalfFaceHandle)
-							 new_halffaces.insert(new_halffaces.begin(), cur_hf);
-						 else break;
-					}
-				}
+                         if(cur_hf != InvalidHalfFaceHandle)
+                             new_halffaces.insert(new_halffaces.begin(), cur_hf);
+                         else break;
+                    }
+                }
 
-				// Everything worked just fine, set the new ordered vector
-				if(new_halffaces.size() == incident_hfs_per_he_[cur_he].size()) {
-					incident_hfs_per_he_[cur_he] = new_halffaces;
-				}
-			}
-    	}
-    }
-
-
-    // Clear
-    boundary_faces_.clear();
-
-    // Get boundary faces
-    for(unsigned int i = 0; i < faces_.size(); ++i) {
-
-        if(incident_cell_per_hf_[halfface_handle(FaceHandle(i), 0)] == InvalidCellHandle ||
-           incident_cell_per_hf_[halfface_handle(FaceHandle(i), 1)] == InvalidCellHandle) {
-
-            // If at least one of two halffaces does not have an
-            // incident cell it is a boundary face
-            boundary_faces_.push_back(FaceHandle(i));
+                // Everything worked just fine, set the new ordered vector
+                if(new_halffaces.size() == incident_hfs_per_he_[cur_he].size()) {
+                    incident_hfs_per_he_[cur_he] = new_halffaces;
+                }
+            }
         }
     }
-
-    has_bottom_up_adjacencies_ = true;
 }
 
 //========================================================================================
@@ -957,12 +980,6 @@ void PolyhedralMesh<VecT>::garbage_collection(bool _preserveManifoldness) {
             FaceHandle fh(0);
             for(typename Faces::iterator f_it = faces_.begin(); f_it != faces_.end();) {
 
-                if(!status(fh).deleted()) {
-                    ++f_it;
-                    fh.idx(fh.idx() + 1);
-                    continue;
-                }
-
                 // Get half-faces
                 HalfFaceHandle hf0 = halfface_handle(fh, 0);
                 HalfFaceHandle hf1 = halfface_handle(fh, 1);
@@ -970,20 +987,23 @@ void PolyhedralMesh<VecT>::garbage_collection(bool _preserveManifoldness) {
                 // If neither of the half-faces is incident to a cell, delete face
                 if(incident_cell(hf0) == InvalidCellHandle && incident_cell(hf1) == InvalidCellHandle) {
 
-                    erase_face(f_it, fh, false);
+                    erase_face(f_it, fh, true);
+
+                    update_face_caches();
+
+                } else {
+                    ++f_it;
+                    fh.idx(fh.idx() + 1);
+                    continue;
                 }
             }
+
+            update_edge_caches();
 
             // Go over all edges and find those
             // whose half-edges are not incident to any half-face
             EdgeHandle eh(0);
             for(typename Edges::iterator e_it = edges_.begin(); e_it != edges_.end();) {
-
-                if(!status(eh).deleted()) {
-                    ++e_it;
-                    eh.idx(eh.idx() + 1);
-                    continue;
-                }
 
                 // Get half-edges
                 HalfEdgeHandle he0 = halfedge_handle(eh, 0);
@@ -994,26 +1014,39 @@ void PolyhedralMesh<VecT>::garbage_collection(bool _preserveManifoldness) {
                 HalfEdgeHalfFaceIter he1hf_it = hehf_iter(he1);
 
                 if(!he0hf_it.valid() && !he1hf_it.valid()) {
-                    erase_edge(e_it, eh, false);
+
+                    erase_edge(e_it, eh, true);
+
+                    update_edge_caches();
+
+                } else {
+                     ++e_it;
+                     eh.idx(eh.idx() + 1);
+                     continue;
                 }
             }
+
+            // Vertex caches have to be re-computed because the face/half-face
+            // indices have changed since the last deletions
+            update_vertex_caches();
 
             // Go over all vertices and find those
             // that are not incident to any edge
             VertexHandle vh(0);
             for(typename Vertices::iterator v_it = vertices_.begin(); v_it != vertices_.end();) {
 
-                if(!status(vh).deleted()) {
-                    ++v_it;
-                    vh.idx(vh.idx() + 1);
-                    continue;
-                }
-
                 // If neither of the half-edges is incident to a half-face, delete edge
                 VertexOHalfedgeIter voh_it = voh_iter(vh);
 
                 if(!voh_it.valid()) {
-                    erase_vertex(v_it, vh, false);
+                    erase_vertex(v_it, vh, true);
+
+                    update_vertex_caches();
+
+                } else {
+                     ++v_it;
+                     vh.idx(vh.idx() + 1);
+                     continue;
                 }
             }
 
@@ -1149,8 +1182,7 @@ void PolyhedralMesh<VecT>::erase_face(typename Faces::iterator& _f_it,
 //========================================================================================
 
 template <typename VecT>
-void PolyhedralMesh<VecT>::erase_cell(typename Cells::iterator& _c_it,
-                                      const CellHandle& _ch) {
+void PolyhedralMesh<VecT>::erase_cell(typename Cells::iterator& _c_it, const CellHandle& _ch) {
 
     _c_it = cells_.erase(_c_it);
 

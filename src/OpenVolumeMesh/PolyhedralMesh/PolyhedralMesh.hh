@@ -302,11 +302,24 @@ public:
     }
 
     //=====================================================================
-    // Public functions
+    // Access functions
     //=====================================================================
 
-    /// Build adjacency list in top-down-order
+    /// Build bottom-up adjacency list
     virtual void update_adjacencies();
+
+private:
+
+    // Build vertex cache for bottom-up adjacencies
+    void update_vertex_caches();
+
+    // Build vertex cache for bottom-up adjacencies
+    void update_edge_caches();
+
+    // Build vertex cache for bottom-up adjacencies
+    void update_face_caches();
+
+public:
 
     /// Add vertex
     virtual VertexHandle add_vertex(const VecT& _p);
@@ -660,13 +673,16 @@ public:
 private:
 
     /// Erase vertex from vector and correct edge handles
-    void erase_vertex(typename Vertices::iterator& _v_it, const VertexHandle& _vh, bool _fixHigherDim = true);
+    void erase_vertex(typename Vertices::iterator& _v_it, const VertexHandle& _vh,
+                      bool _fixHigherDim = true);
 
     /// Erase edge from vector and correct face handles
-    void erase_edge(typename Edges::iterator& _e_it, const EdgeHandle& _eh, bool _fixHigherDim = true);
+    void erase_edge(typename Edges::iterator& _e_it, const EdgeHandle& _eh,
+                    bool _fixHigherDim = true);
 
     /// Erase face from vector and correct cell handles
-    void erase_face(typename Faces::iterator& _f_it, const FaceHandle& _fh, bool _fixHigherDim = true);
+    void erase_face(typename Faces::iterator& _f_it, const FaceHandle& _fh,
+                    bool _fixHigherDim = true);
 
     /// Erase cell from vector
     void erase_cell(typename Cells::iterator& _c_it, const CellHandle& _ch);

@@ -33,7 +33,7 @@ if(GTEST_FOUND)
     
 	if ( NOT WIN32 )
 	  # Set compiler flags
-      set_target_properties(unittests PROPERTIES COMPILE_FLAGS "-Wall -Wuninitialized -Wunused -g -pedantic -ansi -Wno-long-long")
+      set_target_properties(unittests PROPERTIES COMPILE_FLAGS "-Wall -Wextra -Wuninitialized -Wunused -g -pedantic -ansi -Wno-long-long")
 	else()
 	  # Set compiler flags
       set_target_properties(unittests PROPERTIES COMPILE_FLAGS "" )
