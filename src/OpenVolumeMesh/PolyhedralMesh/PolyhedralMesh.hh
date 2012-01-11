@@ -583,30 +583,79 @@ public:
         return vertices.size();
     }
 
-    // Delete entities
+    /**
+     * \brief Delete a single vertex
+     *
+     * Note: The vertex is just marked as deleted.
+     * In order to really remove it from the mesh and
+     * memory, call garbage_collection()
+     *
+     * @param _vh A vertex's handle
+     */
     void delete_vertex(const VertexHandle& _vh) {
         if(!has_vertex_status_) request_vertex_status();
         status(_vh).set_deleted(true);
     }
 
+    /**
+     * \brief Delete a single edge
+     *
+     * Note: The edge is just marked as deleted.
+     * In order to really remove it from the mesh and
+     * memory, call garbage_collection()
+     *
+     * @param _eh An edge's handle
+     */
     void delete_edge(const EdgeHandle& _eh) {
         if(!has_edge_status_) request_edge_status();
         status(_eh).set_deleted(true);
     }
 
+    /**
+     * \brief Delete a single face
+     *
+     * Note: The face is just marked as deleted.
+     * In order to really remove it from the mesh and
+     * memory, call garbage_collection()
+     *
+     * @param _fh A face's handle
+     */
     void delete_face(const FaceHandle& _fh) {
         if(!has_face_status_) request_face_status();
         status(_fh).set_deleted(true);
     }
 
+    /**
+     * \brief Delete a single cell
+     *
+     * Note: The cell is just marked as deleted.
+     * In order to really remove it from the mesh and
+     * memory, call garbage_collection()
+     *
+     * @param _ch A cell's handle
+     */
     void delete_cell(const CellHandle& _ch) {
         if(!has_cell_status_) request_cell_status();
         status(_ch).set_deleted(true);
     }
 
-    // Really delete entities and reset handles in the
-    // respective higher dimensional entities
-    void garbage_collection();
+    /**
+     * \brief Delete all entities that have been marked as deleted
+     *
+     * This function deletes all entities that have been marked as deleted.
+     * It proceeds bottom-up, starting with the vertices. All higher
+     * dimensional entities that are incident to a deleted entity are
+     * automatically marked deleted, too. Once this first pass is through,
+     * one can additionally delete all resulting non-manifold configurations
+     * in a second pass (triggered by the parameter of this function).
+     * This step proceeds as follows: Delete all n-dimensional entities
+     * (starting with n = 2), that are not incident to at least one
+     * entity of dimension n + 1. Note that the second pass requires bottom-up
+     * adjacencies to be available. Compute them by calling update_adjacencies().
+     *
+     * @param _preserveManifoldness Pass true if the mesh is required to stay three-manifold
+     */
+    void garbage_collection(bool _preserveManifoldness = true);
 
     //=====================================================================
     // Additional properties

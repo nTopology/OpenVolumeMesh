@@ -27,12 +27,12 @@ if ( NOT ${PROJECT_NAME} MATCHES "OpenVolumeMesh")
 endif()
 
 if (WIN32)
-  # OpenVolumeMesh has no dll exports so we have to build a static library on windows
-  acg_add_library (OpenVolumeMesh STATIC ${sources} ${headers})
+    # OpenVolumeMesh has no dll exports so we have to build a static library on windows
+    acg_add_library (OpenVolumeMesh STATIC ${sources} ${headers})
 else ()
     acg_add_library (OpenVolumeMesh SHAREDANDSTATIC ${sources} ${headers})
     set_target_properties (OpenVolumeMesh PROPERTIES VERSION ${OPENVOLUMEMESH_VERSION_MAJOR}.${OPENVOLUMEMESH_VERSION_MINOR}
-                                               SOVERSION ${OPENVOLUMEMESH_VERSION_MAJOR}.${OPENVOLUMEMESH_VERSION_MINOR} )
+                                          SOVERSION ${OPENVOLUMEMESH_VERSION_MAJOR}.${OPENVOLUMEMESH_VERSION_MINOR} )
 endif ()
 
 # Only install if the project name matches OpenVolumeMesh.
