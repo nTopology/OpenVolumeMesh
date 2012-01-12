@@ -586,7 +586,7 @@ LAYOUT_FILE            =
 # of the bibliography can be controlled using LATEX_BIB_STYLE. To use this
 # feature you need bibtex and perl available in the search path.
 
-CITE_BIB_FILES         =
+CITE_BIB_FILES         = references.bib
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -683,7 +683,8 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = ../examples
+EXCLUDE                = ../examples \
+                         ../src/Unittests
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
