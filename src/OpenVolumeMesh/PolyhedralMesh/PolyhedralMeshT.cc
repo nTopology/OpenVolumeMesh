@@ -939,7 +939,7 @@ void PolyhedralMesh<VecT>::garbage_collection(bool _preserveManifoldness) {
             continue;
         }
 
-        erase_edge(e_it, eh, true);
+        erase_edge(e_it, eh);
     }
 
     FaceHandle fh(0);
@@ -951,7 +951,7 @@ void PolyhedralMesh<VecT>::garbage_collection(bool _preserveManifoldness) {
             continue;
         }
 
-        erase_face(f_it, fh, true);
+        erase_face(f_it, fh);
     }
 
     CellHandle ch(0);
@@ -987,7 +987,7 @@ void PolyhedralMesh<VecT>::garbage_collection(bool _preserveManifoldness) {
                 // If neither of the half-faces is incident to a cell, delete face
                 if(incident_cell(hf0) == InvalidCellHandle && incident_cell(hf1) == InvalidCellHandle) {
 
-                    erase_face(f_it, fh, true);
+                    erase_face(f_it, fh);
 
                     update_face_caches();
 
@@ -1015,7 +1015,7 @@ void PolyhedralMesh<VecT>::garbage_collection(bool _preserveManifoldness) {
 
                 if(!he0hf_it.valid() && !he1hf_it.valid()) {
 
-                    erase_edge(e_it, eh, true);
+                    erase_edge(e_it, eh);
 
                     update_edge_caches();
 
@@ -1039,7 +1039,7 @@ void PolyhedralMesh<VecT>::garbage_collection(bool _preserveManifoldness) {
                 VertexOHalfedgeIter voh_it = voh_iter(vh);
 
                 if(!voh_it.valid()) {
-                    erase_vertex(v_it, vh, true);
+                    erase_vertex(v_it, vh);
 
                     update_vertex_caches();
 
@@ -1061,8 +1061,7 @@ void PolyhedralMesh<VecT>::garbage_collection(bool _preserveManifoldness) {
 //========================================================================================
 
 template <typename VecT>
-void PolyhedralMesh<VecT>::erase_vertex(typename Vertices::iterator& _v_it,
-                                        const VertexHandle& _vh, bool _fixHigherDim) {
+void PolyhedralMesh<VecT>::erase_vertex(typename Vertices::iterator& _v_it, const VertexHandle& _vh) {
 
     _v_it = vertices_.erase(_v_it);
 
@@ -1097,8 +1096,7 @@ void PolyhedralMesh<VecT>::erase_vertex(typename Vertices::iterator& _v_it,
 //========================================================================================
 
 template <typename VecT>
-void PolyhedralMesh<VecT>::erase_edge(typename Edges::iterator& _e_it,
-                                      const EdgeHandle& _eh, bool _fixHigherDim) {
+void PolyhedralMesh<VecT>::erase_edge(typename Edges::iterator& _e_it, const EdgeHandle& _eh) {
 
     _e_it = edges_.erase(_e_it);
 
@@ -1140,8 +1138,7 @@ void PolyhedralMesh<VecT>::erase_edge(typename Edges::iterator& _e_it,
 //========================================================================================
 
 template <typename VecT>
-void PolyhedralMesh<VecT>::erase_face(typename Faces::iterator& _f_it,
-                                      const FaceHandle& _fh, bool _fixHigherDim) {
+void PolyhedralMesh<VecT>::erase_face(typename Faces::iterator& _f_it, const FaceHandle& _fh) {
 
     _f_it = faces_.erase(_f_it);
 
