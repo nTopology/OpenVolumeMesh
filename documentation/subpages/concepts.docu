@@ -53,6 +53,23 @@ Figure 2 illustrates this hierarchy.
 
 \subsection bottom_up The Bottom-Up Adjacency Relation
 
+In many cases, the adjacency list to higher dimensional entities for a given entity is
+required. Therefore, %OpenVolumeMesh offers the opportunity to explicitly compute
+the so-called \e bottom-up adjacencies. For this, %OpenVolumeMesh stores the
+following information for the respective entity type in additional caches:
+
+\li \b Vertex: A list of all outgoing half-edges.
+\li \b Half-Edge: An (ordered) list of all incident half-faces.
+\li \b Half-Face: The handle to an incident cell or none if it is a boundary half-face.
+
+The computation of this adjacency relations is performed in linear time complexity.
+Call function OpenVolumeMesh::PolyhedralMesh::update_adjacencies() after the
+topology of the mesh is completely initialized. Note that each time the topology
+of the mesh has changed, the bottom-up adjacencies have to be updates.
+Note also that most of the iterators and circulators rely on these adjacency lists.
+So, many of them do not work unless OpenVolumeMesh::PolyhedralMesh::update_adjacencies()
+is called.
+
 \section genericity Genericity
 
 

@@ -65,7 +65,6 @@ has_cell_status_(false) {
 
 //========================================================================================
 
-/// Build adjacency list in top-down-order
 template <typename VecT>
 void PolyhedralMesh<VecT>::update_adjacencies() {
 
