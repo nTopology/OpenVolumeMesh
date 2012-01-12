@@ -12,9 +12,11 @@ edges as a pair of so-called half-edges that have opposing orientations. Additio
 information is stored for each half-edge such that the navigation on the mesh can be completely
 accomplished by using only this local links to adjacent structures (similar to e.g. a linked list).
 This, of course, assumes the surface mesh to be two-manifold.
-
+ 
 The main concept of %OpenVolumeMesh is slightly different but shares some of its ideas with
-%OpenMesh. In %OpenVolumeMesh, all entities are stored in arrays (STL vectors) rather than
+%OpenMesh. In order to represent volumetric meshes (three-manifolds),
+%OpenVolumeMesh extends the set of entities by \e cells.
+In %OpenVolumeMesh, all entities are stored in arrays (STL vectors) rather than
 in adjacency linked lists. This has the major advantage that the data structure allows
 for configurations that are not three-manifold (since this is desired in some applications).
 For example, a set of vertices or just a two-manifold surface can be respresented by
