@@ -2,6 +2,69 @@
 
 \page concepts Concepts of OpenVolumeMesh
 
+\section halfedges From Half-Edges to Half-Faces
+
+The concepts of %OpenVolumeMesh are closely related to those of %OpenMesh (http://www.openmesh.org).
+For further reading on the concepts of %OpenMesh, refer to \cite Botsch02OpenMesh.
+%OpenMesh is used to handle two-manifold geometric meshes. For this purpose, it distinguishes
+between \e vertices, \e edges, and \e faces. The main idea in %OpenMesh is to represent the
+edges as a pair of so-called half-edges that have opposing orientations. Additional local adjacency
+information is stored for each half-edge such that the navigation on the mesh can be completely
+accomplished by using only this local links to adjacent structures (similar to e.g. a linked list).
+This, of course, assumes the surface mesh to be two-manifold.
+
+The main concept of %OpenVolumeMesh is slightly different but shares some of its ideas with
+%OpenMesh. In %OpenVolumeMesh, all entities are stored in arrays (STL vectors) rather than
+in adjacency linked lists. This has the major advantage that the data structure allows
+for configurations that are not three-manifold (since this is desired in some applications).
+For example, a set of vertices or just a two-manifold surface can be respresented by
+%OpenVolumeMesh as well as an entirely three-manifold tetrahedral mesh.
+In order to offer the possibility to locally navigate on the meshes, we carry over
+the idea of splitting edges into half-edges to the faces. This leads to the separation
+of the faces into a pair of so-called half-faces. Each of the half-faces has opposite
+orientation to its counter-part. The orientation of a half-face is uniquely determined
+by its incident half-edges. See Figure 1 for an illustration of this concept.
+
+\image html halfedge_halfface.png "Figure 1. Left: Two half-edges as in OpenMesh. Right: A face split into two half-faces."
+
+\section adjacencies Adjacency Relations
+
+The entities in %OpenVolumeMesh are arranged hierarchically and we distinguish between
+two adjacency relations:
+
+\li The (intrinsic) top-down adjacencies and
+\li the bottom-up adjacencies.
+
+\subsection top_down The Top-Down Adjacency Relation
+
+Each entity of dimension n is defined as a tuple of entities of dimension n-1,
+except for the vertices. So, edges are defined as a pair of vertices, (half-)faces are defined as
+a j-tuple of (half-)edges, where j is the valence of the face, and cells are defined
+as a k-tuple of (half-)faces, where k is the valence of the cell. This adjacency
+relation is intrinsically given by definition. %OpenVolumeMesh can use these
+adjacencies in order to provide \e top-down circulators, that is circulators
+that address all adjacent lower-dimensional entities of a given reference entity.
+Read more on iterators and circulators in Section \ref iterators_and_circulators. 
+Figure 2 illustrates this hierarchy.
+
+\image html volume_mesh_hierarchy.png "Figure 2. Each entity is defined as a tuple of lower-dimensional entities."
+
+\subsection bottom_up The Bottom-Up Adjacency Relation
+
+\section genericity Genericity
+
+
+
+
+
+
+
+
+
+
+
+
+
 See also \cite Botsch02OpenMesh and maybe \cite Ziegler2006LecturesOnPolytopes
 and maybe \cite Moebius2010OpenFlipper
 
