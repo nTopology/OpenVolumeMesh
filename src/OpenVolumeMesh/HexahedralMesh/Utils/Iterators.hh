@@ -57,7 +57,7 @@ class CellSheetCellIter : public BaseIterator<VecT,
 private:
 	typedef BaseIterator<VecT,
 			typename PolyhedralMesh<VecT>::CellHandle,
-			typename PolyhedralMesh<VecT>::CellHandle>        BaseIter;
+			typename PolyhedralMesh<VecT>::CellHandle>    BaseIter;
 	typedef typename PolyhedralMesh<VecT>::CellHandle     CellHandle;
 	typedef typename PolyhedralMesh<VecT>::HalfFaceHandle HalfFaceHandle;
 public:

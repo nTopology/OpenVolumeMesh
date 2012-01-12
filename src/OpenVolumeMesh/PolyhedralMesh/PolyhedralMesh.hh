@@ -122,11 +122,9 @@ class OpenVolumeMeshCell;
 /*
  * TODO:
  *
- * - Implement garbage collection
  * - Make vertex points, edges, faces, etc.
  * 	 be default properties
  * - Make status be a dynamic property for each entity
- * - Put all OpenVolumeMesh stuff into its own namespace
  */
 
 //***************************************************************************

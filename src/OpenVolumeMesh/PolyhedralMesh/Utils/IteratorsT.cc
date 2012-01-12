@@ -50,6 +50,28 @@
 namespace OpenVolumeMesh {
 
 //================================================================================================
+// BaseIterator
+//================================================================================================
+
+template <class VecT, class IH, class OH>
+BaseIterator<VecT,IH,OH>::BaseIterator(const PolyhedralMesh<VecT>* _mesh, const IH& _ih, const OH& _ch) :
+        valid_(true), cur_handle_(_ch), ref_handle_(_ih), mesh_(_mesh) {
+
+}
+
+template <class VecT, class IH, class OH>
+BaseIterator<VecT,IH,OH>::BaseIterator(const PolyhedralMesh<VecT>* _mesh, const IH& _ih) :
+        valid_(true), ref_handle_(_ih), mesh_(_mesh) {
+
+}
+
+template <class VecT, class IH, class OH>
+BaseIterator<VecT,IH,OH>::BaseIterator(const PolyhedralMesh<VecT>* _mesh) :
+        valid_(true), mesh_(_mesh) {
+
+}
+
+//================================================================================================
 // VertexOHalfedgeIter
 //================================================================================================
 
