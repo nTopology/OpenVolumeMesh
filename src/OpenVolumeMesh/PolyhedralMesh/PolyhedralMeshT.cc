@@ -927,7 +927,7 @@ void PolyhedralMesh<VecT>::garbage_collection(bool _preserveManifoldness) {
             continue;
         }
 
-        erase_vertex(v_it, vh, true);
+        erase_vertex(v_it, vh);
     }
 
     EdgeHandle eh(0);
