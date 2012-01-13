@@ -44,6 +44,7 @@
 #define FILEMANAGER_HH_
 
 #include <string>
+#include <fstream>
 
 namespace OpenVolumeMesh {
 
@@ -106,6 +107,22 @@ public:
    * \brief Test whether given file contains a hexahedral mesh
    */
   bool isHexahedralMesh(const std::string& _filename) const;
+
+private:
+
+  // Remove leading and trailing whitespaces
+  void trimString(std::string& _string) const;
+
+  // Get quoted text out of a string
+  void extractQuotedText(std::string& _string) const;
+
+  // Get a whole line from file
+  bool getCleanLine(std::istream& ifs, std::string& _string, bool _skipEmptyLines = true) const;
+
+  // Add and initialize property
+  template<class MeshT, class PropHandleT, typename PropT, typename IterT>
+  void initializeProperty(std::ifstream& _iff, MeshT& _mesh, const std::string& _s_tmp,
+                          const IterT& _begin, const IterT& _end) const;
 };
 
 } // Namespace IO

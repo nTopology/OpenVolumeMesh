@@ -2,4 +2,124 @@
 
 \page file_format File Format
 
+%OpenVolumeMesh comes with a file format specification
+that is implemented in the OpenVolumeMesh::IO::FileManager class.
+As for now, the file format only supports plain text, but a support
+for binary files is planned. Also the data type for vertices is restricted
+to OpenVolumeMesh::Geometry::Vec3d and the serialization of the
+properties is restricted to integral types for the moment.
+A full generic support is also planned for the future. Find the
+file format specification below.
+
+\section file_spec File Format Specification
+
+\verbatim
+OVM ASCII           # File header indicating whether data is
+                    # coded as plain text or binary
+Vertices            # Indicate that all vertices are listed below
+n_v                 # The total number of vertices (>= 0)
+x_1 y_1 z_1         # Coordinate of the first vertex
+...
+x_n y_n z_n         # Coordinate of the n_v'th vertex
+                    # == Optional: ========================
+Property "name"     # A vertex property's name
+type                # The property's data type: Only integral
+                    # types (bool, int, float, double, string)
+p_1                 # Property value for the first vertex
+...
+p_n                 # Property value for the last vertex
+                    # Other properties may follow using
+                    # the same scheme
+                    # =====================================
+Edges               # Indicate that edges are specified below
+n_e                 # The total number of edges (>= 0)
+vs_1 vt_1           # First edge's source vertex index followed
+...                 # by the first edge's target vertex index  
+vs_n vt_n           # Last edge's source and target vertices
+                    # == Optional: ========================
+Property "name"     # The same as for vertices
+...                 # =====================================
+Faces               # Indicate that faces are specified below
+n_f                 # The total number of faces (>= 0)
+d he1_1 ... hed_1   # The first face's valence followed by its
+...                 # incident half-edges' indices
+d he1_n ... hed_n   # Last face's definition
+                    # == Optional: ========================
+Property "name"     # The same as for vertices
+...                 # =====================================
+Polyhedra           # Indicates that polyhedra are specified below
+n_c                 # The total number of cells (>= 0)
+d hf1_1 ... hfd_1   # The first polyhedron's valence followed
+...                 # by its incident half-faces' indices
+d hf1_n ... hfd_n   # The last polyhedron's definition
+                    # == Optional: ========================
+Property "name"     # The same as for vertices
+...                 # =====================================
+\endverbatim
+
+\section file_example A Simple Example File
+
+\verbatim
+OVM ASCII
+Vertices
+8
+-1.0 -1.0 -1.0
+1.0 -1.0 -1.0
+1.0 1.0 -1.0
+-1.0 1.0 -1.0
+-1.0 -1.0 1.0
+1.0 -1.0 1.0
+1.0 1.0 1.0
+-1.0 1.0 1.0
+Property "Vertex Weights"
+float
+1.363
+6.334
+2.766
+8.348
+4.214
+2.136
+7.114
+0.651
+Edges
+12
+0 1
+1 2
+2 3
+3 0
+4 5
+5 6
+6 7
+7 4
+0 4
+1 5
+2 6
+3 7
+Property "Edge Tag"
+bool
+1
+1
+0
+1
+1
+0
+0
+1
+0
+0
+1
+1
+Faces
+6
+4 0 2 4 6
+4 8 10 12 14
+4 18 10 21 3
+4 16 15 23 6
+4 20 12 22 4
+4 0 18 9 17
+Polyhedra
+1
+6 1 2 5 6 9 10
+\endverbatim
+
 **/

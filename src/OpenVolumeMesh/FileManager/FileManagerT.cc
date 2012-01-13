@@ -42,13 +42,17 @@
 
 #define FILEMANAGERT_CC
 
-#include <OpenVolumeMesh/Geometry/VectorT.hh>
-
-#include "FileManager.hh"
-
-#include <fstream>
 #include <vector>
 #include <iostream>
+#include <sstream>
+#include <algorithm>
+#include <cctype>
+#include <typeinfo>
+
+#include <OpenVolumeMesh/Geometry/VectorT.hh>
+#include <OpenVolumeMesh/PolyhedralMesh/PolyhedralMesh.hh>
+
+#include "FileManager.hh"
 
 namespace OpenVolumeMesh {
 
@@ -68,134 +72,564 @@ FileManager::~FileManager() {
 
 //==================================================
 
+void FileManager::trimString(std::string& _string) const {
+
+    // Trim Both leading and trailing spaces
+    size_t start = _string.find_first_not_of(" \t\r\n");
+    size_t end = _string.find_last_not_of(" \t\r\n");
+
+    if((std::string::npos == start) || (std::string::npos == end)) {
+        _string = "";
+    } else {
+        _string = _string.substr(start, end - start + 1);
+    }
+}
+
+//==================================================
+
+void FileManager::extractQuotedText(std::string& _string) const {
+
+    // Trim Both leading and trailing quote marks
+    size_t start = _string.find_first_of("\""); ++start;
+    size_t end = _string.find_last_not_of("\"");
+
+    if((std::string::npos == start) || (std::string::npos == end)) {
+        _string = "";
+    } else {
+        _string = _string.substr(start, end - start + 1);
+    }
+}
+
+//==================================================
+
+bool FileManager::getCleanLine(std::istream& _ifs, std::string& _string, bool _skipEmptyLines) const {
+
+    // While we are not at the end of the file
+    while(true) {
+
+        // Get the current line:
+        std::getline(_ifs, _string);
+
+        // Remove whitespace at beginning and end
+        trimString(_string);
+
+        // Check if string is not empty ( otherwise we continue
+        if(_string.size() != 0) {
+
+            // Check if string is a comment ( starting with # )
+            if(_string[0] != '#') {
+                return true;
+            }
+
+        } else {
+            if(!_skipEmptyLines)
+                return true;
+        }
+
+        if(_ifs.eof()) {
+            std::cerr << "End of file reached while searching for input!" << std::endl;
+            return false;
+        }
+    }
+
+    return false;
+}
+
+//==================================================
+
 template <class MeshT>
 bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     bool _topologyCheck, bool _computeBottomUpAdjacencies, bool _computeFaceNormals) const {
 
-  // found edges in file
-  bool edges_in_file = false;
+    std::ifstream iff(_filename.c_str(), std::ios::in);
 
-  typedef typename MeshT::Vertex Vertex;
-  _mesh.clear();
-
-  std::ifstream iff(_filename.c_str(), std::ios::in);
-
-  if(!iff.good()) {
-    std::cerr << "Error: Could not open file " << _filename << " for reading!" << std::endl;
-    iff.close();
-    return false;
-  }
-
-  std::string s;
-
-  // read header
-  iff >> s;
-  if (s != "Vertices") {
-    std::cerr << "Error reading OpenVolumeMesh file: Vertex section failed!" << std::endl;
-    iff.close();
-    return false;
-  }
-
-  // read vertices
-  int nv = 0;
-  iff >> nv;
-  for (int i = 0; i < nv; ++i) {
-    double x, y, z;
-    iff >> x;
-    iff >> y;
-    iff >> z;
-
-    Vec3d v(x, y, z);
-    _mesh.add_vertex(v);
-  }
-
-  iff >> s;
-  if (s != "Edges") {
-    std::cerr << "No edges found!" << std::endl;
-  } else {
-    edges_in_file = true;
-    int ne = 0;
-    iff >> ne;
-    for (int e = 0; e < ne; ++e) {
-      int v1 = 0;
-      int v2 = 0;
-      iff >> v1;
-      iff >> v2;
-      _mesh.add_edge(typename MeshT::VertexHandle(v1), typename MeshT::VertexHandle(v2));
-    }
-  }
-
-  if (edges_in_file) {
-    iff >> s;
-  }
-
-  if (s != "Faces") {
-    std::cerr << "Error reading OpenVolumeMesh file: Face section failed!" << std::endl;
-    iff.close();
-    return false;
-  }
-
-  // Read halfface indices
-  int nf = 0;
-  iff >> nf;
-  for (int f = 0; f < nf; ++f) {
-    int nfhe;
-    iff >> nfhe;
-    std::vector<typename MeshT::HalfEdgeHandle> hes;
-    for (int he = 0; he < nfhe; ++he) {
-      int i;
-      iff >> i;
-      hes.push_back(i);
+    if(!iff.good()) {
+        std::cerr << "Error: Could not open file " << _filename << " for reading!" << std::endl;
+        iff.close();
+        return false;
     }
 
-    _mesh.add_face(hes, _topologyCheck);
-  }
+    std::stringstream sstr;
+    std::string line;
+    std::string s_tmp;
+    unsigned int c = 0u;
+    typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
+    Vec3d v = Vec3d(0.0, 0.0, 0.0);
+    unsigned int v1 = 0; unsigned int v2 = 0;
 
-  // Read faces and find the respective halffaces
-  iff >> s;
-  if (s != "Polyhedra") {
-    std::cerr << "Error reading OpenVolumeMesh file: Polyhedra section failed!" << std::endl;
-    iff.close();
-    return false;
-  }
+    /*
+     * Header
+     */
 
-  // Just read the specified halffaces
-  int nc = 0;
-  iff >> nc;
-  for (int c = 0; c < nc; ++c) {
+    // Get first line
+    getCleanLine(iff, line);
+    sstr.str(line);
 
-    int nhf;
-    iff >> nhf;
-    std::vector<typename MeshT::HalfFaceHandle> hfs;
-    for (int hf = 0; hf < nhf; ++hf) {
-      int i;
-      iff >> i;
-      hfs.push_back(i);
+    // Check header
+    sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    if(s_tmp != "OVM") {
+        iff.close();
+        std::cerr << "The specified file is not in OpenVolumeMesh format!" << std::endl;
+        return false;
     }
 
-    _mesh.add_cell(hfs, _topologyCheck);
-  }
+    // Get ASCII/BINARY string
+    sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    if(s_tmp == "BINARY") {
+        iff.close();
+        std::cerr << "Binary files are not supported at the moment!" << std::endl;
+        return false;
+    }
 
-  iff.close();
+    /*
+     * Vertices
+     */
+    getCleanLine(iff, line);
+    sstr.clear();
+    sstr.str(line);
 
-  // Compute top-down-adjacencies
-  if(_computeBottomUpAdjacencies) {
-    _mesh.update_adjacencies();
-  }
+    sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    if(s_tmp != "VERTICES") {
+        iff.close();
+        std::cerr << "No vertex section defined!" << std::endl;
+        return false;
+    } else {
 
-  // Compute face normals
-  if(_computeFaceNormals) {
-    _mesh.request_face_normals();
-  }
+        // Read in number of vertices
+        getCleanLine(iff, line);
+        sstr.clear();
+        sstr.str(line);
+        sstr >> c;
 
-  std::cerr << "######## openvolumemesh info #########" << std::endl;
-  std::cerr << "#vertices: " << _mesh.n_vertices() << std::endl;
-  std::cerr << "#edges:    " << _mesh.n_edges() << std::endl;
-  std::cerr << "#faces:    " << _mesh.n_faces() << std::endl;
-  std::cerr << "#cells:    " << _mesh.n_cells() << std::endl;
-  std::cerr << "######################################" << std::endl;
+        // Read in vertices
+        for(unsigned int i = 0u; i < c; ++i) {
 
-  return true;
+            getCleanLine(iff, line);
+            sstr.clear();
+            sstr.str(line);
+            sstr >> v[0];
+            sstr >> v[1];
+            sstr >> v[2];
+            _mesh.add_vertex(v);
+        }
+    }
+
+    getCleanLine(iff, line);
+    sstr.clear();
+    sstr.str(line);
+
+    // Check for properties
+    sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    if(s_tmp == "PROPERTY") {
+
+        s_tmp = sstr.str();
+        extractQuotedText(s_tmp);
+
+        std::string type;
+        getCleanLine(iff, line);
+        sstr.clear();
+        sstr.str(line);
+
+        sstr >> type;
+
+        // Add and initialize property
+        if(type == "int") {
+            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<int>, int, typename MeshT::VertexIter>
+            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
+        } else if(type == "unsigned int") {
+            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<unsigned int>, unsigned int, typename MeshT::VertexIter>
+            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
+        } else if(type == "float") {
+            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<float>, float, typename MeshT::VertexIter>
+            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
+        } else if(type == "double") {
+            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<double>, double, typename MeshT::VertexIter>
+            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
+        } else if(type == "char") {
+            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<char>, char, typename MeshT::VertexIter>
+            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
+        } else if(type == "unsigned char") {
+            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<unsigned char>, unsigned char, typename MeshT::VertexIter>
+            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
+        } else if(type == "bool") {
+            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<bool>, bool, typename MeshT::VertexIter>
+            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
+        } else if(type == "string") {
+            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<std::string>, std::string, typename MeshT::VertexIter>
+            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
+        } else {
+            std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
+
+            // Skip number of vertices lines
+            for(typename MeshT::VertexIter it = _mesh.vertices_begin(); it != _mesh.vertices_end(); ++it) {
+                getCleanLine(iff, line);
+            }
+        }
+
+        // Get next line (edge header)
+        getCleanLine(iff, line);
+        sstr.clear();
+        sstr.str(line);
+
+    } else {
+
+        // Reset stream to whole line
+        sstr.str(line);
+    }
+
+    /*
+     * Edges
+     */
+    sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    if(s_tmp != "EDGES") {
+        iff.close();
+        std::cerr << "No edge section defined!" << std::endl;
+        return false;
+    } else {
+
+        // Read in number of edges
+        getCleanLine(iff, line);
+        sstr.clear();
+        sstr.str(line);
+        sstr >> c;
+
+        // Read in edges
+        for(unsigned int i = 0u; i < c; ++i) {
+
+            getCleanLine(iff, line);
+            sstr.clear();
+            sstr.str(line);
+            sstr >> v1;
+            sstr >> v2;
+            _mesh.add_edge(typename MeshT::VertexHandle(v1), typename MeshT::VertexHandle(v2));
+        }
+    }
+
+    getCleanLine(iff, line);
+    sstr.clear();
+    sstr.str(line);
+
+    // Check for properties
+    sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    if(s_tmp == "PROPERTY") {
+
+        s_tmp = sstr.str();
+        extractQuotedText(s_tmp);
+
+        std::string type;
+        getCleanLine(iff, line);
+        sstr.clear();
+        sstr.str(line);
+
+        sstr >> type;
+
+        // Add and initialize property
+        if(type == "int") {
+            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<int>, int, typename MeshT::EdgeIter>
+            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
+        } else if(type == "unsigned int") {
+            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<unsigned int>, unsigned int, typename MeshT::EdgeIter>
+            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
+        } else if(type == "float") {
+            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<float>, float, typename MeshT::EdgeIter>
+            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
+        } else if(type == "double") {
+            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<double>, double, typename MeshT::EdgeIter>
+            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
+        } else if(type == "char") {
+            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<char>, char, typename MeshT::EdgeIter>
+            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
+        } else if(type == "unsigned char") {
+            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<unsigned char>, unsigned char, typename MeshT::EdgeIter>
+            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
+        } else if(type == "bool") {
+            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<bool>, bool, typename MeshT::EdgeIter>
+            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
+        } else if(type == "string") {
+            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<std::string>, std::string, typename MeshT::EdgeIter>
+            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
+        } else {
+            std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
+
+            // Skip number of edges lines
+            for(typename MeshT::EdgeIter it = _mesh.edges_begin(); it != _mesh.edges_end(); ++it) {
+                getCleanLine(iff, line);
+            }
+        }
+
+        // Get next line (face header)
+        getCleanLine(iff, line);
+        sstr.clear();
+        sstr.str(line);
+
+    } else {
+
+        // Reset stream to whole line
+        sstr.str(line);
+    }
+
+    /*
+     * Faces
+     */
+    sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    if(s_tmp != "FACES") {
+        iff.close();
+        std::cerr << "No face section defined!" << std::endl;
+        return false;
+    } else {
+
+        // Read in number of faces
+        getCleanLine(iff, line);
+        sstr.clear();
+        sstr.str(line);
+        sstr >> c;
+
+        // Read in faces
+        for(unsigned int i = 0u; i < c; ++i) {
+
+            getCleanLine(iff, line);
+            sstr.clear();
+            sstr.str(line);
+
+            std::vector<typename MeshT::HalfEdgeHandle> hes;
+
+            // Get face valence
+            unsigned int val = 0u;
+            sstr >> val;
+
+            // Read half-edge indices
+            for(unsigned int e = 0; e < val; ++e) {
+                sstr >> v1;
+                hes.push_back(typename MeshT::HalfEdgeHandle(v1));
+            }
+
+            _mesh.add_face(hes, _topologyCheck);
+        }
+    }
+
+    getCleanLine(iff, line);
+    sstr.clear();
+    sstr.str(line);
+
+    // Check for properties
+    sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    if(s_tmp == "PROPERTY") {
+
+        s_tmp = sstr.str();
+        extractQuotedText(s_tmp);
+
+        std::string type;
+        getCleanLine(iff, line);
+        sstr.clear();
+        sstr.str(line);
+
+        sstr >> type;
+
+        // Add and initialize property
+        if(type == "int") {
+            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<int>, int, typename MeshT::FaceIter>
+            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
+        } else if(type == "unsigned int") {
+            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<unsigned int>, unsigned int, typename MeshT::FaceIter>
+            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
+        } else if(type == "float") {
+            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<float>, float, typename MeshT::FaceIter>
+            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
+        } else if(type == "double") {
+            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<double>, double, typename MeshT::FaceIter>
+            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
+        } else if(type == "char") {
+            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<char>, char, typename MeshT::FaceIter>
+            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
+        } else if(type == "unsigned char") {
+            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<unsigned char>, unsigned char, typename MeshT::FaceIter>
+            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
+        } else if(type == "bool") {
+            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<bool>, bool, typename MeshT::FaceIter>
+            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
+        } else if(type == "string") {
+            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<std::string>, std::string, typename MeshT::FaceIter>
+            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
+        } else {
+            std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
+
+            // Skip number of faces lines
+            for(typename MeshT::FaceIter it = _mesh.faces_begin(); it != _mesh.faces_end(); ++it) {
+                getCleanLine(iff, line);
+            }
+        }
+
+        // Get next line (cell header)
+        getCleanLine(iff, line);
+        sstr.clear();
+        sstr.str(line);
+
+    } else {
+
+        // Reset stream to whole line
+        sstr.str(line);
+    }
+
+    /*
+     * Cells
+     */
+    sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    if(s_tmp != "POLYHEDRA") {
+        iff.close();
+        std::cerr << "No polyhedra section defined!" << std::endl;
+        return false;
+    } else {
+
+        // Read in number of cells
+        getCleanLine(iff, line);
+        sstr.clear();
+        sstr.str(line);
+        sstr >> c;
+
+        // Read in cells
+        for(unsigned int i = 0u; i < c; ++i) {
+
+            getCleanLine(iff, line);
+            sstr.clear();
+            sstr.str(line);
+
+            std::vector<typename MeshT::HalfFaceHandle> hfs;
+
+            // Get cell valence
+            unsigned int val = 0u;
+            sstr >> val;
+
+            // Read half-face indices
+            for(unsigned int f = 0; f < val; ++f) {
+                sstr >> v1;
+                hfs.push_back(typename MeshT::HalfFaceHandle(v1));
+            }
+
+            _mesh.add_cell(hfs, _topologyCheck);
+        }
+    }
+
+    if(!iff.eof()) {
+
+        getCleanLine(iff, line);
+        sstr.clear();
+        sstr.str(line);
+
+        if(!iff.eof()) {
+
+            // Check for properties
+            sstr >> s_tmp;
+            std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+            if(s_tmp == "PROPERTY") {
+
+                s_tmp = sstr.str();
+                extractQuotedText(s_tmp);
+
+                std::string type;
+                getCleanLine(iff, line);
+                sstr.clear();
+                sstr.str(line);
+
+                sstr >> type;
+
+                // Add and initialize property
+                if(type == "int") {
+                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<int>, int, typename MeshT::CellIter>
+                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
+                } else if(type == "unsigned int") {
+                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<unsigned int>, unsigned int, typename MeshT::CellIter>
+                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
+                } else if(type == "float") {
+                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<float>, float, typename MeshT::CellIter>
+                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
+                } else if(type == "double") {
+                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<double>, double, typename MeshT::CellIter>
+                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
+                } else if(type == "char") {
+                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<char>, char, typename MeshT::CellIter>
+                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
+                } else if(type == "unsigned char") {
+                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<unsigned char>, unsigned char, typename MeshT::CellIter>
+                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
+                } else if(type == "bool") {
+                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<bool>, bool, typename MeshT::CellIter>
+                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
+                } else if(type == "string") {
+                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<std::string>, std::string, typename MeshT::CellIter>
+                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
+                } else {
+                    std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
+
+                    // Skip number of cells lines
+                    for(typename MeshT::CellIter it = _mesh.cells_begin(); it != _mesh.cells_end(); ++it) {
+                        getCleanLine(iff, line);
+                    }
+                }
+
+                // Get next line (cell header)
+                getCleanLine(iff, line);
+                sstr.clear();
+                sstr.str(line);
+
+            }
+        }
+    }
+
+    iff.close();
+
+    // Compute top-down-adjacencies
+    if(_computeBottomUpAdjacencies) {
+        _mesh.update_adjacencies();
+    }
+
+    // Compute face normals
+    if(_computeFaceNormals) {
+        _mesh.request_face_normals();
+    }
+
+    std::cerr << "######## openvolumemesh info #########" << std::endl;
+    std::cerr << "#vertices: " << _mesh.n_vertices() << std::endl;
+    std::cerr << "#edges:    " << _mesh.n_edges() << std::endl;
+    std::cerr << "#faces:    " << _mesh.n_faces() << std::endl;
+    std::cerr << "#cells:    " << _mesh.n_cells() << std::endl;
+    std::cerr << "######################################" << std::endl;
+
+    return true;
+}
+
+//==================================================
+
+template<class MeshT, class PropHandleT, typename PropT, typename IterT>
+void FileManager::initializeProperty(std::ifstream& _iff, MeshT& _mesh, const std::string& _s_tmp,
+                                     const IterT& _begin, const IterT& _end) const {
+
+    std::string line;
+    std::stringstream sstr;
+
+    PropHandleT handle;
+    _mesh.add_property(handle, _s_tmp);
+
+    PropT c;
+
+    IterT it = _begin;
+    for(; it != _end; ++it) {
+
+        getCleanLine(_iff, line);
+        sstr.clear();
+        sstr.str(line);
+        sstr >> c;
+
+        _mesh.property(handle, *it) = c;
+    }
 }
 
 //==================================================

@@ -94,7 +94,7 @@ void SomeClass::someFunction() {
   ...
 
   // Our two-dimensional integer vector class
-  typedef OpenVolumeMesh::Vec2ui Vec2ui;
+  typedef OpenVolumeMesh::Geometry::Vec2ui Vec2ui;
 
   // Vec2ui stands for "two-dimensional vector of unsigned integers"
 
@@ -125,7 +125,7 @@ void SomeClass::someFunction {
   ...
 
   // Create mesh
-  typedef OpenVolumeMesh::Vec3d Vec3d;
+  typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
   OpenVolumeMesh::PolyhedralMesh< Vec3d > myMesh;
 
   // Fill mesh
