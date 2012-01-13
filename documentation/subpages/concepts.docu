@@ -65,26 +65,15 @@ following information for the respective entity type in additional caches:
 The computation of this adjacency relations is performed in linear time complexity.
 Call function OpenVolumeMesh::PolyhedralMesh::update_adjacencies() after the
 topology of the mesh is completely initialized. Note that each time the topology
-of the mesh has changed, the bottom-up adjacencies have to be updates.
-Note also that most of the iterators and circulators rely on these adjacency lists.
-So, many of them do not work unless OpenVolumeMesh::PolyhedralMesh::update_adjacencies()
+of the mesh has changed, the bottom-up adjacencies have to be updated.
+Note also that most of the iterators and circulators rely on these adjacency lists,
+so, many of them do not work unless OpenVolumeMesh::PolyhedralMesh::update_adjacencies()
 is called.
 
 \section genericity Genericity
 
-
-
-
-
-
-
-
-
-
-
-
-
-See also \cite Botsch02OpenMesh and maybe \cite Ziegler2006LecturesOnPolytopes
-and maybe \cite Moebius2010OpenFlipper
+The %OpenVolumeMesh library is designed to be as generic as possible. So, at one hand,
+the developer can choose the vector space into which a mesh is embedded. For example,
+most instances require their vertices being elements of \f$\mathbb{R}^3\f$.
 
 **/
