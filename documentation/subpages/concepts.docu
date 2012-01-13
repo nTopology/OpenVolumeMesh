@@ -72,8 +72,97 @@ is called.
 
 \section genericity Genericity
 
+\subsection generic_embedding Generic Embedding
+
 The %OpenVolumeMesh library is designed to be as generic as possible. So, at one hand,
 the developer can choose the vector space into which a mesh is embedded. For example,
 most instances require their vertices being elements of \f$\mathbb{R}^3\f$.
+But in some cases, one might want e.g. two-dimensional integer coordinates,
+so elements in \f$\mathbb{N}_0^2\f$. In %OpenVolumeMesh, the embedded vector
+type can be specified as template parameter. The libraray is shipped with a vector
+class that also specifies all necessary operations on vectors (such as dot- and cross-product,
+several norms, etc.). The most common vector types are predefined in VectorT.hh.
+So, let's say we want to create a polyhedral mesh whose vertices are elements of
+\f$\mathbb{N}_0^2\f$. We use the following code:
+
+\code
+#include <OpenVolumeMesh/Geometry/VectorT.hh>
+#include <OpenVolumeMesh/PolyhedralMesh/PolyhedralMesh.hh>
+
+void SomeClass::someFunction() {
+
+  ...
+
+  // Our two-dimensional integer vector class
+  typedef OpenVolumeMesh::Vec2ui Vec2ui;
+
+  // Vec2ui stands for "two-dimensional vector of unsigned integers"
+
+  // Our mesh using Vec2ui as vector type
+  OpenVolumeMesh::PolyhedralMesh< Vec2ui > myMesh;
+
+  ...
+
+}
+\endcode
+
+\subsection generic_properties Generic Properties
+
+Similar to the %OpenMesh data structure, it is possible to attach multiple properties
+to any of the entities in %OpenVolumeMesh. The underlying property container class makes
+use of C++ template programming concepts in order to allow the encapsulated property data
+to be of any data type. Let's assume, we want to attach a label to the vertices and
+some real valued weight to the edges of a mesh. Consider the following code:
+
+\code
+#include <string>
+
+#include <OpenVolumeMesh/Geometry/VectorT.hh>
+#include <OpenVolumeMesh/PolyhedralMesh/PolyhedralMesh.hh>
+
+void SomeClass::someFunction {
+
+  ...
+
+  // Create mesh
+  typedef OpenVolumeMesh::Vec3d Vec3d;
+  OpenVolumeMesh::PolyhedralMesh< Vec3d > myMesh;
+
+  // Fill mesh
+  ...
+
+  // Attach label property (data type std::string) to the mesh
+  OpenVolumeMesh::VPropHandleT< std::string > label;
+  myMesh.add_property(label, "LabelProperty");
+
+  // Fill property values
+  for(OpenVolumeMesh::PolyhedralMesh< Vec3d >::VertexIter v_it = myMesh.vertices_begin();
+        v_it != myMesh.vertices_end(); ++v_it) {
+
+    // Assign same label to each vertex
+    myMesh.property(label, *v_it) = "My Label";
+  }
+  
+  // Now, attach weight property (data type float) to the mesh
+  OpenVolumeMesh::EPropHandleT< float > weight;
+  myMesh.add_property(weight, "EdgeWeightProperty");
+
+  // Fill property values
+  for(OpenVolumeMesh::PolyhedralMesh< Vec3d >::EdgeIter e_it = myMesh.edges_begin();
+        e_it != myMesh.edges_end(); ++e_it) {
+
+    // Assign same weight to each edge
+    myMesh.property(weight, *e_it) = 3.14f;
+  }
+
+  // Finally, remove properties from the mesh
+  myMesh.remove_property(label);
+  myMesh.remove_property(weight);
+
+  ...
+}
+\endcode
+
+This, of course, also works for all half-entities (half-edges and half-faces).
 
 **/
