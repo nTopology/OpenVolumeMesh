@@ -41,6 +41,11 @@ TEST_F(PolyhedralMeshBase, LoadFileWithProps) {
   EXPECT_EQ(12u, mesh_.n_edges());
   EXPECT_EQ(6u, mesh_.n_faces());
   EXPECT_EQ(1u, mesh_.n_cells());
+
+  EXPECT_EQ(1u, mesh_.n_vprops());
+  EXPECT_EQ(1u, mesh_.n_eprops());
+  EXPECT_EQ(0u, mesh_.n_fprops());
+  EXPECT_EQ(0u, mesh_.n_cprops());
 }
 
 #endif // INCLUDE GUARD
