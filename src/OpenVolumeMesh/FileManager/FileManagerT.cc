@@ -936,6 +936,10 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
     off << v[0] << " " << v[1] << " " << v[2] << std::endl;
   }
 
+  // Write vertex props
+  writePropertySection<typename MeshT::const_prop_iterator>
+                      (off, "Vertex_Property", _mesh.vprops_begin(), _mesh.vprops_end());
+
   unsigned int n_edges(_mesh.n_edges());
   off << "Edges" << std::endl;
   off << n_edges << std::endl;
@@ -947,6 +951,13 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
     typename MeshT::VertexHandle to_vertex = _mesh.edge(*e_it).to_vertex();
     off << from_vertex << " " << to_vertex << std::endl;
   }
+
+  // Write edge props
+  writePropertySection<typename MeshT::const_prop_iterator>
+                      (off, "Edge_Property", _mesh.eprops_begin(), _mesh.eprops_end());
+  // Write half-edge props
+  writePropertySection<typename MeshT::const_prop_iterator>
+                      (off, "HalfEdge_Property", _mesh.heprops_begin(), _mesh.heprops_end());
 
   unsigned int n_faces(_mesh.n_faces());
   off << "Faces" << std::endl;
@@ -971,6 +982,13 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
     off << std::endl;
   }
 
+  // Write face props
+  writePropertySection<typename MeshT::const_prop_iterator>
+                      (off, "Face_Property", _mesh.fprops_begin(), _mesh.fprops_end());
+  // Write half-face props
+  writePropertySection<typename MeshT::const_prop_iterator>
+                      (off, "HalfFace_Property", _mesh.hfprops_begin(), _mesh.hfprops_end());
+
   unsigned int n_cells(_mesh.n_cells());
   off << "Polyhedra" << std::endl;
   off << n_cells << std::endl;
@@ -993,9 +1011,87 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
     off << std::endl;
   }
 
+  // Write polyhedron props
+  writePropertySection<typename MeshT::const_prop_iterator>
+                      (off, "Polyhedron_Property", _mesh.cprops_begin(), _mesh.cprops_end());
+
   off.close();
 
   return true;
+}
+
+//==================================================
+
+template<typename PropIterT>
+void FileManager::writePropertySection(std::ofstream& _ofs, const std::string& _identifier,
+                            const PropIterT& _begin, const PropIterT& _end) const {
+
+    for(PropIterT it = _begin; it != _end; ++it) {
+
+        // Write property header
+        _ofs << _identifier << " \"" << (*it)->name() << "\"" << std::endl;
+
+        typedef OpenVolumeMeshPropertyT<int> P_I;
+        typedef OpenVolumeMeshPropertyT<unsigned int> P_UI;
+        typedef OpenVolumeMeshPropertyT<float> P_F;
+        typedef OpenVolumeMeshPropertyT<double> P_D;
+        typedef OpenVolumeMeshPropertyT<char> P_C;
+        typedef OpenVolumeMeshPropertyT<unsigned char> P_UC;
+        typedef OpenVolumeMeshPropertyT<bool> P_B;
+        typedef OpenVolumeMeshPropertyT<std::string> P_S;
+
+        P_I*  prop_i =  dynamic_cast<P_I*> (*it);
+        P_UI* prop_ui = dynamic_cast<P_UI*>(*it);
+        P_F*  prop_f =  dynamic_cast<P_F*> (*it);
+        P_D*  prop_d =  dynamic_cast<P_D*> (*it);
+        P_C*  prop_c =  dynamic_cast<P_C*> (*it);
+        P_UC* prop_uc = dynamic_cast<P_UC*>(*it);
+        P_B*  prop_b =  dynamic_cast<P_B*> (*it);
+        P_S*  prop_s =  dynamic_cast<P_S*> (*it);
+
+        if(prop_i != NULL) {
+            _ofs << "int" << std::endl;
+            for(typename P_I::vector_type::const_iterator it = prop_i->data_vector().begin();
+                    it != prop_i->data_vector().end(); ++it)
+                _ofs << *it << std::endl;
+        } else if(prop_ui != NULL) {
+            _ofs << "unsigned int" << std::endl;
+            for(typename P_UI::vector_type::const_iterator it = prop_ui->data_vector().begin();
+                    it != prop_ui->data_vector().end(); ++it)
+                _ofs << *it << std::endl;
+        } else if(prop_f != NULL) {
+            _ofs << "float" << std::endl;
+            for(typename P_F::vector_type::const_iterator it = prop_f->data_vector().begin();
+                    it != prop_f->data_vector().end(); ++it)
+                _ofs << *it << std::endl;
+        } else if(prop_d != NULL) {
+            _ofs << "double" << std::endl;
+            for(typename P_D::vector_type::const_iterator it = prop_d->data_vector().begin();
+                    it != prop_d->data_vector().end(); ++it)
+                _ofs << *it << std::endl;
+        } else if(prop_c != NULL) {
+            _ofs << "char" << std::endl;
+            for(typename P_C::vector_type::const_iterator it = prop_c->data_vector().begin();
+                    it != prop_c->data_vector().end(); ++it)
+                _ofs << *it << std::endl;
+        } else if(prop_uc != NULL) {
+            _ofs << "unsigned char" << std::endl;
+            for(typename P_UC::vector_type::const_iterator it = prop_uc->data_vector().begin();
+                    it != prop_uc->data_vector().end(); ++it)
+                _ofs << *it << std::endl;
+        } else if(prop_b != NULL) {
+            _ofs << "bool" << std::endl;
+            for(unsigned int i = 0; i < prop_b->n_elements(); ++i)
+                _ofs << (*prop_b)[i] << std::endl;
+        } else if(prop_s != NULL) {
+            _ofs << "string" << std::endl;
+            for(unsigned int i = 0; i < prop_s->n_elements(); ++i)
+                _ofs << (*prop_b)[i] << std::endl;
+        } else {
+            _ofs << "unknown" << std::endl << "0" << std::endl;
+            continue;
+        }
+    }
 }
 
 //==================================================

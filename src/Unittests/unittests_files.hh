@@ -74,4 +74,41 @@ TEST_F(PolyhedralMeshBase, LoadFileWithProps) {
   EXPECT_EQ(0u, mesh_.n_cprops());
 }
 
+TEST_F(PolyhedralMeshBase, SaveFileWithProps) {
+
+  OpenVolumeMesh::IO::FileManager fileManager;
+
+  ASSERT_TRUE(fileManager.readFile("Cube_with_props.ovm", mesh_));
+
+  EXPECT_EQ(8u, mesh_.n_vertices());
+  EXPECT_EQ(12u, mesh_.n_edges());
+  EXPECT_EQ(6u, mesh_.n_faces());
+  EXPECT_EQ(1u, mesh_.n_cells());
+
+  EXPECT_EQ(1u, mesh_.n_vprops());
+  EXPECT_EQ(1u, mesh_.n_eprops());
+  EXPECT_EQ(0u, mesh_.n_heprops());
+  EXPECT_EQ(1u, mesh_.n_fprops());
+  EXPECT_EQ(1u, mesh_.n_hfprops());
+  EXPECT_EQ(0u, mesh_.n_cprops());
+
+  ASSERT_TRUE(fileManager.writeFile("Cube_with_props.copy.ovm", mesh_));
+
+  mesh_.clear();
+
+//  ASSERT_TRUE(fileManager.readFile("Cube_with_props.copy.ovm", mesh_));
+//
+//  EXPECT_EQ(8u, mesh_.n_vertices());
+//  EXPECT_EQ(12u, mesh_.n_edges());
+//  EXPECT_EQ(6u, mesh_.n_faces());
+//  EXPECT_EQ(1u, mesh_.n_cells());
+//
+//  EXPECT_EQ(1u, mesh_.n_vprops());
+//  EXPECT_EQ(1u, mesh_.n_eprops());
+//  EXPECT_EQ(0u, mesh_.n_heprops());
+//  EXPECT_EQ(1u, mesh_.n_fprops());
+//  EXPECT_EQ(1u, mesh_.n_hfprops());
+//  EXPECT_EQ(0u, mesh_.n_cprops());
+}
+
 #endif // INCLUDE GUARD

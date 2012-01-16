@@ -148,6 +148,10 @@ private:
   template<class MeshT, typename PropHandleT, typename PropT, typename IterT>
   void initializeProperty(std::ifstream& _iff, MeshT& _mesh, const std::string& _s_tmp,
                           const IterT& _begin, const IterT& _end) const;
+
+  template<typename PropIterT>
+  void writePropertySection(std::ofstream& _ofs, const std::string& _identifier,
+                            const PropIterT& _begin, const PropIterT& _end) const;
 };
 
 } // Namespace IO
