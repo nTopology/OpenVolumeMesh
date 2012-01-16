@@ -165,6 +165,7 @@ public:
 		// }
 
 		std::for_each(properties_.begin(), properties_.end(), ClearAll());
+		properties_.clear();
 	}
 
 	//---------------------------------------------------- synchronize properties
