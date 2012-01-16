@@ -119,8 +119,33 @@ private:
   // Get a whole line from file
   bool getCleanLine(std::istream& ifs, std::string& _string, bool _skipEmptyLines = true) const;
 
+  // Parse properties
+  template<class MeshT, typename IterT>
+  void parseVertexProperties(std::ifstream& _iff, std::stringstream& _sstr, const std::string& _identifier, MeshT& _mesh,
+                                  const IterT& _begin, const IterT& _end) const;
+
+  template<class MeshT, typename IterT>
+  void parseEdgeProperties(std::ifstream& _iff, std::stringstream& _sstr, const std::string& _identifier, MeshT& _mesh,
+                                  const IterT& _begin, const IterT& _end) const;
+
+  template<class MeshT, typename IterT>
+  void parseHalfEdgeProperties(std::ifstream& _iff, std::stringstream& _sstr, const std::string& _identifier, MeshT& _mesh,
+                                  const IterT& _begin, const IterT& _end) const;
+
+  template<class MeshT, typename IterT>
+  void parseFaceProperties(std::ifstream& _iff, std::stringstream& _sstr, const std::string& _identifier, MeshT& _mesh,
+                                  const IterT& _begin, const IterT& _end) const;
+
+  template<class MeshT, typename IterT>
+  void parseHalfFaceProperties(std::ifstream& _iff, std::stringstream& _sstr, const std::string& _identifier, MeshT& _mesh,
+                                  const IterT& _begin, const IterT& _end) const;
+
+  template<class MeshT, typename IterT>
+  void parseCellProperties(std::ifstream& _iff, std::stringstream& _sstr, const std::string& _identifier, MeshT& _mesh,
+                                  const IterT& _begin, const IterT& _end) const;
+
   // Add and initialize property
-  template<class MeshT, class PropHandleT, typename PropT, typename IterT>
+  template<class MeshT, typename PropHandleT, typename PropT, typename IterT>
   void initializeProperty(std::ifstream& _iff, MeshT& _mesh, const std::string& _s_tmp,
                           const IterT& _begin, const IterT& _end) const;
 };

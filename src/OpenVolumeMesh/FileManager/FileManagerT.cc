@@ -221,65 +221,8 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     sstr.clear();
     sstr.str(line);
 
-    // Check for properties
-    sstr >> s_tmp;
-    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
-    if(s_tmp == "PROPERTY") {
-
-        s_tmp = sstr.str();
-        extractQuotedText(s_tmp);
-
-        std::string type;
-        getCleanLine(iff, line);
-        sstr.clear();
-        sstr.str(line);
-
-        sstr >> type;
-
-        // Add and initialize property
-        if(type == "int") {
-            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<int>, int, typename MeshT::VertexIter>
-            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
-        } else if(type == "unsigned int") {
-            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<unsigned int>, unsigned int, typename MeshT::VertexIter>
-            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
-        } else if(type == "float") {
-            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<float>, float, typename MeshT::VertexIter>
-            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
-        } else if(type == "double") {
-            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<double>, double, typename MeshT::VertexIter>
-            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
-        } else if(type == "char") {
-            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<char>, char, typename MeshT::VertexIter>
-            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
-        } else if(type == "unsigned char") {
-            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<unsigned char>, unsigned char, typename MeshT::VertexIter>
-            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
-        } else if(type == "bool") {
-            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<bool>, bool, typename MeshT::VertexIter>
-            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
-        } else if(type == "string") {
-            initializeProperty<MeshT, OpenVolumeMesh::VPropHandleT<std::string>, std::string, typename MeshT::VertexIter>
-            (iff, _mesh, s_tmp, _mesh.vertices_begin(), _mesh.vertices_end());
-        } else {
-            std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
-
-            // Skip number of vertices lines
-            for(typename MeshT::VertexIter it = _mesh.vertices_begin(); it != _mesh.vertices_end(); ++it) {
-                getCleanLine(iff, line);
-            }
-        }
-
-        // Get next line (edge header)
-        getCleanLine(iff, line);
-        sstr.clear();
-        sstr.str(line);
-
-    } else {
-
-        // Reset stream to whole line
-        sstr.str(line);
-    }
+    parseVertexProperties<MeshT, typename MeshT::VertexIter>
+        (iff, sstr, "VERTEX_PROPERTY", _mesh, _mesh.vertices_begin(), _mesh.vertices_end());
 
     /*
      * Edges
@@ -314,65 +257,10 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     sstr.clear();
     sstr.str(line);
 
-    // Check for properties
-    sstr >> s_tmp;
-    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
-    if(s_tmp == "PROPERTY") {
-
-        s_tmp = sstr.str();
-        extractQuotedText(s_tmp);
-
-        std::string type;
-        getCleanLine(iff, line);
-        sstr.clear();
-        sstr.str(line);
-
-        sstr >> type;
-
-        // Add and initialize property
-        if(type == "int") {
-            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<int>, int, typename MeshT::EdgeIter>
-            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
-        } else if(type == "unsigned int") {
-            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<unsigned int>, unsigned int, typename MeshT::EdgeIter>
-            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
-        } else if(type == "float") {
-            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<float>, float, typename MeshT::EdgeIter>
-            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
-        } else if(type == "double") {
-            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<double>, double, typename MeshT::EdgeIter>
-            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
-        } else if(type == "char") {
-            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<char>, char, typename MeshT::EdgeIter>
-            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
-        } else if(type == "unsigned char") {
-            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<unsigned char>, unsigned char, typename MeshT::EdgeIter>
-            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
-        } else if(type == "bool") {
-            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<bool>, bool, typename MeshT::EdgeIter>
-            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
-        } else if(type == "string") {
-            initializeProperty<MeshT, OpenVolumeMesh::EPropHandleT<std::string>, std::string, typename MeshT::EdgeIter>
-            (iff, _mesh, s_tmp, _mesh.edges_begin(), _mesh.edges_end());
-        } else {
-            std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
-
-            // Skip number of edges lines
-            for(typename MeshT::EdgeIter it = _mesh.edges_begin(); it != _mesh.edges_end(); ++it) {
-                getCleanLine(iff, line);
-            }
-        }
-
-        // Get next line (face header)
-        getCleanLine(iff, line);
-        sstr.clear();
-        sstr.str(line);
-
-    } else {
-
-        // Reset stream to whole line
-        sstr.str(line);
-    }
+    parseEdgeProperties<MeshT, typename MeshT::EdgeIter>
+        (iff, sstr, "EDGE_PROPERTY", _mesh, _mesh.edges_begin(), _mesh.edges_end());
+    parseHalfEdgeProperties<MeshT, typename MeshT::HalfEdgeIter>
+        (iff, sstr, "HALFEDGE_PROPERTY", _mesh, _mesh.halfedges_begin(), _mesh.halfedges_end());
 
     /*
      * Faces
@@ -418,65 +306,10 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     sstr.clear();
     sstr.str(line);
 
-    // Check for properties
-    sstr >> s_tmp;
-    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
-    if(s_tmp == "PROPERTY") {
-
-        s_tmp = sstr.str();
-        extractQuotedText(s_tmp);
-
-        std::string type;
-        getCleanLine(iff, line);
-        sstr.clear();
-        sstr.str(line);
-
-        sstr >> type;
-
-        // Add and initialize property
-        if(type == "int") {
-            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<int>, int, typename MeshT::FaceIter>
-            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
-        } else if(type == "unsigned int") {
-            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<unsigned int>, unsigned int, typename MeshT::FaceIter>
-            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
-        } else if(type == "float") {
-            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<float>, float, typename MeshT::FaceIter>
-            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
-        } else if(type == "double") {
-            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<double>, double, typename MeshT::FaceIter>
-            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
-        } else if(type == "char") {
-            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<char>, char, typename MeshT::FaceIter>
-            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
-        } else if(type == "unsigned char") {
-            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<unsigned char>, unsigned char, typename MeshT::FaceIter>
-            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
-        } else if(type == "bool") {
-            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<bool>, bool, typename MeshT::FaceIter>
-            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
-        } else if(type == "string") {
-            initializeProperty<MeshT, OpenVolumeMesh::FPropHandleT<std::string>, std::string, typename MeshT::FaceIter>
-            (iff, _mesh, s_tmp, _mesh.faces_begin(), _mesh.faces_end());
-        } else {
-            std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
-
-            // Skip number of faces lines
-            for(typename MeshT::FaceIter it = _mesh.faces_begin(); it != _mesh.faces_end(); ++it) {
-                getCleanLine(iff, line);
-            }
-        }
-
-        // Get next line (cell header)
-        getCleanLine(iff, line);
-        sstr.clear();
-        sstr.str(line);
-
-    } else {
-
-        // Reset stream to whole line
-        sstr.str(line);
-    }
+    parseFaceProperties<MeshT, typename MeshT::FaceIter>
+        (iff, sstr, "FACE_PROPERTY", _mesh, _mesh.faces_begin(), _mesh.faces_end());
+    parseHalfFaceProperties<MeshT, typename MeshT::HalfFaceIter>
+        (iff, sstr, "HALFFACE_PROPERTY", _mesh, _mesh.halffaces_begin(), _mesh.halffaces_end());
 
     /*
      * Cells
@@ -524,64 +357,8 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
         sstr.clear();
         sstr.str(line);
 
-        if(!iff.eof()) {
-
-            // Check for properties
-            sstr >> s_tmp;
-            std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
-            if(s_tmp == "PROPERTY") {
-
-                s_tmp = sstr.str();
-                extractQuotedText(s_tmp);
-
-                std::string type;
-                getCleanLine(iff, line);
-                sstr.clear();
-                sstr.str(line);
-
-                sstr >> type;
-
-                // Add and initialize property
-                if(type == "int") {
-                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<int>, int, typename MeshT::CellIter>
-                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
-                } else if(type == "unsigned int") {
-                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<unsigned int>, unsigned int, typename MeshT::CellIter>
-                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
-                } else if(type == "float") {
-                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<float>, float, typename MeshT::CellIter>
-                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
-                } else if(type == "double") {
-                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<double>, double, typename MeshT::CellIter>
-                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
-                } else if(type == "char") {
-                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<char>, char, typename MeshT::CellIter>
-                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
-                } else if(type == "unsigned char") {
-                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<unsigned char>, unsigned char, typename MeshT::CellIter>
-                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
-                } else if(type == "bool") {
-                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<bool>, bool, typename MeshT::CellIter>
-                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
-                } else if(type == "string") {
-                    initializeProperty<MeshT, OpenVolumeMesh::CPropHandleT<std::string>, std::string, typename MeshT::CellIter>
-                    (iff, _mesh, s_tmp, _mesh.cells_begin(), _mesh.cells_end());
-                } else {
-                    std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
-
-                    // Skip number of cells lines
-                    for(typename MeshT::CellIter it = _mesh.cells_begin(); it != _mesh.cells_end(); ++it) {
-                        getCleanLine(iff, line);
-                    }
-                }
-
-                // Get next line (cell header)
-                getCleanLine(iff, line);
-                sstr.clear();
-                sstr.str(line);
-
-            }
-        }
+        parseCellProperties<MeshT, typename MeshT::CellIter>
+            (iff, sstr, "CELL_PROPERTY", _mesh, _mesh.cells_begin(), _mesh.cells_end());
     }
 
     iff.close();
@@ -608,7 +385,506 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
 
 //==================================================
 
-template<class MeshT, class PropHandleT, typename PropT, typename IterT>
+template<class MeshT, typename IterT>
+void FileManager::parseVertexProperties(std::ifstream& _iff, std::stringstream& _sstr, const std::string& _identifier, MeshT& _mesh,
+                                  const IterT& _begin, const IterT& _end) const {
+
+    if(_iff.eof()) return;
+
+    std::string line = _sstr.str();
+    std::string s_tmp;
+
+    // Check for properties
+    _sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+
+    // No property found
+    if(s_tmp != _identifier) {
+        // Reset stream
+        _sstr.clear();
+        _sstr.str(line);
+        return;
+    }
+
+    while(s_tmp == _identifier && !_iff.eof()) {
+
+        s_tmp = _sstr.str();
+        extractQuotedText(s_tmp);
+
+        std::string type;
+        getCleanLine(_iff, line);
+        _sstr.clear();
+        _sstr.str(line);
+
+        _sstr >> type;
+
+        // Add and initialize property
+        if(type == "int") {
+            initializeProperty<MeshT, VPropHandleT<int>, int, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "unsigned int") {
+            initializeProperty<MeshT, VPropHandleT<unsigned int>, unsigned int, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "float") {
+            initializeProperty<MeshT, VPropHandleT<float>, float, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "double") {
+            initializeProperty<MeshT, VPropHandleT<double>, double, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "char") {
+            initializeProperty<MeshT, VPropHandleT<char>, char, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "unsigned char") {
+            initializeProperty<MeshT, VPropHandleT<unsigned char>, unsigned char, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "bool") {
+            initializeProperty<MeshT, VPropHandleT<bool>, bool, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "string") {
+            initializeProperty<MeshT, VPropHandleT<std::string>, std::string, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else {
+            std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
+
+            // Skip number of entities lines
+            for(IterT it = _begin; it != _end; ++it) {
+                getCleanLine(_iff, line);
+            }
+        }
+
+        // Get next line
+        getCleanLine(_iff, line);
+        _sstr.clear();
+        _sstr.str(line);
+
+        // Check for properties
+        _sstr >> s_tmp;
+        std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    }
+
+    _sstr.clear();
+    _sstr.str(line);
+}
+
+//==================================================
+
+template<class MeshT, typename IterT>
+void FileManager::parseEdgeProperties(std::ifstream& _iff, std::stringstream& _sstr, const std::string& _identifier, MeshT& _mesh,
+                                  const IterT& _begin, const IterT& _end) const {
+
+    if(_iff.eof()) return;
+
+    std::string line = _sstr.str();
+    std::string s_tmp;
+
+    // Check for properties
+    _sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+
+    // No property found
+    if(s_tmp != _identifier) {
+        // Reset stream
+        _sstr.clear();
+        _sstr.str(line);
+        return;
+    }
+
+    while(s_tmp == _identifier && !_iff.eof()) {
+
+        s_tmp = _sstr.str();
+        extractQuotedText(s_tmp);
+
+        std::string type;
+        getCleanLine(_iff, line);
+        _sstr.clear();
+        _sstr.str(line);
+
+        _sstr >> type;
+
+        // Add and initialize property
+        if(type == "int") {
+            initializeProperty<MeshT, EPropHandleT<int>, int, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "unsigned int") {
+            initializeProperty<MeshT, EPropHandleT<unsigned int>, unsigned int, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "float") {
+            initializeProperty<MeshT, EPropHandleT<float>, float, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "double") {
+            initializeProperty<MeshT, EPropHandleT<double>, double, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "char") {
+            initializeProperty<MeshT, EPropHandleT<char>, char, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "unsigned char") {
+            initializeProperty<MeshT, EPropHandleT<unsigned char>, unsigned char, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "bool") {
+            initializeProperty<MeshT, EPropHandleT<bool>, bool, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "string") {
+            initializeProperty<MeshT, EPropHandleT<std::string>, std::string, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else {
+            std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
+
+            // Skip number of entities lines
+            for(IterT it = _begin; it != _end; ++it) {
+                getCleanLine(_iff, line);
+            }
+        }
+
+        // Get next line
+        getCleanLine(_iff, line);
+        _sstr.clear();
+        _sstr.str(line);
+
+        // Check for properties
+        _sstr >> s_tmp;
+        std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    }
+
+    _sstr.clear();
+    _sstr.str(line);
+}
+
+//==================================================
+
+template<class MeshT, typename IterT>
+void FileManager::parseHalfEdgeProperties(std::ifstream& _iff, std::stringstream& _sstr, const std::string& _identifier, MeshT& _mesh,
+                                  const IterT& _begin, const IterT& _end) const {
+
+    if(_iff.eof()) return;
+
+    std::string line = _sstr.str();
+    std::string s_tmp;
+
+    // Check for properties
+    _sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+
+    // No property found
+    if(s_tmp != _identifier) {
+        // Reset stream
+        _sstr.clear();
+        _sstr.str(line);
+
+        return;
+    }
+
+    while(s_tmp == _identifier && !_iff.eof()) {
+
+        s_tmp = _sstr.str();
+        extractQuotedText(s_tmp);
+
+        std::string type;
+        getCleanLine(_iff, line);
+        _sstr.clear();
+        _sstr.str(line);
+
+        _sstr >> type;
+
+        // Add and initialize property
+        if(type == "int") {
+            initializeProperty<MeshT, HEPropHandleT<int>, int, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "unsigned int") {
+            initializeProperty<MeshT, HEPropHandleT<unsigned int>, unsigned int, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "float") {
+            initializeProperty<MeshT, HEPropHandleT<float>, float, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "double") {
+            initializeProperty<MeshT, HEPropHandleT<double>, double, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "char") {
+            initializeProperty<MeshT, HEPropHandleT<char>, char, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "unsigned char") {
+            initializeProperty<MeshT, HEPropHandleT<unsigned char>, unsigned char, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "bool") {
+            initializeProperty<MeshT, HEPropHandleT<bool>, bool, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "string") {
+            initializeProperty<MeshT, HEPropHandleT<std::string>, std::string, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else {
+            std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
+
+            // Skip number of entities lines
+            for(IterT it = _begin; it != _end; ++it) {
+                getCleanLine(_iff, line);
+            }
+        }
+
+        // Get next line
+        getCleanLine(_iff, line);
+        _sstr.clear();
+        _sstr.str(line);
+
+        // Check for properties
+        _sstr >> s_tmp;
+        std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    }
+
+    _sstr.clear();
+    _sstr.str(line);
+}
+
+//==================================================
+
+template<class MeshT, typename IterT>
+void FileManager::parseFaceProperties(std::ifstream& _iff, std::stringstream& _sstr, const std::string& _identifier, MeshT& _mesh,
+                                  const IterT& _begin, const IterT& _end) const {
+
+    if(_iff.eof()) return;
+
+    std::string line = _sstr.str();
+    std::string s_tmp;
+
+    // Check for properties
+    _sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+
+    // No property found
+    if(s_tmp != _identifier) {
+        // Reset stream
+        _sstr.clear();
+        _sstr.str(line);
+        return;
+    }
+
+    while(s_tmp == _identifier && !_iff.eof()) {
+
+        s_tmp = _sstr.str();
+        extractQuotedText(s_tmp);
+
+        std::string type;
+        getCleanLine(_iff, line);
+        _sstr.clear();
+        _sstr.str(line);
+
+        _sstr >> type;
+
+        // Add and initialize property
+        if(type == "int") {
+            initializeProperty<MeshT, FPropHandleT<int>, int, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "unsigned int") {
+            initializeProperty<MeshT, FPropHandleT<unsigned int>, unsigned int, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "float") {
+            initializeProperty<MeshT, FPropHandleT<float>, float, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "double") {
+            initializeProperty<MeshT, FPropHandleT<double>, double, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "char") {
+            initializeProperty<MeshT, FPropHandleT<char>, char, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "unsigned char") {
+            initializeProperty<MeshT, FPropHandleT<unsigned char>, unsigned char, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "bool") {
+            initializeProperty<MeshT, FPropHandleT<bool>, bool, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "string") {
+            initializeProperty<MeshT, FPropHandleT<std::string>, std::string, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else {
+            std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
+
+            // Skip number of entities lines
+            for(IterT it = _begin; it != _end; ++it) {
+                getCleanLine(_iff, line);
+            }
+        }
+
+        // Get next line
+        getCleanLine(_iff, line);
+        _sstr.clear();
+        _sstr.str(line);
+
+        // Check for properties
+        _sstr >> s_tmp;
+        std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    }
+
+    _sstr.clear();
+    _sstr.str(line);
+}
+
+//==================================================
+
+template<class MeshT, typename IterT>
+void FileManager::parseHalfFaceProperties(std::ifstream& _iff, std::stringstream& _sstr, const std::string& _identifier, MeshT& _mesh,
+                                  const IterT& _begin, const IterT& _end) const {
+
+    if(_iff.eof()) return;
+
+    std::string line = _sstr.str();
+    std::string s_tmp;
+
+    // Check for properties
+    _sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+
+    // No property found
+    if(s_tmp != _identifier) {
+        // Reset stream
+        _sstr.clear();
+        _sstr.str(line);
+        return;
+    }
+
+    while(s_tmp == _identifier && !_iff.eof()) {
+
+        s_tmp = _sstr.str();
+        extractQuotedText(s_tmp);
+
+        std::string type;
+        getCleanLine(_iff, line);
+        _sstr.clear();
+        _sstr.str(line);
+
+        _sstr >> type;
+
+        // Add and initialize property
+        if(type == "int") {
+            initializeProperty<MeshT, HFPropHandleT<int>, int, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "unsigned int") {
+            initializeProperty<MeshT, HFPropHandleT<unsigned int>, unsigned int, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "float") {
+            initializeProperty<MeshT, HFPropHandleT<float>, float, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "double") {
+            initializeProperty<MeshT, HFPropHandleT<double>, double, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "char") {
+            initializeProperty<MeshT, HFPropHandleT<char>, char, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "unsigned char") {
+            initializeProperty<MeshT, HFPropHandleT<unsigned char>, unsigned char, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "bool") {
+            initializeProperty<MeshT, HFPropHandleT<bool>, bool, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "string") {
+            initializeProperty<MeshT, HFPropHandleT<std::string>, std::string, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else {
+            std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
+
+            // Skip number of entities lines
+            for(IterT it = _begin; it != _end; ++it) {
+                getCleanLine(_iff, line);
+            }
+        }
+
+        // Get next line
+        getCleanLine(_iff, line);
+        _sstr.clear();
+        _sstr.str(line);
+
+        // Check for properties
+        _sstr >> s_tmp;
+        std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    }
+
+    _sstr.clear();
+    _sstr.str(line);
+}
+
+//==================================================
+
+template<class MeshT, typename IterT>
+void FileManager::parseCellProperties(std::ifstream& _iff, std::stringstream& _sstr, const std::string& _identifier, MeshT& _mesh,
+                                  const IterT& _begin, const IterT& _end) const {
+
+    if(_iff.eof()) return;
+
+    std::string line = _sstr.str();
+    std::string s_tmp;
+
+    // Check for properties
+    _sstr >> s_tmp;
+    std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+
+    // No property found
+    if(s_tmp != _identifier) {
+        // Reset stream
+        _sstr.clear();
+        _sstr.str(line);
+        return;
+    }
+
+    while(s_tmp == _identifier && !_iff.eof()) {
+
+        s_tmp = _sstr.str();
+        extractQuotedText(s_tmp);
+
+        std::string type;
+        getCleanLine(_iff, line);
+        _sstr.clear();
+        _sstr.str(line);
+
+        _sstr >> type;
+
+        // Add and initialize property
+        if(type == "int") {
+            initializeProperty<MeshT, CPropHandleT<int>, int, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "unsigned int") {
+            initializeProperty<MeshT, CPropHandleT<unsigned int>, unsigned int, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "float") {
+            initializeProperty<MeshT, CPropHandleT<float>, float, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "double") {
+            initializeProperty<MeshT, CPropHandleT<double>, double, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "char") {
+            initializeProperty<MeshT, CPropHandleT<char>, char, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "unsigned char") {
+            initializeProperty<MeshT, CPropHandleT<unsigned char>, unsigned char, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "bool") {
+            initializeProperty<MeshT, CPropHandleT<bool>, bool, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else if(type == "string") {
+            initializeProperty<MeshT, CPropHandleT<std::string>, std::string, IterT>
+            (_iff, _mesh, s_tmp, _begin, _end);
+        } else {
+            std::cerr << "Data type '" << type << "' not recognized!" << std::endl;
+
+            // Skip number of entities lines
+            for(IterT it = _begin; it != _end; ++it) {
+                getCleanLine(_iff, line);
+            }
+        }
+
+        // Get next line
+        getCleanLine(_iff, line);
+        _sstr.clear();
+        _sstr.str(line);
+
+        // Check for properties
+        _sstr >> s_tmp;
+        std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
+    }
+
+    _sstr.clear();
+    _sstr.str(line);
+}
+
+//==================================================
+
+template<class MeshT, typename PropHandleT, typename PropT, typename IterT>
 void FileManager::initializeProperty(std::ifstream& _iff, MeshT& _mesh, const std::string& _s_tmp,
                                      const IterT& _begin, const IterT& _end) const {
 
