@@ -358,7 +358,7 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
         sstr.str(line);
 
         parseCellProperties<MeshT, typename MeshT::CellIter>
-            (iff, sstr, "CELL_PROPERTY", _mesh, _mesh.cells_begin(), _mesh.cells_end());
+            (iff, sstr, "POLYHEDRON_PROPERTY", _mesh, _mesh.cells_begin(), _mesh.cells_end());
     }
 
     iff.close();
