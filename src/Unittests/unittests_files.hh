@@ -31,6 +31,30 @@ TEST_F(HexahedralMeshBase, LoadFile) {
   EXPECT_EQ(288u, mesh_.n_cells());
 }
 
+TEST_F(PolyhedralMeshBase, SaveFile) {
+
+  OpenVolumeMesh::IO::FileManager fileManager;
+
+  ASSERT_TRUE(fileManager.readFile("Cylinder.ovm", mesh_));
+
+  EXPECT_EQ(399u, mesh_.n_vertices());
+  EXPECT_EQ(1070u, mesh_.n_edges());
+  EXPECT_EQ(960u, mesh_.n_faces());
+  EXPECT_EQ(288u, mesh_.n_cells());
+
+  // Write file
+  ASSERT_TRUE(fileManager.writeFile("Cylinder.copy.ovm", mesh_));
+
+  mesh_.clear();
+
+  ASSERT_TRUE(fileManager.readFile("Cylinder.copy.ovm", mesh_));
+
+  EXPECT_EQ(399u, mesh_.n_vertices());
+  EXPECT_EQ(1070u, mesh_.n_edges());
+  EXPECT_EQ(960u, mesh_.n_faces());
+  EXPECT_EQ(288u, mesh_.n_cells());
+}
+
 TEST_F(PolyhedralMeshBase, LoadFileWithProps) {
 
   OpenVolumeMesh::IO::FileManager fileManager;

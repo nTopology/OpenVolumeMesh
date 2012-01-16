@@ -922,7 +922,10 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
     return false;
   }
 
-  int n_vertices(_mesh.n_vertices());
+  // Write header
+  off << "OVM ASCII" << std::endl;
+
+  unsigned int n_vertices(_mesh.n_vertices());
   off << "Vertices" << std::endl;
   off << n_vertices << std::endl;
 
@@ -933,7 +936,7 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
     off << v[0] << " " << v[1] << " " << v[2] << std::endl;
   }
 
-  int n_edges(_mesh.n_edges());
+  unsigned int n_edges(_mesh.n_edges());
   off << "Edges" << std::endl;
   off << n_edges << std::endl;
 
@@ -945,7 +948,7 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
     off << from_vertex << " " << to_vertex << std::endl;
   }
 
-  int n_faces(_mesh.n_faces());
+  unsigned int n_faces(_mesh.n_faces());
   off << "Faces" << std::endl;
   off << n_faces << std::endl;
 
@@ -959,7 +962,7 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
     for (typename std::vector<typename MeshT::HalfEdgeHandle>::const_iterator it = halfedges.begin(); it
         != halfedges.end(); ++it) {
 
-      off << *it;
+      off << it->idx();
 
       if ((it + 1) != halfedges.end())
         off << " ";
@@ -968,7 +971,7 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
     off << std::endl;
   }
 
-  int n_cells(_mesh.n_cells());
+  unsigned int n_cells(_mesh.n_cells());
   off << "Polyhedra" << std::endl;
   off << n_cells << std::endl;
 
@@ -981,7 +984,7 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
     for (typename std::vector<typename MeshT::HalfFaceHandle>::const_iterator it = halffaces.begin(); it
         != halffaces.end(); ++it) {
 
-      off << *it;
+      off << it->idx();
 
       if ((it + 1) != halffaces.end())
         off << " ";
