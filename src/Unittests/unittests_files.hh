@@ -44,7 +44,9 @@ TEST_F(PolyhedralMeshBase, LoadFileWithProps) {
 
   EXPECT_EQ(1u, mesh_.n_vprops());
   EXPECT_EQ(1u, mesh_.n_eprops());
-  EXPECT_EQ(0u, mesh_.n_fprops());
+  EXPECT_EQ(0u, mesh_.n_heprops());
+  EXPECT_EQ(1u, mesh_.n_fprops());
+  EXPECT_EQ(1u, mesh_.n_hfprops());
   EXPECT_EQ(0u, mesh_.n_cprops());
 }
 

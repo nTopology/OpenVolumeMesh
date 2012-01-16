@@ -13,6 +13,7 @@ file format specification below.
 
 \section file_spec File Format Specification
 
+
 \verbatim
 OVM ASCII                   # File header indicating whether data is
                             # coded as plain text or binary
@@ -63,67 +64,6 @@ Polyhedron_Property "name"  # The same as for vertices
 
 \section file_example A Simple Example File
 
-\verbatim
-OVM ASCII
-Vertices
-8
--1.0 -1.0 -1.0
-1.0 -1.0 -1.0
-1.0 1.0 -1.0
--1.0 1.0 -1.0
--1.0 -1.0 1.0
-1.0 -1.0 1.0
-1.0 1.0 1.0
--1.0 1.0 1.0
-Property "Vertex Weights"
-float
-1.363
-6.334
-2.766
-8.348
-4.214
-2.136
-7.114
-0.651
-Edges
-12
-0 1
-1 2
-2 3
-3 0
-4 5
-5 6
-6 7
-7 4
-0 4
-1 5
-2 6
-3 7
-Property "Edge Tag"
-bool
-1
-1
-0
-1
-1
-0
-0
-1
-0
-0
-1
-1
-Faces
-6
-4 0 2 4 6
-4 8 10 12 14
-4 18 10 21 3
-4 16 15 23 6
-4 20 12 22 4
-4 0 18 9 17
-Polyhedra
-1
-6 1 2 5 6 9 10
-\endverbatim
+\include Cube_with_props.ovm
 
 **/
