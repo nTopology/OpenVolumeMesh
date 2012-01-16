@@ -2,4 +2,95 @@
 
 \page tutorial_01 Tutorial 01: Creating a Simple Volume Mesh
 
+Creating a volumetric mesh with %OpenVolumeMesh is pretty simple.
+In order to make available the different built-in vector types
+that %OpenVolumeMesh provides, just include the following header:
+
+\code
+#include <OpenVolumeMesh/Geometry/VectorT.hh>
+\endcode
+
+Depending on whether you want to deal with hexahedral or general
+polyhedral meshes, either of the following headers has to be
+included, too:
+
+\code
+// Hexahedral meshes
+#include <OpenVolumeMesh/HexahedralMesh/HexahedralMesh.hh>
+
+// Polyhedral meshes
+#include <OpenVolumeMesh/PolyhedralMesh/PolyhedralMesh.hh>
+\endcode
+
+Note that you can also handle hexahedral meshes with the
+OpenVolumeMesh::PolyhedralMesh class, but class OpenVolumeMesh::HexahedralMesh
+provides some specific topology checks and, more importantly,
+a set of specialized iterators.
+
+The following code creates a polyhedral mesh instance and fills it
+with two adjacent tetrahedra:
+
+\code
+typedef OpenVolumeMesh::Geometry::Vec3d Vec3d
+typedef OpenVolumeMesh::PolyhedralMesh<Vec3d> PolyhedralMeshV3d;
+
+// Create mesh object
+PolyhedralMeshV3d myMesh;
+
+// Add eight vertices
+PolyhedralMesh::VertexHandle v0 = myMesh.add_vertex(Vec3d(-1.0, 0.0, 0.0));
+PolyhedralMesh::VertexHandle v1 = myMesh.add_vertex(Vec3d( 0.0, 0.0, 1.0));
+PolyhedralMesh::VertexHandle v2 = myMesh.add_vertex(Vec3d( 1.0, 0.0, 0.0));
+PolyhedralMesh::VertexHandle v3 = myMesh.add_vertex(Vec3d( 0.0, 0.0,-1.0));
+PolyhedralMesh::VertexHandle v4 = myMesh.add_vertex(Vec3d( 0.0, 1.0, 0.0));
+
+std::vector<PolyhedralMesh::VertexHandle> vertices;
+
+// Add faces
+vertices.push_back(v0); vertices.push_back(v1);vertices.push_back(v3);
+FaceHandle f0 = _mesh.add_face(vertices);
+
+vertices.clear();
+vertices.push_back(v2); vertices.push_back(v0);vertices.push_back(v3);
+FaceHandle f1 = _mesh.add_face(vertices);
+
+vertices.clear();
+vertices.push_back(v0); vertices.push_back(v2);vertices.push_back(v1);
+FaceHandle f2 = _mesh.add_face(vertices);
+
+vertices.clear();
+vertices.push_back(v1); vertices.push_back(v4);vertices.push_back(v3);
+FaceHandle f3 = _mesh.add_face(vertices);
+
+vertices.clear();
+vertices.push_back(v2); vertices.push_back(v3);vertices.push_back(v4);
+FaceHandle f4 = _mesh.add_face(vertices);
+
+vertices.clear();
+vertices.push_back(v2); vertices.push_back(v4);vertices.push_back(v1);
+FaceHandle f5 = _mesh.add_face(vertices);
+
+vertices.clear();
+vertices.push_back(v1); vertices.push_back(v2);vertices.push_back(v3);
+FaceHandle f6 = _mesh.add_face(vertices);
+
+std::vector<PolyhedralMeshHalf::FaceHandle> halffaces;
+
+// Add first tetrahedron
+halffaces.push_back(_mesh.halfface_handle(f0, 1));
+halffaces.push_back(_mesh.halfface_handle(f1, 1));
+halffaces.push_back(_mesh.halfface_handle(f2, 1)); 
+halffaces.push_back(_mesh.halfface_handle(f6, 1)); 
+_mesh.add_cell(halffaces);
+
+// Add second tetrahedron
+halffaces.clear();
+halffaces.push_back(_mesh.halfface_handle(f3, 1));
+halffaces.push_back(_mesh.halfface_handle(f4, 1));
+halffaces.push_back(_mesh.halfface_handle(f5, 1)); 
+halffaces.push_back(_mesh.halfface_handle(f6, 0)); 
+_mesh.add_cell(halffaces);
+
+\endcode
+
 **/

@@ -50,8 +50,8 @@
 
 namespace OpenVolumeMesh {
 
-/*
- * HexMesh data structure basing on OpenVolumeMesh
+/**
+ * \class Hexahedral Mesh data structure basing on PolyhedralMesh
  *
  * Define hexahedra to span a 3D coordinate system:
  *
