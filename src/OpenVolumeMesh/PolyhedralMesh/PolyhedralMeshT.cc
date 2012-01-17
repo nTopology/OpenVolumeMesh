@@ -728,7 +728,7 @@ PolyhedralMesh<VecT>::halfedge(const VertexHandle& _vh1, const VertexHandle& _vh
     assert(_vh1.idx() < vertices_.size());
     assert(_vh2.idx() < vertices_.size());
 
-    for(VertexOHalfedgeIter voh_it = voh_iter(_vh1); voh_it.valid(); ++voh_it) {
+    for(VertexOHalfEdgeIter voh_it = voh_iter(_vh1); voh_it.valid(); ++voh_it) {
         if(halfedge(*voh_it).to_vertex() == _vh2) {
             return *voh_it;
         }
@@ -1035,7 +1035,7 @@ void PolyhedralMesh<VecT>::garbage_collection(bool _preserveManifoldness) {
             for(typename Vertices::iterator v_it = vertices_.begin(); v_it != vertices_.end();) {
 
                 // If neither of the half-edges is incident to a half-face, delete edge
-                VertexOHalfedgeIter voh_it = voh_iter(vh);
+                VertexOHalfEdgeIter voh_it = voh_iter(vh);
 
                 if(!voh_it.valid()) {
                     erase_vertex(v_it, vh);

@@ -72,11 +72,11 @@ BaseIterator<VecT,IH,OH>::BaseIterator(const PolyhedralMesh<VecT>* _mesh) :
 }
 
 //================================================================================================
-// VertexOHalfedgeIter
+// VertexOHalfEdgeIter
 //================================================================================================
 
 template <class VecT>
-VertexOHalfedgeIter<VecT>::VertexOHalfedgeIter(const VertexHandle& _ref_h,
+VertexOHalfEdgeIter<VecT>::VertexOHalfEdgeIter(const VertexHandle& _ref_h,
 		const PolyhedralMesh<VecT>* _mesh) :
 BaseIter(_mesh, _ref_h),
 cur_index_(0) {
@@ -104,7 +104,7 @@ cur_index_(0) {
 }
 
 template <class VecT>
-VertexOHalfedgeIter<VecT>& VertexOHalfedgeIter<VecT>::operator--() {
+VertexOHalfEdgeIter<VecT>& VertexOHalfEdgeIter<VecT>::operator--() {
 
 	--cur_index_;
 
@@ -119,7 +119,7 @@ VertexOHalfedgeIter<VecT>& VertexOHalfedgeIter<VecT>::operator--() {
 }
 
 template <class VecT>
-VertexOHalfedgeIter<VecT>& VertexOHalfedgeIter<VecT>::operator++() {
+VertexOHalfEdgeIter<VecT>& VertexOHalfEdgeIter<VecT>::operator++() {
 
 	++cur_index_;
 

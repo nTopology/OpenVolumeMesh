@@ -169,7 +169,7 @@ public:
     // Iterators
     //=====================================================================
 
-    friend class VertexOHalfedgeIter<VecT>;
+    friend class VertexOHalfEdgeIter<VecT>;
     friend class HalfEdgeHalfFaceIter<VecT>;
     friend class VertexCellIter<VecT>;
     friend class HalfedgeCellIter<VecT>;
@@ -183,7 +183,7 @@ public:
     friend class HalfFaceIter<VecT>;
     friend class CellIter<VecT>;
 
-    typedef class VertexOHalfedgeIter<VecT> 	VertexOHalfedgeIter;
+    typedef class VertexOHalfEdgeIter<VecT> 	VertexOHalfEdgeIter;
     typedef class HalfEdgeHalfFaceIter<VecT> 	HalfEdgeHalfFaceIter;
     typedef class VertexCellIter<VecT> 		    VertexCellIter;
     typedef class HalfedgeCellIter<VecT> 		  HalfedgeCellIter;
@@ -197,8 +197,8 @@ public:
     typedef class HalfFaceIter<VecT> 			    HalfFaceIter;
     typedef class CellIter<VecT> 				      CellIter;
 
-    VertexOHalfedgeIter voh_iter(const VertexHandle& _idx) const {
-    	return VertexOHalfedgeIter(_idx, this);
+    VertexOHalfEdgeIter voh_iter(const VertexHandle& _idx) const {
+    	return VertexOHalfEdgeIter(_idx, this);
     }
 
     HalfEdgeHalfFaceIter hehf_iter(const HalfEdgeHandle& _idx) const {
@@ -571,7 +571,7 @@ public:
             std::cerr << "Error: is_boundary() needs bottom-up adjacencies!" << std::endl;
             return false;
         }
-        for(VertexOHalfedgeIter voh_it = voh_iter(_vertexHandle); voh_it.valid(); ++voh_it) {
+        for(VertexOHalfEdgeIter voh_it = voh_iter(_vertexHandle); voh_it.valid(); ++voh_it) {
             if(is_boundary(*voh_it)) return true;
         }
         return false;

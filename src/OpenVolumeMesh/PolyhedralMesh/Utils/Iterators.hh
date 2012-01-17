@@ -148,7 +148,7 @@ private:
 //===========================================================================
 
 template <class VecT>
-class VertexOHalfedgeIter :
+class VertexOHalfEdgeIter :
 	public BaseIterator<VecT,
 	typename PolyhedralMesh<VecT>::VertexHandle,
 	typename PolyhedralMesh<VecT>::HalfEdgeHandle> {
@@ -158,49 +158,49 @@ public:
 			typename PolyhedralMesh<VecT>::HalfEdgeHandle> BaseIter;
 	typedef typename PolyhedralMesh<VecT>::VertexHandle VertexHandle;
 
-	VertexOHalfedgeIter(const VertexHandle& _vIdx,
+	VertexOHalfEdgeIter(const VertexHandle& _vIdx,
 			const PolyhedralMesh<VecT>* _mesh);
 
 	// Post increment/decrement operator
-	VertexOHalfedgeIter operator++(int) {
-		VertexOHalfedgeIter cpy = *this;
+	VertexOHalfEdgeIter operator++(int) {
+		VertexOHalfEdgeIter cpy = *this;
 		++(*this);
 		return cpy;
 	}
-	VertexOHalfedgeIter operator--(int) {
-		VertexOHalfedgeIter cpy = *this;
+	VertexOHalfEdgeIter operator--(int) {
+		VertexOHalfEdgeIter cpy = *this;
 		--(*this);
 		return cpy;
 	}
-	VertexOHalfedgeIter operator+(int _n) {
-		VertexOHalfedgeIter cpy = *this;
+	VertexOHalfEdgeIter operator+(int _n) {
+		VertexOHalfEdgeIter cpy = *this;
 		for(int i = 0; i < _n; ++i) {
 			++cpy;
 		}
 		return cpy;
 	}
-	VertexOHalfedgeIter operator-(int _n) {
-		VertexOHalfedgeIter cpy = *this;
+	VertexOHalfEdgeIter operator-(int _n) {
+		VertexOHalfEdgeIter cpy = *this;
 		for(int i = 0; i < _n; ++i) {
 			--cpy;
 		}
 		return cpy;
 	}
-	VertexOHalfedgeIter& operator+=(int _n) {
+	VertexOHalfEdgeIter& operator+=(int _n) {
 		for(int i = 0; i < _n; ++i) {
 			++(*this);
 		}
 		return *this;
 	}
-	VertexOHalfedgeIter& operator-=(int _n) {
+	VertexOHalfEdgeIter& operator-=(int _n) {
 		for(int i = 0; i < _n; ++i) {
 			--(*this);
 		}
 		return *this;
 	}
 
-	VertexOHalfedgeIter& operator++();
-	VertexOHalfedgeIter& operator--();
+	VertexOHalfEdgeIter& operator++();
+	VertexOHalfEdgeIter& operator--();
 
 private:
 

@@ -70,6 +70,21 @@ Note also that most of the iterators and circulators rely on these adjacency lis
 so, many of them do not work unless OpenVolumeMesh::PolyhedralMesh::update_adjacencies()
 is called.
 
+\section index_based Using handles to address the entities of a mesh
+
+%OpenVolumeMesh is an index-based data structure where generally all entities
+are stored in linear memory arrays (STL vectors). So, each of the entities
+is uniquely defined through its handle which is a simple class that encapsulates
+the index of it in the respective array it is stored in. This makes sure
+the entities can be accessed in \f$O(1)\f$. Each of the distinct entity
+types has its own handle class in order to avoid ambiguity when accessing
+elements at compile time. The handle classes are each derived from a common
+base class called, OpenVolumeMesh::OpenVolumeMeshHandle. The iterators as well
+as the circulators are designed to return a handle to an entity on dereference
+rather than a reference to the entity itself. A special constant,
+OpenVolumeMesh::PolyhedralMesh::InvalidVertexHandle, etc., for each entity
+is used when trying to access non-existing entities.
+
 \section genericity Genericity
 
 \subsection generic_embedding Generic Embedding

@@ -2,4 +2,57 @@
 
 \page tutorial_02 Tutorial 02: Using Iterators
 
+%OpenVolumeMesh is shipped with a set of useful iterators and circulators to
+comfortably address the entities (local neighborhood of entities) in a polyhedral mesh.
+See Section \ref iterators_and_circulators for a more detailed description of all
+available iterators and circulators. In this tutorial, we examine how to use the iterators
+that come along with %OpenVolumeMesh.
+
+In the first example, we simply iterate over all half-edges of a mesh using
+the OpenVolumeMesh::HalfEdgeIter iterator class:
+
+\code
+typedef OpenVolumeMesh::Geometry::Vec3f Vec3f;
+
+// Instantiate e.g. a hexahedral mesh
+OpenVolumeMesh::HexahedralMesh<Vec3f> myMesh;
+
+// Fill mesh with geometry
+...
+
+// Iterate over all half-edges
+for(OpenVolumeMesh::HexahedralMesh<Vec3f>::HalfEdgeIter he_it = myMesh.halfedges_begin();
+    he_it != myMesh.halfedges_end(); ++he_it) {
+
+    // Now dereferencing he_it returns a half-edge handle
+    ...
+}
+\endcode
+
+In the next example, we iterate over all incident outgoing half-edges of a given
+vertex.
+
+\code
+typedef OpenVolumeMesh::Geometry::Vec3f Vec3f;
+
+// Instantiate a polyhedral mesh
+OpenVolumeMesh::PolyhedralMesh<Vec3f> myMesh;
+
+// Fill mesh with geometry
+...
+
+typedef OpenVolumeMesh::PolyhedralMesh<Vec3f>::VertexHandle VertexHandle;
+
+// Get first vertex in mesh
+VertexHandle vh = *(myMesh.vertices_begin());
+
+// Iterate over all outgoing half-edges of vertex vh
+for(OpenVolumeMesh::PolyhedralMesh<Vec3f>::VertexOHalfEdgeIter voh_it = myMesh.voh_iter(vh);
+    voh_it.valid(); ++voh_it) {
+
+    // Now dereferencing voh_it returns a half-edge handle
+    ...
+}
+\endcode
+
 **/
