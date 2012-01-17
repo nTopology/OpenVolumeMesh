@@ -51,7 +51,7 @@
 namespace OpenVolumeMesh {
 
 /**
- * \class HexahedralMesh A data structure basing on PolyhedralMesh with specializations for hexahedra
+ * \class HexahedralMesh< VecT > A data structure basing on PolyhedralMesh with specializations for hexahedra.
  *
  * The hexahedron has an induced "virtual" coordinate system. This supposes
  * the incident half-faces to be given in a specific order.
