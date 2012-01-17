@@ -58,7 +58,8 @@ for(OpenVolumeMesh::PolyhedralMesh<Vec3f>::VertexOHalfEdgeIter voh_it = myMesh.v
 In the last example, we create a hexahedral mesh and use its specialized OpenVolumeMesh::CellSheetCellIter
 iterator class. This iterator expects a cell handle as parameter and iterates over all adjacent cells
 in the same \e sheet. A sheet is, in the terms of the \e spatial \e twist \e continuum, short STC,
-a "layer" of hexahedra as illustrated in the following figure. The gray shaded hexahedra form
+a "layer" of hexahedra as illustrated in the following figure. For rurther reading on STC,
+refer to \cite MurdochSTC. The gray shaded hexahedra form
 a sheet, all other cells (except the outlines of the boundary cells) are invisible in this illustration.
 
 \image html sheet_illustration.png
