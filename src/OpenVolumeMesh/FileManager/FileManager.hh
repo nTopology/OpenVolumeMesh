@@ -53,6 +53,8 @@ namespace IO {
 /**
  * \class FileManager
  * \brief Read/Write mesh data from/to files
+ *
+ * \todo Implement binary file support
  */
 
 class FileManager {
