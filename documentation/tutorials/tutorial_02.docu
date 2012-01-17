@@ -55,4 +55,43 @@ for(OpenVolumeMesh::PolyhedralMesh<Vec3f>::VertexOHalfEdgeIter voh_it = myMesh.v
 }
 \endcode
 
+In the last example, we create a hexahedral mesh and use its specialized OpenVolumeMesh::CellSheetCellIter
+iterator class. This iterator expects a cell handle as parameter and iterates over all adjacent cells
+in the same \e sheet. A sheet is, in the terms of the \e spatial \e twist \e continuum, short STC,
+a "layer" of hexahedra as illustrated in the following figure. The gray shaded hexahedra form
+a sheet, all other cells (except the outlines of the boundary cells) are invisible in this illustration.
+
+\image html sheet_illustration.png
+
+Starting from a hexahedron, we determine its virtual axis that is \e orthogonal to the desired sheet
+(note that there are always two opposing virtual axes that are orthogonal to such a sheet).
+We create our sheet iterator by passing the reference cell's handle as well as an orthogonal
+virtual axis with respect to that cell to the iterator's constructor. The iterators then
+iterates over all directly adjacent cells in the same sheet (those hexahedra that share a common
+face with the reference hexahedron). Consider the following code:
+
+\code
+typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
+
+typdef OpenVolumeMesh::HexahedralMesh<Vec3d> HexahedralMeshV3d;
+
+// Instantiate a hexahedral mesh
+HexahedralMeshV3d myMesh;
+
+// Fill mesh with geometry
+...
+
+// Get handle of first cell
+HexahedralMeshV3d::CellHandle ch = *(myMesh.cells_begin());
+
+// Iterate over the hexahedra in the same sheet that are adjacent
+// to the reference hexahedron (cell handle ch)
+for(HexahedralMeshV3d::CellSheetCellIter csc_it = myMesh.csc_iter(ch);
+    csc_it.valid(); ++csc_it) {
+
+    // Now dereferencing csc_it returns a cell handle
+    ...
+}
+\endcode
+
 **/
