@@ -333,7 +333,7 @@ private:
 	typename std::set<CellHandle>::const_iterator cell_iter_;
 };
 
-template <class VecT> class HalfedgeCellIter : public BaseIterator<VecT,
+template <class VecT> class HalfEdgeCellIter : public BaseIterator<VecT,
 	typename PolyhedralMesh<VecT>::HalfEdgeHandle,
 	typename PolyhedralMesh<VecT>::CellHandle> {
 public:
@@ -342,48 +342,48 @@ public:
 			typename PolyhedralMesh<VecT>::CellHandle> BaseIter;
 	typedef typename PolyhedralMesh<VecT>::HalfEdgeHandle HalfEdgeHandle;
 
-	HalfedgeCellIter(const HalfEdgeHandle& _heIdx, const PolyhedralMesh<VecT>* _mesh);
+	HalfEdgeCellIter(const HalfEdgeHandle& _heIdx, const PolyhedralMesh<VecT>* _mesh);
 
 	// Post increment/decrement operator
-	HalfedgeCellIter operator++(int) {
-		HalfedgeCellIter cpy = *this;
+	HalfEdgeCellIter operator++(int) {
+		HalfEdgeCellIter cpy = *this;
 		++(*this);
 		return cpy;
 	}
-	HalfedgeCellIter operator--(int) {
-		HalfedgeCellIter cpy = *this;
+	HalfEdgeCellIter operator--(int) {
+		HalfEdgeCellIter cpy = *this;
 		--(*this);
 		return cpy;
 	}
-	HalfedgeCellIter operator+(int _n) {
-		HalfedgeCellIter cpy = *this;
+	HalfEdgeCellIter operator+(int _n) {
+		HalfEdgeCellIter cpy = *this;
 		for(int i = 0; i < _n; ++i) {
 			++cpy;
 		}
 		return cpy;
 	}
-	HalfedgeCellIter operator-(int _n) {
-		HalfedgeCellIter cpy = *this;
+	HalfEdgeCellIter operator-(int _n) {
+		HalfEdgeCellIter cpy = *this;
 		for(int i = 0; i < _n; ++i) {
 			--cpy;
 		}
 		return cpy;
 	}
-	HalfedgeCellIter& operator+=(int _n) {
+	HalfEdgeCellIter& operator+=(int _n) {
 		for(int i = 0; i < _n; ++i) {
 			++(*this);
 		}
 		return *this;
 	}
-	HalfedgeCellIter& operator-=(int _n) {
+	HalfEdgeCellIter& operator-=(int _n) {
 		for(int i = 0; i < _n; ++i) {
 			--(*this);
 		}
 		return *this;
 	}
 
-	HalfedgeCellIter& operator++();
-	HalfedgeCellIter& operator--();
+	HalfEdgeCellIter& operator++();
+	HalfEdgeCellIter& operator--();
 
 private:
 	int cur_index_;

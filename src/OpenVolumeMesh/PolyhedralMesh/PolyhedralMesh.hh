@@ -170,7 +170,7 @@ public:
     friend class VertexOHalfEdgeIter<VecT>;
     friend class HalfEdgeHalfFaceIter<VecT>;
     friend class VertexCellIter<VecT>;
-    friend class HalfedgeCellIter<VecT>;
+    friend class HalfEdgeCellIter<VecT>;
     friend class CellVertexIter<VecT>;
     friend class CellCellIter<VecT>;
     friend class BoundaryFaceIter<VecT>;
@@ -181,19 +181,19 @@ public:
     friend class HalfFaceIter<VecT>;
     friend class CellIter<VecT>;
 
-    typedef class VertexOHalfEdgeIter<VecT> 	VertexOHalfEdgeIter;
-    typedef class HalfEdgeHalfFaceIter<VecT> 	HalfEdgeHalfFaceIter;
+    typedef class VertexOHalfEdgeIter<VecT>     VertexOHalfEdgeIter;
+    typedef class HalfEdgeHalfFaceIter<VecT>    HalfEdgeHalfFaceIter;
     typedef class VertexCellIter<VecT> 		    VertexCellIter;
-    typedef class HalfedgeCellIter<VecT> 		  HalfedgeCellIter;
+    typedef class HalfEdgeCellIter<VecT> 		HalfEdgeCellIter;
     typedef class CellVertexIter<VecT> 		    CellVertexIter;
-    typedef class CellCellIter<VecT> 			    CellCellIter;
-    typedef class BoundaryFaceIter<VecT> 		  BoundaryFaceIter;
-    typedef class VertexIter<VecT> 			      VertexIter;
-    typedef class EdgeIter<VecT> 				      EdgeIter;
-    typedef class HalfEdgeIter<VecT> 			    HalfEdgeIter;
-    typedef class FaceIter<VecT> 				      FaceIter;
-    typedef class HalfFaceIter<VecT> 			    HalfFaceIter;
-    typedef class CellIter<VecT> 				      CellIter;
+    typedef class CellCellIter<VecT> 			CellCellIter;
+    typedef class BoundaryFaceIter<VecT> 		BoundaryFaceIter;
+    typedef class VertexIter<VecT> 			    VertexIter;
+    typedef class EdgeIter<VecT> 				EdgeIter;
+    typedef class HalfEdgeIter<VecT> 			HalfEdgeIter;
+    typedef class FaceIter<VecT> 				FaceIter;
+    typedef class HalfFaceIter<VecT> 			HalfFaceIter;
+    typedef class CellIter<VecT> 				CellIter;
 
     VertexOHalfEdgeIter voh_iter(const VertexHandle& _idx) const {
     	return VertexOHalfEdgeIter(_idx, this);
@@ -207,8 +207,8 @@ public:
         return VertexCellIter(_idx, this);
     }
 
-    HalfedgeCellIter hec_iter(const HalfEdgeHandle& _idx) const {
-        return HalfedgeCellIter(_idx, this);
+    HalfEdgeCellIter hec_iter(const HalfEdgeHandle& _idx) const {
+        return HalfEdgeCellIter(_idx, this);
     }
 
     CellVertexIter cv_iter(const CellHandle& _idx) const {

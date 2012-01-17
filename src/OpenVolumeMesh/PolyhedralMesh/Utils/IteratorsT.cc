@@ -263,11 +263,11 @@ VertexCellIter<VecT>& VertexCellIter<VecT>::operator++() {
 }
 
 ////================================================================================================
-//// HalfedgeCellIter
+//// HalfEdgeCellIter
 ////================================================================================================
 
 template <class VecT>
-HalfedgeCellIter<VecT>::HalfedgeCellIter(const HalfEdgeHandle& _ref_h,
+HalfEdgeCellIter<VecT>::HalfEdgeCellIter(const HalfEdgeHandle& _ref_h,
         const PolyhedralMesh<VecT>* _mesh) :
 BaseIter(_mesh, _ref_h),
 cur_index_(0) {
@@ -299,7 +299,7 @@ cur_index_(0) {
 }
 
 template <class VecT>
-HalfedgeCellIter<VecT>& HalfedgeCellIter<VecT>::operator--() {
+HalfEdgeCellIter<VecT>& HalfEdgeCellIter<VecT>::operator--() {
 
 	--cur_index_;
 	if(cur_index_ < 0) {
@@ -312,7 +312,7 @@ HalfedgeCellIter<VecT>& HalfedgeCellIter<VecT>::operator--() {
 }
 
 template <class VecT>
-HalfedgeCellIter<VecT>& HalfedgeCellIter<VecT>::operator++() {
+HalfEdgeCellIter<VecT>& HalfEdgeCellIter<VecT>::operator++() {
 
 	++cur_index_;
 	if((unsigned int)cur_index_ >= BaseIter::mesh()->incident_hfs_per_he_[BaseIter::ref_handle()].size()) {
