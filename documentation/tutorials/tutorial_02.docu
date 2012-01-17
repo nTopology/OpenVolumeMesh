@@ -22,7 +22,7 @@ OpenVolumeMesh::HexahedralMesh<Vec3f> myMesh;
 
 // Iterate over all half-edges
 for(OpenVolumeMesh::HexahedralMesh<Vec3f>::HalfEdgeIter he_it = myMesh.halfedges_begin();
-    he_it != myMesh.halfedges_end(); ++he_it) {
+        he_it != myMesh.halfedges_end(); ++he_it) {
 
     // Now dereferencing he_it returns a half-edge handle
     ...
@@ -48,7 +48,7 @@ VertexHandle vh = *(myMesh.vertices_begin());
 
 // Iterate over all outgoing half-edges of vertex vh
 for(OpenVolumeMesh::PolyhedralMesh<Vec3f>::VertexOHalfEdgeIter voh_it = myMesh.voh_iter(vh);
-    voh_it.valid(); ++voh_it) {
+        voh_it.valid(); ++voh_it) {
 
     // Now dereferencing voh_it returns a half-edge handle
     ...
@@ -87,7 +87,7 @@ HexahedralMeshV3d::CellHandle ch = *(myMesh.cells_begin());
 // Iterate over the hexahedra in the same sheet that are adjacent
 // to the reference hexahedron (cell handle ch)
 for(HexahedralMeshV3d::CellSheetCellIter csc_it = myMesh.csc_iter(ch);
-    csc_it.valid(); ++csc_it) {
+        csc_it.valid(); ++csc_it) {
 
     // Now dereferencing csc_it returns a cell handle
     ...
