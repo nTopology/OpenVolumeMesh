@@ -477,7 +477,8 @@ PolyhedralMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bo
     if(_topologyCheck) {
 
         /*
-         * Test if all halffaces are connected => Cell is closed
+         * Test if all halffaces are connected and form a two-manifold
+         * => Cell is closed
          *
          * The test works as follows: Put every incident halfedge of
          * all faces into a set. Only if all faces are pairwise

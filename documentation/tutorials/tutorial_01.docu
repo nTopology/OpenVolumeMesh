@@ -28,7 +28,15 @@ provides some specific topology checks and, more importantly,
 a set of specialized iterators.
 
 The following code creates a polyhedral mesh instance and fills it
-with two adjacent tetrahedra:
+with two adjacent tetrahedra. Note that when defining cells in %OpenVolumeMesh,
+the incident half-faces that define a cell are supposed to form a two-manifold.
+This particularly implies that they are supposed to have the same orientation
+(whether their normal points inside the cell or outside the cell does not matter,
+but convention assumes the half-face normals to point inside the cell).
+%OpenVolumeMesh per default performs a check whether the specified half-faces
+form a two-manifold when adding a cell. This check can explicitly turned off
+by passing false as second parameter to OpenVolumeMesh::PolyhedralMesh<VecT>::add_face().
+Note that in these cases, it is not guaranteed that a given mesh is three-manifold.
 
 \code
 typedef OpenVolumeMesh::Geometry::Vec3d Vec3d

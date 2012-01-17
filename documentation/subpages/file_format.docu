@@ -8,8 +8,9 @@ As for now, the file format only supports plain text, but a support
 for binary files is planned. Also the data type for vertices is restricted
 to OpenVolumeMesh::Geometry::Vec3d and the serialization of the
 properties is restricted to integral types for the moment.
-A full generic support is also planned for the future. Find the
-file format specification below.
+A full generic support is also planned for the future.
+%OpenVolumeMesh files should have the file name extension *.ovm.
+Find the file format specification below.
 
 \section file_spec File Format Specification
 

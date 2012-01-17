@@ -118,12 +118,9 @@ class OpenVolumeMeshCell;
     the half-edge index of the second half-edge of edge k is 2*k+1.
     This works analogously for half-faces.
 
-    \TODO:
-
-    - Make vertex points, edges, faces, etc.
-      be default properties
-    - Make status be a dynamic property for each entity
-    - Implement const iterators
+    \todo Make vertex points, edges, faces, etc. be default properties
+    \todo Make status be a dynamic property for each entity
+    \todo Implement const iterators
 */
 
 //***************************************************************************

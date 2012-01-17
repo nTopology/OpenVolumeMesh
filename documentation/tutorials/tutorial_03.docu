@@ -2,4 +2,61 @@
 
 \page tutorial_03 Tutorial 03: Adding Properties
 
+In %OpenVolumeMesh it is possible to attach multiple properties to each of the entities.
+Due to the use of STL template programming, these properties can be of any data type.
+In this tutorial, we learn how to attach properties to the entities of a polyhedral mesh.
+
+The following example shows how to attach a floating-point property to the vertices of a mesh.
+
+\code
+typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
+typedef OpenVolumeMesh::PolyhedralMesh<Vec3d> PolyhedralMeshV3d;
+
+void someFunction() {
+
+    // Create mesh object
+    PolyhedralMeshV3d myMesh;
+    
+    // Fill mesh with geometry
+    ...
+    
+    // Add property
+    OpenVolumeMesh::VPropHandleT<float> floatProp;
+    myMesh.add_property(floatProp, "Vertex Weights");
+    
+    // Now, iterate over all vertices and set property value to some number
+    float val = 0.0f;
+    for(PolyhedralMeshV3d::VertexIter v_it = myMesh.vertices_begin();
+            v_it != myMesh.vertices_end(); ++v_it) {
+    
+            // Set property value
+            myMesh.property(floatProp, *v_it) = val;
+    
+            // Increase value by 1.5
+            val += 1.5f;
+    }
+    
+    // Call some other function
+    someOtherFunction(myMesh);
+    
+    // Remove property from mesh
+    myMesh.remove_property(floatProp);
+}
+
+void someOtherFunction(PolyhedralMeshV3d& _mesh) {
+
+    // Try to get property handle by its name
+    OpenVolumeMesh::VPropHandleT<float> propHandle;
+    if(_mesh.get_property_handle(propHandle, "Vertex Weights")) {
+        
+        // Now propHandle is a valid handle to the property.
+        // Access property value via _mesh.property(propHandle, vertexHandle).
+    }
+}
+\endcode
+
+For all other entities, this works the same way. Use class OpenVolumeMesh::EPropHandleT
+as handle type for edge properties, OpenVolumeMesh::HFPropHandleT for half-face properties,
+and so on...
+
 **/
