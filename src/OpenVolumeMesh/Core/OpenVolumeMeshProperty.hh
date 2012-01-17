@@ -77,7 +77,7 @@ class OpenVolumeMeshPropertyT: public OpenVolumeMeshBaseProperty {
 public:
 
 	typedef T 										Value;
-	typedef std::vector<T> 				vector_type;
+	typedef std::vector<T> 				            vector_type;
 	typedef T 										value_type;
 	typedef typename vector_type::reference 		reference;
 	typedef typename vector_type::const_reference 	const_reference;

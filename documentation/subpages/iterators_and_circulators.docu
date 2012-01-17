@@ -23,13 +23,20 @@ The following sections provide a concise overview of the iterators that come alo
 
 \section intrinsic_iterators Intrinsic Iterators
 
-\li OpenVolumeMesh::VertexIter: Iterate over all vertices of a mesh.
-\li OpenVolumeMesh::EdgeIter: Iterate over all edges of a mesh.
-\li OpenVolumeMesh::HalfEdgeIter: Iterate over all half-edges of a mesh.
-\li OpenVolumeMesh::FaceIter: Iterate over all faces of a mesh.
-\li OpenVolumeMesh::HalfFaceIter: Iterate over all half-faces of a mesh.
-\li OpenVolumeMesh::CellIter: Iterate over all cells of a mesh.
-\li OpenVolumeMesh::CellVertexIter: Iterate over all vertices of a given cell.
+\li OpenVolumeMesh::VertexIter: 
+    Iterate over all vertices of a mesh.
+\li OpenVolumeMesh::EdgeIter:
+    Iterate over all edges of a mesh.
+\li OpenVolumeMesh::HalfEdgeIter:
+    Iterate over all half-edges of a mesh.
+\li OpenVolumeMesh::FaceIter:
+    Iterate over all faces of a mesh.
+\li OpenVolumeMesh::HalfFaceIter:
+    Iterate over all half-faces of a mesh.
+\li OpenVolumeMesh::CellIter:
+    Iterate over all cells of a mesh.
+\li OpenVolumeMesh::CellVertexIter:
+    Iterate over all vertices of a given cell.
 
     
 \section adjacency_depending_iterators Bottom-Up Adjacency Dependent Iterators and Circulators
@@ -45,8 +52,10 @@ The following sections provide a concise overview of the iterators that come alo
 
 \subsection hexahedral_mesh_iterators Specializations for Hexahedral Meshes
 
-\li OpenVolumeMesh::CellSheetCellIter
-\li OpenVolumeMesh::HalfFaceSheetHalfFaceIter
-\li OpenVolumeMesh::OutsideNeighborHalfFaceIter
+\li OpenVolumeMesh::CellSheetCellIter: Iterate over all adjacent hexahedra in the same sheet of a given hexahedron. Also see \ref tutorial_02, last example.
+\li OpenVolumeMesh::HalfFaceSheetHalfFaceIter: Iterate over all adjacent half-faces of a given half-face in the same sheet of hexahedra.
+\li OpenVolumeMesh::OutsideNeighborHalfFaceIter: Iterate over all adjacent boundary half-faces (outside) of a given boundary half-face.
+
+\todo Make figures for all iterators.
 
 **/
