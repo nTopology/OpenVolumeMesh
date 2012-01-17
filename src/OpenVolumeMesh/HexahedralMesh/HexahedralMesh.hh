@@ -51,13 +51,31 @@
 namespace OpenVolumeMesh {
 
 /**
- * \class Hexahedral Mesh data structure basing on PolyhedralMesh
+ * \class HexahedralMesh Hexahedral mesh data structure basing on PolyhedralMesh
  *
- * Define hexahedra to span a 3D coordinate system:
+ * The hexahedron has an induced "virtual" coordinate system. This supposes
+ * the incident half-faces to be given in a specific order.
+ * See the following figure for an illustration of the induced
+ * coordinate system.
  *
- * X-axis: From X-Front to X-Back face
- * Y-axis: From Y-Front to Y-Back face
- * Z-axis: From Z-Front to Z-Back face
+ * \image html induced_coordsys.png
+ *
+ * The abbreviations XF, XB, etc. are short for
+ *
+ * \li \c XF: X-axis front face
+ * \li \c XB: X-axis back face
+ * \li \c YF: Y-axis front face
+ * \li \c ...
+ *
+ * The axes refer to the intrinsic "virtual" axes of the hexahedron.
+ * The incident half-faces have to be defined in the following order:
+ *
+ * \li \c 1. XF
+ * \li \c 2. XB
+ * \li \c 3. YF
+ * \li \c 4. YB
+ * \li \c 5. ZF
+ * \li \c 6. ZB
  */
 
 template <typename VecT>
