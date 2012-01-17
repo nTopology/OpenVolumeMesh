@@ -60,6 +60,8 @@ void someFunction() {
 
    // Read mesh from file "myMesh.ovm" in the current directory
    fileManager.readFile("myMesh.ovm", myMesh);
+
+   // Now myMesh contains the geometry specified in file "myMesh.ovm"
 }
 \endcode
 
