@@ -252,6 +252,232 @@ TEST_F(PolyhedralMeshBase, CreateSimpleMeshWithoutCells) {
     }
 }
 
+TEST_F(PolyhedralMeshBase, TopologyCheckPass) {
+
+    // Add eight vertices
+    VertexHandle v0 = mesh_.add_vertex(Vec3d(-1.0, 0.0, 0.0));
+    VertexHandle v1 = mesh_.add_vertex(Vec3d( 0.0, 0.0, 1.0));
+    VertexHandle v2 = mesh_.add_vertex(Vec3d( 1.0, 0.0, 0.0));
+    VertexHandle v3 = mesh_.add_vertex(Vec3d( 0.0, 1.0, 0.0));
+
+    std::vector<VertexHandle> vertices;
+
+    // Add faces
+    vertices.push_back(v0); vertices.push_back(v1);vertices.push_back(v3);
+    FaceHandle f0 = mesh_.add_face(vertices);
+
+    vertices.clear();
+    vertices.push_back(v1); vertices.push_back(v2);vertices.push_back(v3);
+    FaceHandle f1 = mesh_.add_face(vertices);
+
+    vertices.clear();
+    vertices.push_back(v0); vertices.push_back(v1);vertices.push_back(v2);
+    FaceHandle f2 = mesh_.add_face(vertices);
+
+    vertices.clear();
+    vertices.push_back(v0); vertices.push_back(v3);vertices.push_back(v2);
+    FaceHandle f3 = mesh_.add_face(vertices);
+
+    std::vector<HalfFaceHandle> halffaces;
+
+    // Add first tetrahedron
+    halffaces.push_back(mesh_.halfface_handle(f0, 1));
+    halffaces.push_back(mesh_.halfface_handle(f1, 1));
+    halffaces.push_back(mesh_.halfface_handle(f2, 0));
+    halffaces.push_back(mesh_.halfface_handle(f3, 1));
+    EXPECT_NE(PolyhedralMesh::InvalidCellHandle, mesh_.add_cell(halffaces));
+}
+
+TEST_F(PolyhedralMeshBase, TopologyCheckFail) {
+
+    // Add eight vertices
+    VertexHandle v0 = mesh_.add_vertex(Vec3d(-1.0, 0.0, 0.0));
+    VertexHandle v1 = mesh_.add_vertex(Vec3d( 0.0, 0.0, 1.0));
+    VertexHandle v2 = mesh_.add_vertex(Vec3d( 1.0, 0.0, 0.0));
+    VertexHandle v3 = mesh_.add_vertex(Vec3d( 0.0, 1.0, 0.0));
+
+    std::vector<VertexHandle> vertices;
+
+    // Add faces
+    vertices.push_back(v0); vertices.push_back(v1);vertices.push_back(v3);
+    FaceHandle f0 = mesh_.add_face(vertices);
+
+    vertices.clear();
+    vertices.push_back(v1); vertices.push_back(v2);vertices.push_back(v3);
+    FaceHandle f1 = mesh_.add_face(vertices);
+
+    vertices.clear();
+    vertices.push_back(v0); vertices.push_back(v1);vertices.push_back(v2);
+    FaceHandle f2 = mesh_.add_face(vertices);
+
+    vertices.clear();
+    vertices.push_back(v0); vertices.push_back(v3);vertices.push_back(v2);
+    FaceHandle f3 = mesh_.add_face(vertices);
+
+    std::vector<HalfFaceHandle> halffaces;
+
+    // Add first tetrahedron
+    halffaces.push_back(mesh_.halfface_handle(f0, 1));
+    halffaces.push_back(mesh_.halfface_handle(f1, 1));
+    halffaces.push_back(mesh_.halfface_handle(f2, 0));
+    halffaces.push_back(mesh_.halfface_handle(f3, 0));
+    EXPECT_EQ(PolyhedralMesh::InvalidCellHandle, mesh_.add_cell(halffaces));
+}
+
+TEST_F(HexahedralMeshBase, TopologyCheckPass) {
+
+    VertexHandle v0 = mesh_.add_vertex(Vec3d(-1.0, -1.0, -1.0));
+    VertexHandle v1 = mesh_.add_vertex(Vec3d( 1.0, -1.0, -1.0));
+    VertexHandle v2 = mesh_.add_vertex(Vec3d( 1.0,  1.0, -1.0));
+    VertexHandle v3 = mesh_.add_vertex(Vec3d(-1.0,  1.0, -1.0));
+    VertexHandle v4 = mesh_.add_vertex(Vec3d(-1.0, -1.0,  1.0));
+    VertexHandle v5 = mesh_.add_vertex(Vec3d( 1.0, -1.0,  1.0));
+    VertexHandle v6 = mesh_.add_vertex(Vec3d( 1.0,  1.0,  1.0));
+    VertexHandle v7 = mesh_.add_vertex(Vec3d(-1.0,  1.0,  1.0));
+
+    std::vector<VertexHandle> fvertices;
+
+    fvertices.push_back(v3);
+    fvertices.push_back(v2);
+    fvertices.push_back(v1);
+    fvertices.push_back(v0);
+
+    FaceHandle fh0 = mesh_.add_face(fvertices);
+
+    fvertices.clear();
+
+    fvertices.push_back(v4);
+    fvertices.push_back(v5);
+    fvertices.push_back(v6);
+    fvertices.push_back(v7);
+
+    FaceHandle fh1 = mesh_.add_face(fvertices);
+
+    fvertices.clear();
+
+    fvertices.push_back(v0);
+    fvertices.push_back(v4);
+    fvertices.push_back(v7);
+    fvertices.push_back(v3);
+
+    FaceHandle fh2 = mesh_.add_face(fvertices);
+
+    fvertices.clear();
+
+    fvertices.push_back(v1);
+    fvertices.push_back(v2);
+    fvertices.push_back(v6);
+    fvertices.push_back(v5);
+
+    FaceHandle fh3 = mesh_.add_face(fvertices);
+
+    fvertices.clear();
+
+    fvertices.push_back(v7);
+    fvertices.push_back(v6);
+    fvertices.push_back(v2);
+    fvertices.push_back(v3);
+
+    FaceHandle fh4 = mesh_.add_face(fvertices);
+
+    fvertices.clear();
+
+    fvertices.push_back(v0);
+    fvertices.push_back(v1);
+    fvertices.push_back(v5);
+    fvertices.push_back(v4);
+
+    FaceHandle fh5 = mesh_.add_face(fvertices);
+
+    std::vector<HalfFaceHandle> chfaces;
+
+    chfaces.push_back(mesh_.halfface_handle(fh0, 0));
+    chfaces.push_back(mesh_.halfface_handle(fh1, 0));
+    chfaces.push_back(mesh_.halfface_handle(fh2, 0));
+    chfaces.push_back(mesh_.halfface_handle(fh3, 0));
+    chfaces.push_back(mesh_.halfface_handle(fh4, 0));
+    chfaces.push_back(mesh_.halfface_handle(fh5, 0));
+
+    EXPECT_NE(HexahedralMesh::InvalidCellHandle, mesh_.add_cell(chfaces));
+}
+
+TEST_F(HexahedralMeshBase, TopologyCheckFail) {
+
+    VertexHandle v0 = mesh_.add_vertex(Vec3d(-1.0, -1.0, -1.0));
+    VertexHandle v1 = mesh_.add_vertex(Vec3d( 1.0, -1.0, -1.0));
+    VertexHandle v2 = mesh_.add_vertex(Vec3d( 1.0,  1.0, -1.0));
+    VertexHandle v3 = mesh_.add_vertex(Vec3d(-1.0,  1.0, -1.0));
+    VertexHandle v4 = mesh_.add_vertex(Vec3d(-1.0, -1.0,  1.0));
+    VertexHandle v5 = mesh_.add_vertex(Vec3d( 1.0, -1.0,  1.0));
+    VertexHandle v6 = mesh_.add_vertex(Vec3d( 1.0,  1.0,  1.0));
+    VertexHandle v7 = mesh_.add_vertex(Vec3d(-1.0,  1.0,  1.0));
+
+    std::vector<VertexHandle> fvertices;
+
+    fvertices.push_back(v3);
+    fvertices.push_back(v2);
+    fvertices.push_back(v1);
+    fvertices.push_back(v0);
+
+    FaceHandle fh0 = mesh_.add_face(fvertices);
+
+    fvertices.clear();
+
+    fvertices.push_back(v4);
+    fvertices.push_back(v5);
+    fvertices.push_back(v6);
+    fvertices.push_back(v7);
+
+    FaceHandle fh1 = mesh_.add_face(fvertices);
+
+    fvertices.clear();
+
+    fvertices.push_back(v0);
+    fvertices.push_back(v4);
+    fvertices.push_back(v7);
+    fvertices.push_back(v3);
+
+    FaceHandle fh2 = mesh_.add_face(fvertices);
+
+    fvertices.clear();
+
+    fvertices.push_back(v1);
+    fvertices.push_back(v2);
+    fvertices.push_back(v6);
+    fvertices.push_back(v5);
+
+    FaceHandle fh3 = mesh_.add_face(fvertices);
+
+    fvertices.clear();
+
+    fvertices.push_back(v7);
+    fvertices.push_back(v6);
+    fvertices.push_back(v2);
+    fvertices.push_back(v3);
+
+    FaceHandle fh4 = mesh_.add_face(fvertices);
+
+    fvertices.clear();
+
+    fvertices.push_back(v0);
+    fvertices.push_back(v1);
+    fvertices.push_back(v5);
+    fvertices.push_back(v4);
+
+    FaceHandle fh5 = mesh_.add_face(fvertices);
+
+    std::vector<HalfFaceHandle> chfaces;
+
+    chfaces.push_back(mesh_.halfface_handle(fh0, 0));
+    chfaces.push_back(mesh_.halfface_handle(fh1, 1));
+    chfaces.push_back(mesh_.halfface_handle(fh2, 0));
+    chfaces.push_back(mesh_.halfface_handle(fh3, 0));
+    chfaces.push_back(mesh_.halfface_handle(fh4, 0));
+    chfaces.push_back(mesh_.halfface_handle(fh5, 0));
+
+    EXPECT_EQ(HexahedralMesh::InvalidCellHandle, mesh_.add_cell(chfaces));
+}
+
 TEST_F(PolyhedralMeshBase, VolumeMeshConnectivity) {
 
     generatePolyhedralMesh(mesh_);
