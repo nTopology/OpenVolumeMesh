@@ -365,9 +365,6 @@ PolyhedralMesh<VecT>::add_face(const std::vector<HalfEdgeHandle>& _halfedges, bo
             toVertices.insert(halfedge(*it).to_vertex());
         }
 
-        // Debug
-        assert(fromVertices.size() == toVertices.size());
-
         for(typename std::set<VertexHandle>::const_iterator v_it = fromVertices.begin();
                 v_it != fromVertices.end(); ++v_it) {
             if(toVertices.count(*v_it) != 1) {
@@ -480,17 +477,12 @@ PolyhedralMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bo
          * Test if all halffaces are connected and form a two-manifold
          * => Cell is closed
          *
-         * The test works as follows: Put every incident halfedge of
-         * all faces into a set. Only if all faces are pairwise
-         * connected via one common edge (two opposing halfedges)
-         * every pair of halfedges that belong to each commonly shared
-         * edge (between each pair of faces) will appear in the set.
-         * This means, the number of edges, belonging to each of
-         * the halfedges is exactly the number of halfedges divided
-         * by 2. This follows from the Euler-Poincare theorem.
+         * This test is simple: The number of involved half-edges has to be
+         * exactly twice the number of involved edges.
          */
 
         std::set<HalfEdgeHandle> incidentHalfedges;
+        std::set<EdgeHandle>     incidentEdges;
 
         for(typename std::vector<HalfFaceHandle>::const_iterator it = _halffaces.begin();
                 it != _halffaces.end(); ++it) {
@@ -499,21 +491,16 @@ PolyhedralMesh<VecT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bo
             for(typename std::vector<HalfEdgeHandle>::const_iterator he_it = hface.halfedges().begin();
                     he_it != hface.halfedges().end(); ++he_it) {
                 incidentHalfedges.insert(*he_it);
+                incidentEdges.insert(edge_handle(*he_it));
             }
         }
 
-        // Now test if all pairs of halfedges were added for all incident edges
-        std::set<EdgeHandle> commonEdges;
-        for(typename std::set<HalfEdgeHandle>::const_iterator he_it = incidentHalfedges.begin();
-                he_it != incidentHalfedges.end(); ++he_it) {
-            commonEdges.insert(edge_handle(*he_it));
-        }
-
-        if((commonEdges.size() * 2u != incidentHalfedges.size()) ||
-                (commonEdges.size() != _halffaces.size() * 2u)) {
+        if(incidentHalfedges.size() != (incidentEdges.size() * 2u)) {
             std::cerr << "The specified halffaces are not connected!" << std::endl;
             return InvalidCellHandle;
         }
+
+        // The halffaces are now guaranteed to form a two-manifold
     }
 
     // Create new cell
