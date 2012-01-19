@@ -46,43 +46,43 @@ typedef OpenVolumeMesh::PolyhedralMesh<Vec3d> PolyhedralMeshV3d;
 PolyhedralMeshV3d myMesh;
 
 // Add eight vertices
-PolyhedralMesh::VertexHandle v0 = myMesh.add_vertex(Vec3d(-1.0, 0.0, 0.0));
-PolyhedralMesh::VertexHandle v1 = myMesh.add_vertex(Vec3d( 0.0, 0.0, 1.0));
-PolyhedralMesh::VertexHandle v2 = myMesh.add_vertex(Vec3d( 1.0, 0.0, 0.0));
-PolyhedralMesh::VertexHandle v3 = myMesh.add_vertex(Vec3d( 0.0, 0.0,-1.0));
-PolyhedralMesh::VertexHandle v4 = myMesh.add_vertex(Vec3d( 0.0, 1.0, 0.0));
+PolyhedralMeshV3d::VertexHandle v0 = myMesh.add_vertex(Vec3d(-1.0, 0.0, 0.0));
+PolyhedralMeshV3d::VertexHandle v1 = myMesh.add_vertex(Vec3d( 0.0, 0.0, 1.0));
+PolyhedralMeshV3d::VertexHandle v2 = myMesh.add_vertex(Vec3d( 1.0, 0.0, 0.0));
+PolyhedralMeshV3d::VertexHandle v3 = myMesh.add_vertex(Vec3d( 0.0, 0.0,-1.0));
+PolyhedralMeshV3d::VertexHandle v4 = myMesh.add_vertex(Vec3d( 0.0, 1.0, 0.0));
 
-std::vector<PolyhedralMesh::VertexHandle> vertices;
+std::vector<PolyhedralMeshV3d::VertexHandle> vertices;
 
 // Add faces
 vertices.push_back(v0); vertices.push_back(v1);vertices.push_back(v3);
-FaceHandle f0 = _mesh.add_face(vertices);
+PolyhedralMeshV3d::FaceHandle f0 = _mesh.add_face(vertices);
 
 vertices.clear();
 vertices.push_back(v2); vertices.push_back(v0);vertices.push_back(v3);
-FaceHandle f1 = _mesh.add_face(vertices);
+PolyhedralMeshV3d::FaceHandle f1 = _mesh.add_face(vertices);
 
 vertices.clear();
 vertices.push_back(v0); vertices.push_back(v2);vertices.push_back(v1);
-FaceHandle f2 = _mesh.add_face(vertices);
+PolyhedralMeshV3d::FaceHandle f2 = _mesh.add_face(vertices);
 
 vertices.clear();
 vertices.push_back(v1); vertices.push_back(v4);vertices.push_back(v3);
-FaceHandle f3 = _mesh.add_face(vertices);
+PolyhedralMeshV3d::FaceHandle f3 = _mesh.add_face(vertices);
 
 vertices.clear();
 vertices.push_back(v2); vertices.push_back(v3);vertices.push_back(v4);
-FaceHandle f4 = _mesh.add_face(vertices);
+PolyhedralMeshV3d::FaceHandle f4 = _mesh.add_face(vertices);
 
 vertices.clear();
 vertices.push_back(v2); vertices.push_back(v4);vertices.push_back(v1);
-FaceHandle f5 = _mesh.add_face(vertices);
+PolyhedralMeshV3d::FaceHandle f5 = _mesh.add_face(vertices);
 
 vertices.clear();
 vertices.push_back(v1); vertices.push_back(v2);vertices.push_back(v3);
-FaceHandle f6 = _mesh.add_face(vertices);
+PolyhedralMeshV3d::FaceHandle f6 = _mesh.add_face(vertices);
 
-std::vector<PolyhedralMeshHalf::FaceHandle> halffaces;
+std::vector<PolyhedralMeshV3d::HalfFaceHandle> halffaces;
 
 // Add first tetrahedron
 halffaces.push_back(_mesh.halfface_handle(f0, 1));
