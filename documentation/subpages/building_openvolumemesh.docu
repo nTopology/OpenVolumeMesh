@@ -59,4 +59,15 @@ sudo make install
 This installs the requested files into the \c lib and \c include folders in \c /usr/local (this is the default
 value that can easily be changed using \c ccmake).
 
+There is also a simple example in the \c examples folder in OpenVolumeMesh's root directory.
+This example has its own target defined in the CMake configuration file found in \c examples/CMakeLists.txt.
+This target is excluded from target \c all and has to be built explicitly.
+You can easily build it by typing:
+
+\code
+make simple_mesh
+\endcode
+
+The binary can then be found in \c Build/Examples, or whatever you have specified in the CMake configuration.
+
 **/
