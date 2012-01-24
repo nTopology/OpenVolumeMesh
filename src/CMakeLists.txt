@@ -64,7 +64,10 @@ install(DIRECTORY .
 
 endif ()
 
-# Add unittests target
-add_subdirectory(Unittests)
+# Only build unittests if not built as external library
+if(${PROJECT_NAME} MATCHES "OpenVolumeMesh")
+    # Add unittests target
+    add_subdirectory(Unittests)
+endif()
 
 
