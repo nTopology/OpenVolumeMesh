@@ -84,6 +84,8 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
      * Header
      */
 
+    bool header_found = true;
+
     // Get first line
     getCleanLine(iff, line);
     sstr.str(line);
@@ -92,9 +94,10 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     sstr >> s_tmp;
     std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);
     if(s_tmp != "OVM") {
-        iff.close();
-        std::cerr << "The specified file is not in OpenVolumeMesh format!" << std::endl;
-        return false;
+        //iff.close();
+        header_found = false;
+        std::cerr << "The specified might not be in OpenVolumeMesh format!" << std::endl;
+        //return false;
     }
 
     // Get ASCII/BINARY string
@@ -109,9 +112,14 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     /*
      * Vertices
      */
-    getCleanLine(iff, line);
-    sstr.clear();
-    sstr.str(line);
+    if(!header_found) {
+        sstr.clear();
+        sstr.str(line);
+    } else {
+        getCleanLine(iff, line);
+        sstr.clear();
+        sstr.str(line);
+    }
 
     sstr >> s_tmp;
     std::transform(s_tmp.begin(), s_tmp.end(), s_tmp.begin(), ::toupper);

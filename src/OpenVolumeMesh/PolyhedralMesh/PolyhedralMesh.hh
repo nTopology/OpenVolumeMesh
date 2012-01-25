@@ -156,6 +156,8 @@ public:
     typedef std::vector<Face>    Faces;
     typedef std::vector<Cell>    Cells;
 
+    typedef VecT PointT;
+
     //=====================================================================
     // Constructors/Destructor
     //=====================================================================
