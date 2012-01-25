@@ -58,8 +58,6 @@ namespace IO {
  */
 
 class FileManager {
-private:
-  typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
 public:
 
   /// Default constructor

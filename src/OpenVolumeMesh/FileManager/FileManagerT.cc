@@ -60,83 +60,6 @@ namespace IO {
 
 //==================================================
 
-FileManager::FileManager() {
-
-}
-
-//==================================================
-
-FileManager::~FileManager() {
-
-}
-
-//==================================================
-
-void FileManager::trimString(std::string& _string) const {
-
-    // Trim Both leading and trailing spaces
-    size_t start = _string.find_first_not_of(" \t\r\n");
-    size_t end = _string.find_last_not_of(" \t\r\n");
-
-    if((std::string::npos == start) || (std::string::npos == end)) {
-        _string = "";
-    } else {
-        _string = _string.substr(start, end - start + 1);
-    }
-}
-
-//==================================================
-
-void FileManager::extractQuotedText(std::string& _string) const {
-
-    // Trim Both leading and trailing quote marks
-    size_t start = _string.find_first_of("\""); ++start;
-    size_t end = _string.find_last_not_of("\"");
-
-    if((std::string::npos == start) || (std::string::npos == end)) {
-        _string = "";
-    } else {
-        _string = _string.substr(start, end - start + 1);
-    }
-}
-
-//==================================================
-
-bool FileManager::getCleanLine(std::istream& _ifs, std::string& _string, bool _skipEmptyLines) const {
-
-    // While we are not at the end of the file
-    while(true) {
-
-        // Get the current line:
-        std::getline(_ifs, _string);
-
-        // Remove whitespace at beginning and end
-        trimString(_string);
-
-        // Check if string is not empty ( otherwise we continue
-        if(_string.size() != 0) {
-
-            // Check if string is a comment ( starting with # )
-            if(_string[0] != '#') {
-                return true;
-            }
-
-        } else {
-            if(!_skipEmptyLines)
-                return true;
-        }
-
-        if(_ifs.eof()) {
-            std::cerr << "End of file reached while searching for input!" << std::endl;
-            return false;
-        }
-    }
-
-    return false;
-}
-
-//==================================================
-
 template <class MeshT>
 bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     bool _topologyCheck, bool _computeBottomUpAdjacencies, bool _computeFaceNormals) const {
@@ -153,8 +76,8 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     std::string line;
     std::string s_tmp;
     unsigned int c = 0u;
-    typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
-    Vec3d v = Vec3d(0.0, 0.0, 0.0);
+    typedef typename MeshT::PointT Point;
+    Point v = Point(0.0, 0.0, 0.0);
     unsigned int v1 = 0; unsigned int v2 = 0;
 
     /*
@@ -929,10 +852,12 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
   off << "Vertices" << std::endl;
   off << n_vertices << std::endl;
 
+  typedef typename MeshT::PointT Point;
+
   // write vertices
   for (typename MeshT::VertexIter v_it = _mesh.v_iter(); v_it; ++v_it) {
 
-    Vec3d v = _mesh.vertex(*v_it).position();
+    Point v = _mesh.vertex(*v_it).position();
     off << v[0] << " " << v[1] << " " << v[2] << std::endl;
   }
 
@@ -1092,51 +1017,6 @@ void FileManager::writePropertySection(std::ofstream& _ofs, const std::string& _
             continue;
         }
     }
-}
-
-//==================================================
-
-bool FileManager::isHexahedralMesh(const std::string& _filename) const {
-
-  std::ifstream iff(_filename.c_str(), std::ios::in);
-
-  if(!iff.good()) {
-    std::cerr << "Could not open file " << _filename << " for reading!" << std::endl;
-    iff.close();
-    return false;
-  }
-
-  std::string s;
-  unsigned int n = 0u;
-
-  // Skip until we find polyhedra section
-  while (true || !iff.eof()) {
-    iff >> s;
-    if (s == "Polyhedra") {
-      break;
-    }
-  }
-
-  if (iff.eof()) {
-    // Polyhedra section not found in file. Defaulting to polyhedral type.
-    iff.close();
-    return false;
-  }
-
-  // Read in number of cells
-  iff >> n;
-  unsigned int v = 0;
-  char tmp[256];
-  for (unsigned int i = 0; i < n; ++i) {
-    iff >> v;
-    iff.getline(tmp, 256);
-    if (v != 6u) {
-      iff.close();
-      return false;
-    }
-  }
-  iff.close();
-  return true;
 }
 
 //==================================================
