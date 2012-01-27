@@ -1,5 +1,9 @@
 /** 
+\if OPENVOLUMEMESH_INTERNAL_DOC
 \mainpage OpenVolumeMesh Documentation
+\else
+\page OpenVolumeMeshDoc Documentation
+\endif
 
 \image html volume_mesh.png
 
