@@ -96,7 +96,7 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     if(s_tmp != "OVM") {
         //iff.close();
         header_found = false;
-        std::cerr << "The specified might not be in OpenVolumeMesh format!" << std::endl;
+        std::cerr << "The specified file might not be in OpenVolumeMesh format!" << std::endl;
         //return false;
     }
 
