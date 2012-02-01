@@ -91,14 +91,14 @@ is used when trying to access non-existing entities.
 
 The %OpenVolumeMesh library is designed to be as generic as possible. So, at one hand,
 the developer can choose the vector space into which a mesh is embedded. For example,
-most instances require their vertices being elements of \f$\mathbb{R}^3\f$.
+most instances require their vertices being elements of \f$\mathrm{R}^3\f$.
 But in some cases, one might want e.g. two-dimensional integer coordinates,
-so elements in \f$\mathbb{N}_0^2\f$. In %OpenVolumeMesh, the embedded vector
+so elements in \f$\mathrm{N}_0^2\f$. In %OpenVolumeMesh, the embedded vector
 type can be specified as template parameter. The libraray is shipped with a vector
 class that also specifies all necessary operations on vectors (such as dot- and cross-product,
 several norms, etc.). The most common vector types are predefined in VectorT.hh.
 So, let's say we want to create a polyhedral mesh whose vertices are elements of
-\f$\mathbb{N}_0^2\f$. We use the following code:
+\f$\mathrm{N}_0^2\f$. We use the following code:
 
 \code
 #include <OpenVolumeMesh/Geometry/VectorT.hh>
