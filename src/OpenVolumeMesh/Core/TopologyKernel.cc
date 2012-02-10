@@ -431,7 +431,7 @@ const HalfEdgeHandle TopologyKernel::next_halfedge_in_halfface(const HalfEdgeHan
 
     std::vector<HalfEdgeHandle> hes = halfface(_hfh).halfedges();
 
-    for(typename std::vector<HalfEdgeHandle>::const_iterator it = hes.begin();
+    for(std::vector<HalfEdgeHandle>::const_iterator it = hes.begin();
             it != hes.end(); ++it) {
         if(*it == _heh) {
             if((it + 1) != hes.end()) return *(it + 1);
@@ -451,7 +451,7 @@ const HalfEdgeHandle TopologyKernel::prev_halfedge_in_halfface(const HalfEdgeHan
 
     std::vector<HalfEdgeHandle> hes = halfface(_hfh).halfedges();
 
-    for(typename std::vector<HalfEdgeHandle>::const_iterator it = hes.begin();
+    for(std::vector<HalfEdgeHandle>::const_iterator it = hes.begin();
             it != hes.end(); ++it) {
         if(*it == _heh) {
             if(it != hes.begin()) return *(it - 1);
@@ -517,7 +517,7 @@ void TopologyKernel::update_edge_adjacencies() {
         std::vector<HalfEdgeHandle> halfedges = faces_[i].halfedges();
 
         // Go over all halfedges
-        for(typename std::vector<HalfEdgeHandle>::const_iterator he_it = halfedges.begin();
+        for(std::vector<HalfEdgeHandle>::const_iterator he_it = halfedges.begin();
                 he_it != halfedges.end(); ++he_it) {
 
             incident_hfs_per_he_[*he_it].push_back(halfface_handle(FaceHandle(i), 0));
@@ -542,7 +542,7 @@ void TopologyKernel::update_face_adjacencies() {
         std::vector<HalfFaceHandle> halffaces = cells_[i].halffaces();
 
         // Go over all halffaces
-        for(typename std::vector<HalfFaceHandle>::const_iterator hf_it = halffaces.begin();
+        for(std::vector<HalfFaceHandle>::const_iterator hf_it = halffaces.begin();
                 hf_it != halffaces.end(); ++hf_it) {
 
             if(incident_cell_per_hf_[*hf_it] == InvalidCellHandle) {
@@ -675,7 +675,7 @@ TopologyKernel::adjacent_halfface_in_cell(const HalfFaceHandle& _halfFaceHandle,
     bool skipped = false;
     bool found = false;
     HalfFaceHandle idx = InvalidHalfFaceHandle;
-    for(typename std::vector<HalfFaceHandle>::const_iterator hf_it = c.halffaces().begin();
+    for(std::vector<HalfFaceHandle>::const_iterator hf_it = c.halffaces().begin();
             hf_it != c.halffaces().end(); ++hf_it) {
 
         if(*hf_it == _halfFaceHandle) {
@@ -684,7 +684,7 @@ TopologyKernel::adjacent_halfface_in_cell(const HalfFaceHandle& _halfFaceHandle,
         }
 
         OpenVolumeMeshFace hf = halfface(*hf_it);
-        for(typename std::vector<HalfEdgeHandle>::const_iterator he_it = hf.halfedges().begin();
+        for(std::vector<HalfEdgeHandle>::const_iterator he_it = hf.halfedges().begin();
             he_it != hf.halfedges().end(); ++he_it) {
 
             if(edge_handle(*he_it) == edge_handle(_halfEdgeHandle)) {
