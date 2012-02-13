@@ -61,7 +61,7 @@ public:
 
 	// STL compliance
 	typedef std::bidirectional_iterator_tag iterator_category;
-	typedef int						        distance_type;
+	typedef int						        difference_type;
 	typedef OH  					        value_type;
 	typedef OH* 					        pointer;
 	typedef OH& 					        reference;
