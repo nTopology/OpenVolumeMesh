@@ -93,7 +93,7 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halff
         std::cerr << "Cell valence is not six! Aborting." << std::endl;
         return TopologyKernel::InvalidCellHandle;
     }
-    for(typename std::vector<HalfFaceHandle>::const_iterator it = _halffaces.begin();
+    for(std::vector<HalfFaceHandle>::const_iterator it = _halffaces.begin();
             it != _halffaces.end(); ++it) {
         if(TopologyKernel::halfface(*it).halfedges().size() != 4) {
             std::cerr << "Incident face does not have valence four! Aborting." << std::endl;
@@ -119,7 +119,7 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halff
         // Go over all incident halfedges
         std::vector<HalfEdgeHandle> hes = TopologyKernel::halfface(ordered_halffaces[0]).halfedges();
         unsigned int idx = 0;
-        for(typename std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin();
+        for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin();
                 he_it != hes.end(); ++he_it) {
 
             HalfFaceHandle ahfh = get_adjacent_halfface(ordered_halffaces[0], *he_it, _halffaces);
@@ -185,7 +185,7 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halff
     int offsetBot = -1;
 
     // Traverse halfedges top
-    for(typename std::vector<HalfEdgeHandle>::const_iterator it = halfedgesTop.begin();
+    for(std::vector<HalfEdgeHandle>::const_iterator it = halfedgesTop.begin();
             it != halfedgesTop.end(); ++it) {
 
         HalfFaceHandle ahfh = get_adjacent_halfface(hfhTop, *it, ordered_halffaces);
@@ -210,7 +210,7 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halff
     }
 
     // Traverse halfedges bottom
-    for(typename std::vector<HalfEdgeHandle>::const_iterator it = halfedgesBot.begin();
+    for(std::vector<HalfEdgeHandle>::const_iterator it = halfedgesBot.begin();
             it != halfedgesBot.end(); ++it) {
 
         HalfFaceHandle ahfh = get_adjacent_halfface(hfhBot, *it, ordered_halffaces);
@@ -248,11 +248,11 @@ HexahedralMeshTopologyKernel::get_adjacent_halfface(const HalfFaceHandle& _hfh, 
     // halfedge of _heh
     HalfEdgeHandle o_he = TopologyKernel::opposite_halfedge_handle(_heh);
 
-    for(typename std::vector<HalfFaceHandle>::const_iterator it = _halffaces.begin();
+    for(std::vector<HalfFaceHandle>::const_iterator it = _halffaces.begin();
             it != _halffaces.end(); ++it) {
         if(*it == _hfh) continue;
         std::vector<HalfEdgeHandle> halfedges = TopologyKernel::halfface(*it).halfedges();
-        for(typename std::vector<HalfEdgeHandle>::const_iterator h_it = halfedges.begin();
+        for(std::vector<HalfEdgeHandle>::const_iterator h_it = halfedges.begin();
                 h_it != halfedges.end(); ++h_it) {
             if(*h_it == o_he) return *it;
         }
