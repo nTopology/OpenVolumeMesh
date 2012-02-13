@@ -65,7 +65,7 @@ BaseIter(_mesh, _ref_h) {
 
 	// First off, get all surrounding cells
 	std::vector<HalfFaceHandle> halffaces = _mesh->cell(_ref_h).halffaces();
-	for(typename std::vector<HalfFaceHandle>::const_iterator hf_it = halffaces.begin();
+	for(std::vector<HalfFaceHandle>::const_iterator hf_it = halffaces.begin();
 			hf_it != halffaces.end(); ++hf_it) {
 		// Add those, that are perpendicular to the specified _orthDir
 		if(_mesh->orientation(*hf_it, _ref_h) != _orthDir &&
@@ -150,11 +150,11 @@ BaseIter(_mesh, _ref_h) {
 			csc_it.valid(); ++csc_it) {
 
 		std::vector<HalfFaceHandle> hfs = _mesh->cell(*csc_it).halffaces();
-		for(typename std::vector<HalfFaceHandle>::const_iterator hf_it = hfs.begin();
+		for(std::vector<HalfFaceHandle>::const_iterator hf_it = hfs.begin();
 				hf_it != hfs.end(); ++hf_it) {
 
 			std::vector<HalfEdgeHandle> hf_hes = _mesh->halfface(*hf_it).halfedges();
-			for(typename std::vector<HalfEdgeHandle>::const_iterator he_it = hf_hes.begin();
+			for(std::vector<HalfEdgeHandle>::const_iterator he_it = hf_hes.begin();
 					he_it != hf_hes.end(); ++he_it) {
 
 				if(hes.count(*he_it) > 0) {
@@ -218,7 +218,7 @@ BaseIter(_mesh, _ref_h) {
 
     // Go over all incident halfedges
     std::vector<HalfEdgeHandle> halfedges = _mesh->halfface(_ref_h).halfedges();
-    for(typename std::vector<HalfEdgeHandle>::const_iterator he_it = halfedges.begin();
+    for(std::vector<HalfEdgeHandle>::const_iterator he_it = halfedges.begin();
             he_it != halfedges.end(); ++he_it) {
 
         // Get outside halffaces
