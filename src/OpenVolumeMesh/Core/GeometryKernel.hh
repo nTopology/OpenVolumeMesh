@@ -50,11 +50,12 @@
 
 namespace OpenVolumeMesh {
 
-template <class VecT>
-class GeometryKernel : public TopologyKernel {
+template <class VecT, class TopologyKernelT = TopologyKernel>
+class GeometryKernel : public TopologyKernelT {
 public:
 
     typedef VecT PointT;
+    typedef TopologyKernelT KernelT;
 
     /// Constructor
     GeometryKernel() {}
@@ -99,7 +100,7 @@ public:
     virtual VertexIter delete_vertex(const VertexHandle& _h) {
         assert(_h.idx() < (int)n_vertices());
 
-        VertexIter nV = TopologyKernel::delete_vertex(_h);
+        VertexIter nV = TopologyKernelT::delete_vertex(_h);
 
         vertices_.erase(vertices_.begin() + _h.idx());
 
@@ -109,7 +110,7 @@ public:
     virtual void clear() {
 
         vertices_.clear();
-        TopologyKernel::clear();
+        TopologyKernelT::clear();
     }
 
 private:

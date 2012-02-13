@@ -40,8 +40,6 @@
  *                                                                           *
 \*===========================================================================*/
 
-#define HEXAHEDRALMESHITERATORST_CC
-
 #include <set>
 
 #include "HexahedralMeshIterators.hh"
@@ -54,9 +52,9 @@ namespace OpenVolumeMesh {
 // CellSheetCellIter
 //================================================================================================
 
-template<class KernelT>
-CellSheetCellIter<KernelT>::CellSheetCellIter(const CellHandle& _ref_h,
-        const unsigned char _orthDir, const HexahedralMeshTopologyKernel<KernelT>* _mesh) :
+
+CellSheetCellIter::CellSheetCellIter(const CellHandle& _ref_h,
+        const unsigned char _orthDir, const HexahedralMeshTopologyKernel* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
     if(!_mesh->has_bottom_up_adjacencies()) {
@@ -73,7 +71,7 @@ BaseIter(_mesh, _ref_h) {
 		if(_mesh->orientation(*hf_it, _ref_h) != _orthDir &&
 				_mesh->orientation(*hf_it, _ref_h) != _mesh->opposite_orientation(_orthDir)) {
 			CellHandle ch = _mesh->incident_cell(_mesh->opposite_halfface_handle(*hf_it));
-			if(ch != KernelT::InvalidCellHandle) {
+			if(ch != TopologyKernel::InvalidCellHandle) {
 				neighb_sheet_cell_hs_.insert(ch);
 			}
 		}
@@ -86,8 +84,8 @@ BaseIter(_mesh, _ref_h) {
 	}
 }
 
-template<class KernelT>
-CellSheetCellIter<KernelT>& CellSheetCellIter<KernelT>::operator--() {
+
+CellSheetCellIter& CellSheetCellIter::operator--() {
 
     if(cur_it_ == neighb_sheet_cell_hs_.begin()) {
         BaseIter::valid(false);
@@ -98,8 +96,8 @@ CellSheetCellIter<KernelT>& CellSheetCellIter<KernelT>::operator--() {
     return *this;
 }
 
-template<class KernelT>
-CellSheetCellIter<KernelT>& CellSheetCellIter<KernelT>::operator++() {
+
+CellSheetCellIter& CellSheetCellIter::operator++() {
 
     ++cur_it_;
 	if(cur_it_ != neighb_sheet_cell_hs_.end()) {
@@ -114,9 +112,9 @@ CellSheetCellIter<KernelT>& CellSheetCellIter<KernelT>::operator++() {
 // HalfFaceSheetHalfFaceIter
 //================================================================================================
 
-template<class KernelT>
-HalfFaceSheetHalfFaceIter<KernelT>::HalfFaceSheetHalfFaceIter(const HalfFaceHandle& _ref_h,
-        const HexahedralMeshTopologyKernel<KernelT>* _mesh) :
+
+HalfFaceSheetHalfFaceIter::HalfFaceSheetHalfFaceIter(const HalfFaceHandle& _ref_h,
+        const HexahedralMeshTopologyKernel* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
 	if(!_mesh->has_bottom_up_adjacencies()) {
@@ -148,7 +146,7 @@ BaseIter(_mesh, _ref_h) {
 	std::set<HalfEdgeHandle> hes;
 	hes.insert(hes_v.begin(), hes_v.end());
 
-	for(CellSheetCellIter<KernelT> csc_it = _mesh->csc_iter(ch, orientation);
+	for(CellSheetCellIter csc_it = _mesh->csc_iter(ch, orientation);
 			csc_it.valid(); ++csc_it) {
 
 		std::vector<HalfFaceHandle> hfs = _mesh->cell(*csc_it).halffaces();
@@ -177,8 +175,8 @@ BaseIter(_mesh, _ref_h) {
     }
 }
 
-template<class KernelT>
-HalfFaceSheetHalfFaceIter<KernelT>& HalfFaceSheetHalfFaceIter<KernelT>::operator--() {
+
+HalfFaceSheetHalfFaceIter& HalfFaceSheetHalfFaceIter::operator--() {
 
     --cur_it_;
     --edge_it_;
@@ -190,8 +188,8 @@ HalfFaceSheetHalfFaceIter<KernelT>& HalfFaceSheetHalfFaceIter<KernelT>::operator
     return *this;
 }
 
-template<class KernelT>
-HalfFaceSheetHalfFaceIter<KernelT>& HalfFaceSheetHalfFaceIter<KernelT>::operator++() {
+
+HalfFaceSheetHalfFaceIter& HalfFaceSheetHalfFaceIter::operator++() {
 
     ++cur_it_;
     ++edge_it_;
@@ -207,9 +205,9 @@ HalfFaceSheetHalfFaceIter<KernelT>& HalfFaceSheetHalfFaceIter<KernelT>::operator
 // OutsideNeighborHalfFaceIter
 //================================================================================================
 
-template<class KernelT>
-OutsideNeighborHalfFaceIter<KernelT>::OutsideNeighborHalfFaceIter(const HalfFaceHandle& _ref_h,
-        const HexahedralMeshTopologyKernel<KernelT>* _mesh) :
+
+OutsideNeighborHalfFaceIter::OutsideNeighborHalfFaceIter(const HalfFaceHandle& _ref_h,
+        const HexahedralMeshTopologyKernel* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
     if(!_mesh->has_bottom_up_adjacencies()) {
@@ -224,7 +222,7 @@ BaseIter(_mesh, _ref_h) {
             he_it != halfedges.end(); ++he_it) {
 
         // Get outside halffaces
-        typename KernelT::HalfEdgeHalfFaceIter hehf_it = _mesh->hehf_iter(_mesh->opposite_halfedge_handle(*he_it));
+        OpenVolumeMesh::HalfEdgeHalfFaceIter hehf_it = _mesh->hehf_iter(_mesh->opposite_halfedge_handle(*he_it));
         for(; hehf_it.valid(); ++hehf_it) {
 
             if(_mesh->is_boundary(*hehf_it)) {
@@ -242,8 +240,8 @@ BaseIter(_mesh, _ref_h) {
     }
 }
 
-template<class KernelT>
-OutsideNeighborHalfFaceIter<KernelT>& OutsideNeighborHalfFaceIter<KernelT>::operator--() {
+
+OutsideNeighborHalfFaceIter& OutsideNeighborHalfFaceIter::operator--() {
 
     --cur_it_;
     --edge_it_;
@@ -255,8 +253,8 @@ OutsideNeighborHalfFaceIter<KernelT>& OutsideNeighborHalfFaceIter<KernelT>::oper
     return *this;
 }
 
-template<class KernelT>
-OutsideNeighborHalfFaceIter<KernelT>& OutsideNeighborHalfFaceIter<KernelT>::operator++() {
+
+OutsideNeighborHalfFaceIter& OutsideNeighborHalfFaceIter::operator++() {
 
     ++cur_it_;
     ++edge_it_;

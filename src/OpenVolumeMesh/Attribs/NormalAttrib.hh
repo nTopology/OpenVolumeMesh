@@ -51,15 +51,11 @@
 
 namespace OpenVolumeMesh {
 
-// Forward declaration
-template<class VecT>
-class GeometryKernel;
-
-template <class VecT>
+template <class GeomKernelT>
 class NormalAttrib {
 public:
 
-    NormalAttrib(GeometryKernel<VecT>& _kernel);
+    NormalAttrib(GeomKernelT& _kernel);
     virtual ~NormalAttrib();
 
     /** \brief A simple heuristic to estimate the vertex normals
@@ -79,22 +75,22 @@ public:
      */
     void update_face_normals();
 
-    const VecT& operator[](const VertexHandle& _h) const {
+    const typename GeomKernelT::PointT& operator[](const VertexHandle& _h) const {
         assert((unsigned int)_h.idx < v_normals_.size());
         return v_normals_[_h.idx()];
     }
 
-    const VecT& operator[](const FaceHandle& _h) const {
+    const typename GeomKernelT::PointT& operator[](const FaceHandle& _h) const {
         assert((unsigned int)_h.idx < f_normals_.size());
         return f_normals_[_h.idx()];
     }
 
-    VecT& operator[](const VertexHandle& _h) {
+    typename GeomKernelT::PointT& operator[](const VertexHandle& _h) {
         assert((unsigned int)_h.idx < kernel_.n_vertices());
         return v_normals_[_h.idx()];
     }
 
-    VecT& operator[](const FaceHandle& _h) {
+    typename GeomKernelT::PointT& operator[](const FaceHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_faces());
         return f_normals_[_h.idx()];
     }
@@ -105,10 +101,10 @@ private:
 
     void compute_face_normal(const FaceHandle& _fh);
 
-    GeometryKernel<VecT>& kernel_;
+    GeomKernelT& kernel_;
 
-    VertexPropertyT<VecT> v_normals_;
-    FacePropertyT<VecT> f_normals_;
+    VertexPropertyT<typename GeomKernelT::PointT> v_normals_;
+    FacePropertyT<typename GeomKernelT::PointT> f_normals_;
 };
 
 } // Namespace OpenVolumeMesh

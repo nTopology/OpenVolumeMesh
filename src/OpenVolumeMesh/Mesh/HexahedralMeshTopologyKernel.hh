@@ -45,7 +45,7 @@
 
 #include <set>
 
-#include "../Core/GeometryKernel.hh"
+#include "../Core/TopologyKernel.hh"
 #include "HexahedralMeshIterators.hh"
 
 namespace OpenVolumeMesh {
@@ -78,8 +78,7 @@ namespace OpenVolumeMesh {
  * \li \c 6. ZB
  */
 
-template <class KernelT>
-class HexahedralMeshTopologyKernel : public KernelT {
+class HexahedralMeshTopologyKernel : public TopologyKernel {
 public:
 
     // Orientation constants
@@ -113,13 +112,13 @@ public:
 
     // ======================= Specialized Iterators =============================
 
-    friend class CellSheetCellIter<KernelT>;
-    friend class HalfFaceSheetHalfFaceIter<KernelT>;
-    friend class OutsideNeighborHalfFaceIter<KernelT>;
+    friend class CellSheetCellIter;
+    friend class HalfFaceSheetHalfFaceIter;
+    friend class OutsideNeighborHalfFaceIter;
 
-    typedef class CellSheetCellIter<KernelT> CellSheetCellIter;
-    typedef class HalfFaceSheetHalfFaceIter<KernelT> HalfFaceSheetHalfFaceIter;
-    typedef class OutsideNeighborHalfFaceIter<KernelT> OutsideNeighborHalfFaceIter;
+    typedef class CellSheetCellIter CellSheetCellIter;
+    typedef class HalfFaceSheetHalfFaceIter HalfFaceSheetHalfFaceIter;
+    typedef class OutsideNeighborHalfFaceIter OutsideNeighborHalfFaceIter;
 
     CellSheetCellIter csc_iter(const CellHandle& _ref_h, const unsigned char _orthDir) const {
         return CellSheetCellIter(_ref_h, _orthDir, this);
@@ -137,7 +136,7 @@ public:
 
     inline HalfFaceHandle opposite_halfface_handle_in_cell(const HalfFaceHandle& _hfh, const CellHandle& _ch) {
 
-        assert((unsigned int)_ch < KernelT::cells_.size());
+        assert((unsigned int)_ch < TopologyKernel::cells_.size());
 
         if(orientation(_hfh, _ch) == XF) return xback_halfface(_ch);
         if(orientation(_hfh, _ch) == XB) return xfront_halfface(_ch);
@@ -146,56 +145,56 @@ public:
         if(orientation(_hfh, _ch) == ZF) return zback_halfface(_ch);
         if(orientation(_hfh, _ch) == ZB) return zfront_halfface(_ch);
 
-        return KernelT::InvalidHalfFaceHandle;
+        return TopologyKernel::InvalidHalfFaceHandle;
     }
 
     inline HalfFaceHandle xfront_halfface(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < KernelT::cells_.size());
+        assert((unsigned int)_ch < TopologyKernel::cells_.size());
 
-        return KernelT::cell(_ch).halffaces()[XF];
+        return TopologyKernel::cell(_ch).halffaces()[XF];
     }
 
     inline HalfFaceHandle xback_halfface(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < KernelT::cells_.size());
+        assert((unsigned int)_ch < TopologyKernel::cells_.size());
 
-        return KernelT::cell(_ch).halffaces()[XB];
+        return TopologyKernel::cell(_ch).halffaces()[XB];
     }
 
     inline HalfFaceHandle yfront_halfface(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < KernelT::cells_.size());
+        assert((unsigned int)_ch < TopologyKernel::cells_.size());
 
-        return KernelT::cell(_ch).halffaces()[YF];
+        return TopologyKernel::cell(_ch).halffaces()[YF];
     }
 
     inline HalfFaceHandle yback_halfface(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < KernelT::cells_.size());
+        assert((unsigned int)_ch < TopologyKernel::cells_.size());
 
-        return KernelT::cell(_ch).halffaces()[YB];
+        return TopologyKernel::cell(_ch).halffaces()[YB];
     }
 
     inline HalfFaceHandle zfront_halfface(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < KernelT::cells_.size());
+        assert((unsigned int)_ch < TopologyKernel::cells_.size());
 
-        return KernelT::cell(_ch).halffaces()[ZF];
+        return TopologyKernel::cell(_ch).halffaces()[ZF];
     }
 
     inline HalfFaceHandle zback_halfface(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < KernelT::cells_.size());
+        assert((unsigned int)_ch < TopologyKernel::cells_.size());
 
-        return KernelT::cell(_ch).halffaces()[ZB];
+        return TopologyKernel::cell(_ch).halffaces()[ZB];
     }
 
     unsigned char orientation(const HalfFaceHandle& _hfh, const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < KernelT::cells_.size());
+        assert((unsigned int)_ch < TopologyKernel::cells_.size());
 
-        std::vector<HalfFaceHandle> halffaces = KernelT::cell(_ch).halffaces();
+        std::vector<HalfFaceHandle> halffaces = TopologyKernel::cell(_ch).halffaces();
         for(unsigned int i = 0; i < halffaces.size(); ++i) {
             if(halffaces[i] == _hfh) return (unsigned char)i;
         }
@@ -244,14 +243,14 @@ public:
         if(_o == YB) return yback_halfface(_ch);
         if(_o == ZF) return zfront_halfface(_ch);
         if(_o == ZB) return zback_halfface(_ch);
-        return KernelT::InvalidHalfFaceHandle;
+        return TopologyKernel::InvalidHalfFaceHandle;
     }
 
     HalfFaceHandle adjacent_halfface_on_sheet(const HalfFaceHandle& _hfh, const HalfEdgeHandle& _heh) const {
 
-        if(!KernelT::has_bottom_up_adjacencies()) {
+        if(!TopologyKernel::has_bottom_up_adjacencies()) {
             std::cerr << "No bottom-up adjacencies computed so far, could not get adjacent halfface on sheet!" << std::endl;
-            return KernelT::InvalidHalfFaceHandle;
+            return TopologyKernel::InvalidHalfFaceHandle;
         }
 
         HalfFaceHandle n_hf = _hfh;
@@ -259,67 +258,67 @@ public:
 
         // Try the 1st way
         while(true) {
-            n_hf = KernelT::adjacent_halfface_in_cell(n_hf, n_he);
-            if(n_hf == KernelT::InvalidHalfFaceHandle) break;
-            n_hf = KernelT::opposite_halfface_handle(n_hf);
-            if(n_hf == KernelT::InvalidHalfFaceHandle) break;
-            HalfEdgeHandle o_he = KernelT::opposite_halfedge_handle(n_he);
-            if(o_he == KernelT::InvalidHalfEdgeHandle) break;
-            n_hf = KernelT::adjacent_halfface_in_cell(n_hf, o_he);
-            if(n_hf == KernelT::InvalidHalfFaceHandle) break;
+            n_hf = TopologyKernel::adjacent_halfface_in_cell(n_hf, n_he);
+            if(n_hf == TopologyKernel::InvalidHalfFaceHandle) break;
+            n_hf = TopologyKernel::opposite_halfface_handle(n_hf);
+            if(n_hf == TopologyKernel::InvalidHalfFaceHandle) break;
+            HalfEdgeHandle o_he = TopologyKernel::opposite_halfedge_handle(n_he);
+            if(o_he == TopologyKernel::InvalidHalfEdgeHandle) break;
+            n_hf = TopologyKernel::adjacent_halfface_in_cell(n_hf, o_he);
+            if(n_hf == TopologyKernel::InvalidHalfFaceHandle) break;
             else return n_hf;
         }
 
-        n_hf = KernelT::opposite_halfface_handle(_hfh);
-        n_he = KernelT::opposite_halfedge_handle(_heh);
+        n_hf = TopologyKernel::opposite_halfface_handle(_hfh);
+        n_he = TopologyKernel::opposite_halfedge_handle(_heh);
 
         // Try the 2nd way
         while(true) {
-            n_hf = KernelT::adjacent_halfface_in_cell(n_hf, n_he);
-            if(n_hf == KernelT::InvalidHalfFaceHandle) break;
-            n_hf = KernelT::opposite_halfface_handle(n_hf);
-            if(n_hf == KernelT::InvalidHalfFaceHandle) break;
-            HalfEdgeHandle o_he = KernelT::opposite_halfedge_handle(n_he);
-            if(o_he == KernelT::InvalidHalfEdgeHandle) break;
-            n_hf = KernelT::adjacent_halfface_in_cell(n_hf, o_he);
-            if(n_hf == KernelT::InvalidHalfFaceHandle) break;
-            else return KernelT::opposite_halfface_handle(n_hf);
+            n_hf = TopologyKernel::adjacent_halfface_in_cell(n_hf, n_he);
+            if(n_hf == TopologyKernel::InvalidHalfFaceHandle) break;
+            n_hf = TopologyKernel::opposite_halfface_handle(n_hf);
+            if(n_hf == TopologyKernel::InvalidHalfFaceHandle) break;
+            HalfEdgeHandle o_he = TopologyKernel::opposite_halfedge_handle(n_he);
+            if(o_he == TopologyKernel::InvalidHalfEdgeHandle) break;
+            n_hf = TopologyKernel::adjacent_halfface_in_cell(n_hf, o_he);
+            if(n_hf == TopologyKernel::InvalidHalfFaceHandle) break;
+            else return TopologyKernel::opposite_halfface_handle(n_hf);
         }
 
-        return KernelT::InvalidHalfFaceHandle;
+        return TopologyKernel::InvalidHalfFaceHandle;
     }
 
     HalfFaceHandle adjacent_halfface_on_surface(const HalfFaceHandle& _hfh, const HalfEdgeHandle& _heh) const {
 
-        for(typename KernelT::HalfEdgeHalfFaceIter hehf_it = KernelT::hehf_iter(_heh);
+        for(OpenVolumeMesh::HalfEdgeHalfFaceIter hehf_it = TopologyKernel::hehf_iter(_heh);
                 hehf_it.valid(); ++hehf_it) {
             if(*hehf_it == _hfh) continue;
-            if(KernelT::is_boundary(*hehf_it)) {
+            if(TopologyKernel::is_boundary(*hehf_it)) {
                 return *hehf_it;
             }
-            if(KernelT::is_boundary(KernelT::opposite_halfface_handle(*hehf_it))) {
-                return KernelT::opposite_halfface_handle(*hehf_it);
+            if(TopologyKernel::is_boundary(TopologyKernel::opposite_halfface_handle(*hehf_it))) {
+                return TopologyKernel::opposite_halfface_handle(*hehf_it);
             }
         }
-        return KernelT::InvalidHalfFaceHandle;
+        return TopologyKernel::InvalidHalfFaceHandle;
     }
 
     HalfFaceHandle neighboring_outside_halfface(const HalfFaceHandle& _hfh, const HalfEdgeHandle& _heh) const {
 
-        if(!KernelT::has_bottom_up_adjacencies()) {
+        if(!TopologyKernel::has_bottom_up_adjacencies()) {
             std::cerr << "No bottom-up adjacencies computed so far, could not get neighboring outside halfface!" << std::endl;
-            return KernelT::InvalidHalfFaceHandle;
+            return TopologyKernel::InvalidHalfFaceHandle;
         }
 
-        for(typename KernelT::HalfEdgeHalfFaceIter hehf_it = KernelT::hehf_iter(_heh);
+        for(OpenVolumeMesh::HalfEdgeHalfFaceIter hehf_it = TopologyKernel::hehf_iter(_heh);
                 hehf_it; ++hehf_it) {
             if(*hehf_it == _hfh) continue;
-            if(KernelT::is_boundary(*hehf_it)) return *hehf_it;
-            if(KernelT::is_boundary(KernelT::opposite_halfface_handle(*hehf_it)))
-                return KernelT::opposite_halfface_handle(*hehf_it);
+            if(TopologyKernel::is_boundary(*hehf_it)) return *hehf_it;
+            if(TopologyKernel::is_boundary(TopologyKernel::opposite_halfface_handle(*hehf_it)))
+                return TopologyKernel::opposite_halfface_handle(*hehf_it);
         }
 
-        return KernelT::InvalidHalfFaceHandle;
+        return TopologyKernel::InvalidHalfFaceHandle;
     }
 
 private:
@@ -330,9 +329,5 @@ private:
 };
 
 } // Namespace OpenVolumeMesh
-
-#if defined(INCLUDE_TEMPLATES) && !defined(HEXAHEDRALMESHTOPOLOGYKERNELT_CC)
-#include "HexahedralMeshTopologyKernelT.cc"
-#endif
 
 #endif /* HEXAHEDRALMESHTOPOLOGYKERNEL_HH */

@@ -50,21 +50,21 @@
 
 namespace OpenVolumeMesh {
 
-template <class VecT>
-NormalAttrib<VecT>::NormalAttrib(GeometryKernel<VecT>& _kernel) :
+template <class GeomKernelT>
+NormalAttrib<GeomKernelT>::NormalAttrib(GeomKernelT& _kernel) :
 kernel_(_kernel),
-v_normals_(_kernel.template request_vertex_property<VecT>("vertex_normals")),
-f_normals_(_kernel.template request_face_property<VecT>("face_normals")) {
+v_normals_(_kernel.template request_vertex_property<typename GeomKernelT::PointT>("vertex_normals")),
+f_normals_(_kernel.template request_face_property<typename GeomKernelT::PointT>("face_normals")) {
 
 }
 
-template <class VecT>
-NormalAttrib<VecT>::~NormalAttrib() {
+template <class GeomKernelT>
+NormalAttrib<GeomKernelT>::~NormalAttrib() {
 
 }
 
-template <class VecT>
-void NormalAttrib<VecT>::update_vertex_normals() {
+template <class GeomKernelT>
+void NormalAttrib<GeomKernelT>::update_vertex_normals() {
 
     if(!kernel_.has_bottom_up_adjacencies()) {
         std::cerr << "Error: update_vertex_normals() needs bottom-up adjacencies!" << std::endl;
@@ -79,8 +79,8 @@ void NormalAttrib<VecT>::update_vertex_normals() {
     }
 }
 
-template <class VecT>
-void NormalAttrib<VecT>::update_face_normals() {
+template <class GeomKernelT>
+void NormalAttrib<GeomKernelT>::update_face_normals() {
 
     for(FaceIter f_it = kernel_.f_iter(); f_it.valid(); ++f_it) {
         // Assume the face is planar, so just take the
@@ -89,8 +89,8 @@ void NormalAttrib<VecT>::update_face_normals() {
     }
 }
 
-template <typename VecT>
-void NormalAttrib<VecT>::compute_vertex_normal(const VertexHandle& _vh) {
+template <class GeomKernelT>
+void NormalAttrib<GeomKernelT>::compute_vertex_normal(const VertexHandle& _vh) {
 
     std::set<FaceHandle> faces;
     for(VertexOHalfEdgeIter voh_it = kernel_.voh_iter(_vh);
@@ -103,7 +103,7 @@ void NormalAttrib<VecT>::compute_vertex_normal(const VertexHandle& _vh) {
             }
         }
     }
-    VecT normal;
+    typename GeomKernelT::PointT normal;
     for(std::set<FaceHandle>::const_iterator f_it = faces.begin();
             f_it != faces.end(); ++f_it) {
         normal += f_normals_[f_it->idx()];
@@ -114,8 +114,8 @@ void NormalAttrib<VecT>::compute_vertex_normal(const VertexHandle& _vh) {
     v_normals_[_vh.idx()] = normal;
 }
 
-template <typename VecT>
-void NormalAttrib<VecT>::compute_face_normal(const FaceHandle& _fh) {
+template <class GeomKernelT>
+void NormalAttrib<GeomKernelT>::compute_face_normal(const FaceHandle& _fh) {
 
     if(kernel_.face(_fh).halfedges().size() < 3) {
         std::cerr << "Warning: Degenerate face detected!" << std::endl;
@@ -129,12 +129,12 @@ void NormalAttrib<VecT>::compute_face_normal(const FaceHandle& _fh) {
     std::vector<HalfEdgeHandle> halfedges = kernel_.halfface(hfh).halfedges();
     std::vector<HalfEdgeHandle>::const_iterator he_it = halfedges.begin();
 
-    VecT p1 = kernel_.vertex(kernel_.halfedge(*he_it).from_vertex());
-    VecT p2 = kernel_.vertex(kernel_.halfedge(*he_it).to_vertex());
+    typename GeomKernelT::PointT p1 = kernel_.vertex(kernel_.halfedge(*he_it).from_vertex());
+    typename GeomKernelT::PointT p2 = kernel_.vertex(kernel_.halfedge(*he_it).to_vertex());
     ++he_it;
-    VecT p3 = kernel_.vertex(kernel_.halfedge(*he_it).to_vertex());
+    typename GeomKernelT::PointT p3 = kernel_.vertex(kernel_.halfedge(*he_it).to_vertex());
 
-    VecT n = (p3 - p2) % (p1 - p2);
+    typename GeomKernelT::PointT n = (p3 - p2) % (p1 - p2);
     n.normalize();
 
     f_normals_[_fh.idx()] = n;

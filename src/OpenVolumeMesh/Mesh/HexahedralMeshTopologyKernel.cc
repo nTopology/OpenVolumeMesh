@@ -40,66 +40,64 @@
  *                                                                           *
 \*===========================================================================*/
 
-#define HEXAHEDRALMESHTOPOLOGYKERNELT_CC
-
 #include "HexahedralMeshTopologyKernel.hh"
 
 namespace OpenVolumeMesh {
 
-template <typename KernelT>
-HexahedralMeshTopologyKernel<KernelT>::HexahedralMeshTopologyKernel() {
+
+HexahedralMeshTopologyKernel::HexahedralMeshTopologyKernel() {
 
 }
 
 //========================================================================================
 
-template <typename KernelT>
-HexahedralMeshTopologyKernel<KernelT>::~HexahedralMeshTopologyKernel() {
+
+HexahedralMeshTopologyKernel::~HexahedralMeshTopologyKernel() {
 
 }
 
 //========================================================================================
 
-template <typename KernelT>
-FaceHandle HexahedralMeshTopologyKernel<KernelT>::add_face(const std::vector<HalfEdgeHandle>& _halfedges, bool _topologyCheck) {
+
+FaceHandle HexahedralMeshTopologyKernel::add_face(const std::vector<HalfEdgeHandle>& _halfedges, bool _topologyCheck) {
 
     if(_halfedges.size() != 4) {
         std::cerr << "Face valence is not four! Aborting." << std::endl;
-        return KernelT::InvalidFaceHandle;
+        return TopologyKernel::InvalidFaceHandle;
     }
 
-    return KernelT::add_face(_halfedges, _topologyCheck);
+    return TopologyKernel::add_face(_halfedges, _topologyCheck);
 }
 
 //========================================================================================
 
-template <typename KernelT>
+
 FaceHandle
-HexahedralMeshTopologyKernel<KernelT>::add_face(const std::vector<VertexHandle>& _vertices) {
+HexahedralMeshTopologyKernel::add_face(const std::vector<VertexHandle>& _vertices) {
 
     if(_vertices.size() != 4) {
         std::cerr << "Face valence is not four! Aborting." << std::endl;
-        return KernelT::InvalidFaceHandle;
+        return TopologyKernel::InvalidFaceHandle;
     }
 
-    return KernelT::add_face(_vertices);
+    return TopologyKernel::add_face(_vertices);
 }
 
 //========================================================================================
 
-template <typename KernelT>
+
 CellHandle
-HexahedralMeshTopologyKernel<KernelT>::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck, bool _reorderFaces) {
+HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck, bool _reorderFaces) {
 
     if(_halffaces.size() != 6) {
         std::cerr << "Cell valence is not six! Aborting." << std::endl;
-        return KernelT::InvalidCellHandle;
+        return TopologyKernel::InvalidCellHandle;
     }
     for(typename std::vector<HalfFaceHandle>::const_iterator it = _halffaces.begin();
             it != _halffaces.end(); ++it) {
-        if(KernelT::halfface(*it).halfedges().size() != 4) {
+        if(TopologyKernel::halfface(*it).halfedges().size() != 4) {
             std::cerr << "Incident face does not have valence four! Aborting." << std::endl;
-            return KernelT::InvalidCellHandle;
+            return TopologyKernel::InvalidCellHandle;
         }
     }
 
@@ -113,19 +111,19 @@ HexahedralMeshTopologyKernel<KernelT>::add_cell(const std::vector<HalfFaceHandle
     // The user wants the faces to be reordered
     if(_reorderFaces) {
 
-        ordered_halffaces.resize(6, KernelT::InvalidHalfFaceHandle);
+        ordered_halffaces.resize(6, TopologyKernel::InvalidHalfFaceHandle);
 
         // Create top side
         ordered_halffaces[0] = _halffaces[0];
 
         // Go over all incident halfedges
-        std::vector<HalfEdgeHandle> hes = KernelT::halfface(ordered_halffaces[0]).halfedges();
+        std::vector<HalfEdgeHandle> hes = TopologyKernel::halfface(ordered_halffaces[0]).halfedges();
         unsigned int idx = 0;
         for(typename std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin();
                 he_it != hes.end(); ++he_it) {
 
             HalfFaceHandle ahfh = get_adjacent_halfface(ordered_halffaces[0], *he_it, _halffaces);
-            if(ahfh == KernelT::InvalidHalfFaceHandle) {
+            if(ahfh == TopologyKernel::InvalidHalfFaceHandle) {
                 std::cerr << "The current halfface is invalid!" << std::endl;
                 continue;
             }
@@ -135,14 +133,14 @@ HexahedralMeshTopologyKernel<KernelT>::add_cell(const std::vector<HalfFaceHandle
 
         // Now set bottom-halfface
         HalfFaceHandle cur_hf = ordered_halffaces[0];
-        HalfEdgeHandle cur_he = *(KernelT::halfface(cur_hf).halfedges().begin());
+        HalfEdgeHandle cur_he = *(TopologyKernel::halfface(cur_hf).halfedges().begin());
         cur_hf = get_adjacent_halfface(cur_hf, cur_he, _halffaces);
-        cur_he = KernelT::opposite_halfedge_handle(cur_he);
-        cur_he = KernelT::next_halfedge_in_halfface(cur_he, cur_hf);
-        cur_he = KernelT::next_halfedge_in_halfface(cur_he, cur_hf);
+        cur_he = TopologyKernel::opposite_halfedge_handle(cur_he);
+        cur_he = TopologyKernel::next_halfedge_in_halfface(cur_he, cur_hf);
+        cur_he = TopologyKernel::next_halfedge_in_halfface(cur_he, cur_hf);
         cur_hf = get_adjacent_halfface(cur_hf, cur_he, _halffaces);
 
-        if(cur_hf != KernelT::InvalidHalfFaceHandle) {
+        if(cur_hf != TopologyKernel::InvalidHalfFaceHandle) {
             ordered_halffaces[1] = cur_hf;
         } else {
             std::cerr << "The current halfface is invalid!" << std::endl;
@@ -180,8 +178,8 @@ HexahedralMeshTopologyKernel<KernelT>::add_cell(const std::vector<HalfFaceHandle
     HalfFaceHandle hfhTop = ordered_halffaces[0];
     HalfFaceHandle hfhBot = ordered_halffaces[1];
 
-    std::vector<HalfEdgeHandle> halfedgesTop = KernelT::halfface(ordered_halffaces[0]).halfedges();
-    std::vector<HalfEdgeHandle> halfedgesBot = KernelT::halfface(ordered_halffaces[1]).halfedges();
+    std::vector<HalfEdgeHandle> halfedgesTop = TopologyKernel::halfface(ordered_halffaces[0]).halfedges();
+    std::vector<HalfEdgeHandle> halfedgesBot = TopologyKernel::halfface(ordered_halffaces[1]).halfedges();
 
     int offsetTop = -1;
     int offsetBot = -1;
@@ -201,14 +199,14 @@ HexahedralMeshTopologyKernel<KernelT>::add_cell(const std::vector<HalfFaceHandle
             offsetTop = (offsetTop + 1) % 4;
             if(ahfh != ordered_halffaces[orderTop[offsetTop]]) {
                 std::cerr << "Faces not in right order!" << std::endl;
-                return KernelT::InvalidCellHandle;
+                return TopologyKernel::InvalidCellHandle;
             }
         }
     }
 
     if(offsetTop == -1) {
         std::cerr << "Faces not in right order!" << std::endl;
-        return KernelT::InvalidCellHandle;
+        return TopologyKernel::InvalidCellHandle;
     }
 
     // Traverse halfedges bottom
@@ -226,41 +224,41 @@ HexahedralMeshTopologyKernel<KernelT>::add_cell(const std::vector<HalfFaceHandle
             offsetBot = (offsetBot + 1) % 4;
             if(ahfh != ordered_halffaces[orderBot[offsetBot]]) {
                 std::cerr << "Faces not in right order!" << std::endl;
-                return KernelT::InvalidCellHandle;
+                return TopologyKernel::InvalidCellHandle;
             }
         }
     }
 
     if(offsetBot == -1) {
         std::cerr << "Faces not in right order!" << std::endl;
-        return KernelT::InvalidCellHandle;
+        return TopologyKernel::InvalidCellHandle;
     }
 
-    return KernelT::add_cell(ordered_halffaces, _topologyCheck);
+    return TopologyKernel::add_cell(ordered_halffaces, _topologyCheck);
 }
 
 //========================================================================================
 
-template <typename KernelT>
+
 const HalfFaceHandle&
-HexahedralMeshTopologyKernel<KernelT>::get_adjacent_halfface(const HalfFaceHandle& _hfh, const HalfEdgeHandle& _heh,
+HexahedralMeshTopologyKernel::get_adjacent_halfface(const HalfFaceHandle& _hfh, const HalfEdgeHandle& _heh,
         const std::vector<HalfFaceHandle>& _halffaces) const {
 
     // Search for halfface that is incident to the opposite
     // halfedge of _heh
-    HalfEdgeHandle o_he = KernelT::opposite_halfedge_handle(_heh);
+    HalfEdgeHandle o_he = TopologyKernel::opposite_halfedge_handle(_heh);
 
     for(typename std::vector<HalfFaceHandle>::const_iterator it = _halffaces.begin();
             it != _halffaces.end(); ++it) {
         if(*it == _hfh) continue;
-        std::vector<HalfEdgeHandle> halfedges = KernelT::halfface(*it).halfedges();
+        std::vector<HalfEdgeHandle> halfedges = TopologyKernel::halfface(*it).halfedges();
         for(typename std::vector<HalfEdgeHandle>::const_iterator h_it = halfedges.begin();
                 h_it != halfedges.end(); ++h_it) {
             if(*h_it == o_he) return *it;
         }
     }
 
-    return KernelT::InvalidHalfFaceHandle;
+    return TopologyKernel::InvalidHalfFaceHandle;
 }
 
 } // Namespace OpenVolumeMesh

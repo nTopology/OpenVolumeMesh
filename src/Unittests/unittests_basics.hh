@@ -543,7 +543,7 @@ TEST_F(PolyhedralMeshBase, VolumeMeshNormals) {
 
     generatePolyhedralMesh(mesh_);
 
-    NormalAttrib<Vec3d> normals(mesh_);
+    NormalAttrib<GeometricPolyhedralMeshV3d> normals(mesh_);
 
     Vec3d n_x(1.0, 0.0, 0.0);
     Vec3d n_y(0.0, 1.0, 0.0);

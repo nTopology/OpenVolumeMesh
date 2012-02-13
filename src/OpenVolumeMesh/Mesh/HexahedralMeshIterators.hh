@@ -47,10 +47,9 @@
 
 namespace OpenVolumeMesh {
 
-template<class KernelT>
 class HexahedralMeshTopologyKernel;
 
-template<class KernelT>
+
 class CellSheetCellIter : public BaseIterator<CellHandle,
 	CellHandle> {
 private:
@@ -58,7 +57,7 @@ private:
 			CellHandle>    BaseIter;
 public:
 	CellSheetCellIter(const CellHandle& _ref_h, const unsigned char _orthDir,
-			const HexahedralMeshTopologyKernel<KernelT>* _mesh);
+			const HexahedralMeshTopologyKernel* _mesh);
 
 	CellSheetCellIter& operator=(const CellSheetCellIter& _c) {
 		BaseIter::operator=(_c);
@@ -113,7 +112,7 @@ private:
 	std::set<CellHandle>::const_iterator cur_it_;
 };
 
-template<class KernelT>
+
 class HalfFaceSheetHalfFaceIter : public BaseIterator<HalfFaceHandle,
 	HalfFaceHandle> {
 private:
@@ -121,7 +120,7 @@ private:
 			HalfFaceHandle> BaseIter;
 public:
 	HalfFaceSheetHalfFaceIter(const HalfFaceHandle& _ref_h,
-			const HexahedralMeshTopologyKernel<KernelT>* _mesh);
+			const HexahedralMeshTopologyKernel* _mesh);
 	HalfFaceSheetHalfFaceIter& operator=(const HalfFaceSheetHalfFaceIter& _c) {
 		BaseIter::operator=(_c);
 		adjacent_halffaces_ = _c.adjacent_halffaces_;
@@ -179,7 +178,7 @@ private:
     std::vector<EdgeHandle>::const_iterator edge_it_;
 };
 
-template<class KernelT>
+
 class OutsideNeighborHalfFaceIter : public BaseIterator<HalfFaceHandle,
     HalfFaceHandle> {
 private:
@@ -187,7 +186,7 @@ private:
             HalfFaceHandle> BaseIter;
 public:
     OutsideNeighborHalfFaceIter(const HalfFaceHandle& _ref_h,
-            const HexahedralMeshTopologyKernel<KernelT>* _mesh);
+            const HexahedralMeshTopologyKernel* _mesh);
     OutsideNeighborHalfFaceIter& operator=(const OutsideNeighborHalfFaceIter& _c) {
         BaseIter::operator=(_c);
         neighbor_halffaces_ = _c.neighbor_halffaces_;
@@ -246,9 +245,5 @@ private:
 };
 
 } // Namespace OpenVolumeMesh
-
-#if defined(INCLUDE_TEMPLATES) && !defined(HEXAHEDRALMESHITERATORST_CC)
-#include "HexahedralMeshIteratorsT.cc"
-#endif
 
 #endif /* HEXAHEDRALMESHITERATORS_HH */

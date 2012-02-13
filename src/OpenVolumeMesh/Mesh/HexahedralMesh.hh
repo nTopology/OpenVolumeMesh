@@ -50,9 +50,9 @@ namespace OpenVolumeMesh {
 /*
  * Predefines for most common mesh types
  */
-typedef HexahedralMeshTopologyKernel<GeometryKernel<Geometry::Vec3d> > GeometricHexahedralMeshV3d;
+typedef GeometryKernel<Geometry::Vec3d, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV3d;
 
-typedef HexahedralMeshTopologyKernel<TopologyKernel> TopologicHexahedralMesh;
+typedef HexahedralMeshTopologyKernel TopologicHexahedralMesh;
 
 } // Namespace OpenVolumeMesh
 
