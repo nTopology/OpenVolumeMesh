@@ -134,20 +134,6 @@ public:
 
     void released_property(MeshPropHandle _handle);
 
-    void set_persistent_copy(VertexPropHandle _handle);
-
-    void set_persistent_copy(EdgePropHandle _handle);
-
-    void set_persistent_copy(HalfEdgePropHandle _handle);
-
-    void set_persistent_copy(FacePropHandle _handle);
-
-    void set_persistent_copy(HalfFacePropHandle _handle);
-
-    void set_persistent_copy(CellPropHandle _handle);
-
-    void set_persistent_copy(MeshPropHandle _handle);
-
     unsigned int n_vertex_props() const { return vertex_props_.size(); }
 
     unsigned int n_edge_props() const { return edge_props_.size(); }
@@ -161,6 +147,20 @@ public:
     unsigned int n_cell_props() const { return cell_props_.size(); }
 
     unsigned int n_mesh_props() const { return mesh_props_.size(); }
+
+    template<class T> void set_persistent(VertexPropertyT<T>& _prop);
+
+    template<class T> void set_persistent(EdgePropertyT<T>& _prop);
+
+    template<class T> void set_persistent(HalfEdgePropertyT<T>& _prop);
+
+    template<class T> void set_persistent(FacePropertyT<T>& _prop);
+
+    template<class T> void set_persistent(HalfFacePropertyT<T>& _prop);
+
+    template<class T> void set_persistent(CellPropertyT<T>& _prop);
+
+    template<class T> void set_persistent(MeshPropertyT<T>& _prop);
 
 private:
 
@@ -177,6 +177,20 @@ private:
     std::vector<BaseProperty*> cell_props_;
 
     std::vector<BaseProperty*> mesh_props_;
+
+    std::vector<BaseProperty*> persistent_vprops_;
+
+    std::vector<BaseProperty*> persistent_eprops_;
+
+    std::vector<BaseProperty*> persistent_heprops_;
+
+    std::vector<BaseProperty*> persistent_fprops_;
+
+    std::vector<BaseProperty*> persistent_hfprops_;
+
+    std::vector<BaseProperty*> persistent_cprops_;
+
+    std::vector<BaseProperty*> persistent_mprops_;
 };
 
 }

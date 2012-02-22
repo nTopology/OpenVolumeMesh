@@ -122,19 +122,11 @@ public:
     /// Access the encapsulated dereferenced pointer
     PropT& operator*();
 
-    virtual void set_persistent();
-
-    virtual bool persistent() const;
-
     virtual void delete_element(size_t _idx);
 
+    unsigned int counter() const { return h_->count_; }
+
 protected:
-
-    virtual void set_non_persistent();
-
-    virtual void set_ref_count(unsigned int _c);
-
-    virtual unsigned int ref_count() const;
 
     virtual void set_handle(const OpenVolumeMeshHandle& _handle);
 

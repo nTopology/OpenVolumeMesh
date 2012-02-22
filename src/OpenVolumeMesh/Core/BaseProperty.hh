@@ -69,10 +69,6 @@ public:
 
     virtual const std::string& name() const = 0;
 
-    virtual void set_persistent() = 0;
-
-    virtual bool persistent() const = 0;
-
     virtual void delete_element(size_t _idx) = 0;
 
     virtual std::ostream& serialize(std::ostream& _ostr) const = 0;
@@ -80,16 +76,6 @@ public:
     virtual std::istream& deserialize(std::istream& _istr) = 0;
 
 protected:
-
-    virtual void set_non_persistent() = 0;
-
-    void set_master_copy(bool _b) { masterCopy_ = _b; }
-
-    bool master_copy() const { return masterCopy_; }
-
-    virtual void set_ref_count(unsigned int /*_c*/) = 0;
-
-    virtual unsigned int ref_count() const = 0;
 
     virtual void set_handle(const OpenVolumeMeshHandle& /*_handle*/) = 0;
 

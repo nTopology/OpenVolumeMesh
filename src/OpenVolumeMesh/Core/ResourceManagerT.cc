@@ -53,13 +53,11 @@ namespace OpenVolumeMesh {
 template<class T>
 VertexPropertyT<T> ResourceManager::request_vertex_property(const std::string& _name) {
 
-    for(std::vector<BaseProperty*>::iterator it = vertex_props_.begin();
-            it != vertex_props_.end(); ++it) {
-        if((*it)->persistent() && (*it)->name() == _name) {
-            VertexPropertyT<T>* prop = dynamic_cast<VertexPropertyT<T>*>(*it);
-            if(prop != NULL) {
-                return *prop;
-            }
+    for(std::vector<BaseProperty*>::iterator it = persistent_vprops_.begin();
+            it != persistent_vprops_.end(); ++it) {
+        if((*it)->name() == _name) {
+            VertexPropertyT<T>* prop = dynamic_cast<VertexPropertyT<T>* >(*it);
+            return *prop;
         }
     }
 
@@ -82,13 +80,11 @@ VertexPropertyT<T> ResourceManager::request_vertex_property(const std::string& _
 template<class T>
 EdgePropertyT<T> ResourceManager::request_edge_property(const std::string& _name) {
 
-    for(std::vector<BaseProperty*>::iterator it = edge_props_.begin();
-            it != edge_props_.end(); ++it) {
-        if((*it)->persistent() && (*it)->name() == _name) {
-            EdgePropertyT<T>* prop = dynamic_cast<EdgePropertyT<T>*>(*it);
-            if(prop != NULL) {
-                return *prop;
-            }
+    for(std::vector<BaseProperty*>::iterator it = persistent_eprops_.begin();
+            it != persistent_eprops_.end(); ++it) {
+        if((*it)->name() == _name) {
+            EdgePropertyT<T>* prop = dynamic_cast<EdgePropertyT<T>* >(*it);
+            return *prop;
         }
     }
 
@@ -111,13 +107,11 @@ EdgePropertyT<T> ResourceManager::request_edge_property(const std::string& _name
 template<class T>
 HalfEdgePropertyT<T> ResourceManager::request_halfedge_property(const std::string& _name) {
 
-    for(std::vector<BaseProperty*>::iterator it = halfedge_props_.begin();
-            it != halfedge_props_.end(); ++it) {
-        if((*it)->persistent() && (*it)->name() == _name) {
-            HalfEdgePropertyT<T>* prop = dynamic_cast<HalfEdgePropertyT<T>*>(*it);
-            if(prop != NULL) {
-                return *prop;
-            }
+    for(std::vector<BaseProperty*>::iterator it = persistent_heprops_.begin();
+            it != persistent_heprops_.end(); ++it) {
+        if((*it)->name() == _name) {
+            HalfEdgePropertyT<T>* prop = dynamic_cast<HalfEdgePropertyT<T>* >(*it);
+            return *prop;
         }
     }
 
@@ -140,13 +134,11 @@ HalfEdgePropertyT<T> ResourceManager::request_halfedge_property(const std::strin
 template<class T>
 FacePropertyT<T> ResourceManager::request_face_property(const std::string& _name) {
 
-    for(std::vector<BaseProperty*>::iterator it = face_props_.begin();
-            it != face_props_.end(); ++it) {
-        if((*it)->persistent() && (*it)->name() == _name) {
-            FacePropertyT<T>* prop = dynamic_cast<FacePropertyT<T>*>(*it);
-            if(prop != NULL) {
-                return *prop;
-            }
+    for(std::vector<BaseProperty*>::iterator it = persistent_fprops_.begin();
+            it != persistent_fprops_.end(); ++it) {
+        if((*it)->name() == _name) {
+            FacePropertyT<T>* prop = dynamic_cast<FacePropertyT<T>* >(*it);
+            return *prop;
         }
     }
 
@@ -169,13 +161,11 @@ FacePropertyT<T> ResourceManager::request_face_property(const std::string& _name
 template<class T>
 HalfFacePropertyT<T> ResourceManager::request_halfface_property(const std::string& _name) {
 
-    for(std::vector<BaseProperty*>::iterator it = halfface_props_.begin();
-            it != halfface_props_.end(); ++it) {
-        if((*it)->persistent() && (*it)->name() == _name) {
-            HalfFacePropertyT<T>* prop = dynamic_cast<HalfFacePropertyT<T>*>(*it);
-            if(prop != NULL) {
-                return *prop;
-            }
+    for(std::vector<BaseProperty*>::iterator it = persistent_hfprops_.begin();
+            it != persistent_hfprops_.end(); ++it) {
+        if((*it)->name() == _name) {
+            HalfFacePropertyT<T>* prop = dynamic_cast<HalfFacePropertyT<T>* >(*it);
+            return *prop;
         }
     }
 
@@ -198,13 +188,11 @@ HalfFacePropertyT<T> ResourceManager::request_halfface_property(const std::strin
 template<class T>
 CellPropertyT<T> ResourceManager::request_cell_property(const std::string& _name) {
 
-    for(std::vector<BaseProperty*>::iterator it = cell_props_.begin();
-            it != cell_props_.end(); ++it) {
-        if((*it)->persistent() && (*it)->name() == _name) {
-            CellPropertyT<T>* prop = dynamic_cast<CellPropertyT<T>*>(*it);
-            if(prop != NULL) {
-                return *prop;
-            }
+    for(std::vector<BaseProperty*>::iterator it = persistent_cprops_.begin();
+            it != persistent_cprops_.end(); ++it) {
+        if((*it)->name() == _name) {
+            CellPropertyT<T>* prop = dynamic_cast<CellPropertyT<T>* >(*it);
+            return *prop;
         }
     }
 
@@ -227,13 +215,11 @@ CellPropertyT<T> ResourceManager::request_cell_property(const std::string& _name
 template<class T>
 MeshPropertyT<T> ResourceManager::request_mesh_property(const std::string& _name) {
 
-    for(std::vector<BaseProperty*>::iterator it = mesh_props_.begin();
-            it != mesh_props_.end(); ++it) {
-        if((*it)->persistent() && (*it)->name() == _name) {
-            MeshPropertyT<T>* prop = dynamic_cast<MeshPropertyT<T>*>(*it);
-            if(prop != NULL) {
-                return *prop;
-            }
+    for(std::vector<BaseProperty*>::iterator it = persistent_mprops_.begin();
+            it != persistent_mprops_.end(); ++it) {
+        if((*it)->name() == _name) {
+            MeshPropertyT<T>* prop = dynamic_cast<MeshPropertyT<T>* >(*it);
+            return *prop;
         }
     }
 
@@ -251,6 +237,55 @@ MeshPropertyT<T> ResourceManager::request_mesh_property(const std::string& _name
     --(*prop).h_->count_;
 
     return *prop;
+}
+
+template<class T>
+void ResourceManager::set_persistent(VertexPropertyT<T>& _prop) {
+
+    VertexPropertyT<T>* prop = new VertexPropertyT<T>(_prop);
+    persistent_vprops_.push_back(prop);
+}
+
+template<class T>
+void ResourceManager::set_persistent(EdgePropertyT<T>& _prop) {
+
+    EdgePropertyT<T>* prop = new EdgePropertyT<T>(_prop);
+    persistent_eprops_.push_back(prop);
+}
+
+template<class T>
+void ResourceManager::set_persistent(HalfEdgePropertyT<T>& _prop) {
+
+    HalfEdgePropertyT<T>* prop = new HalfEdgePropertyT<T>(_prop);
+    persistent_heprops_.push_back(prop);
+}
+
+template<class T>
+void ResourceManager::set_persistent(FacePropertyT<T>& _prop) {
+
+    FacePropertyT<T>* prop = new FacePropertyT<T>(_prop);
+    persistent_fprops_.push_back(prop);
+}
+
+template<class T>
+void ResourceManager::set_persistent(HalfFacePropertyT<T>& _prop) {
+
+    HalfFacePropertyT<T>* prop = new HalfFacePropertyT<T>(_prop);
+    persistent_hfprops_.push_back(prop);
+}
+
+template<class T>
+void ResourceManager::set_persistent(CellPropertyT<T>& _prop) {
+
+    CellPropertyT<T>* prop = new CellPropertyT<T>(_prop);
+    persistent_cprops_.push_back(prop);
+}
+
+template<class T>
+void ResourceManager::set_persistent(MeshPropertyT<T>& _prop) {
+
+    MeshPropertyT<T>* prop = new MeshPropertyT<T>(_prop);
+    persistent_mprops_.push_back(prop);
 }
 
 } // Namespace OpenVolumeMesh

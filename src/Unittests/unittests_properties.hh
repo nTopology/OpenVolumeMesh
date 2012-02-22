@@ -44,7 +44,7 @@ TEST_F(PolyhedralMeshBase, PropertySmartPointerTest1) {
         EXPECT_EQ(4u, mesh_.n_vertex_props());
     }
 
-    v_prop_d.set_persistent();
+    mesh_.set_persistent(v_prop_d);
 
     EXPECT_EQ(1u, mesh_.n_vertex_props());
 
@@ -76,7 +76,7 @@ TEST_F(HexahedralMeshBase, PropertySmartPointerPersistencyTest1) {
         v_prop[0] = 24.5f;
         v_prop[11] = 2.34f;
 
-        v_prop.set_persistent();
+        mesh_.set_persistent(v_prop);
     }
 
     VertexPropertyT<float> v_prop2 = mesh_.request_vertex_property<float>("FloatVProp");

@@ -51,63 +51,41 @@ ResourceManager::ResourceManager() {
 ResourceManager::~ResourceManager() {
 
     // Delete all persistent properties
-    for(std::vector<BaseProperty*>::iterator it = vertex_props_.begin();
-            it != vertex_props_.end(); ++it) {
-
-        (*it)->set_non_persistent();
-        (*it)->set_ref_count(1u);
+    for(std::vector<BaseProperty*>::iterator it = persistent_vprops_.begin();
+            it != persistent_vprops_.end(); ++it) {
         delete *it;
     }
-    vertex_props_.clear();
-    for(std::vector<BaseProperty*>::iterator it = edge_props_.begin();
-            it != edge_props_.end(); ++it) {
-
-        (*it)->set_non_persistent();
-        (*it)->set_ref_count(1u);
+    persistent_vprops_.clear();
+    for(std::vector<BaseProperty*>::iterator it = persistent_eprops_.begin();
+            it != persistent_eprops_.end(); ++it) {
         delete *it;
     }
-    edge_props_.clear();
-    for(std::vector<BaseProperty*>::iterator it = halfedge_props_.begin();
-            it != halfedge_props_.end(); ++it) {
-
-        (*it)->set_non_persistent();
-        (*it)->set_ref_count(1u);
+    persistent_eprops_.clear();
+    for(std::vector<BaseProperty*>::iterator it = persistent_heprops_.begin();
+            it != persistent_heprops_.end(); ++it) {
         delete *it;
     }
-    halfedge_props_.clear();
-    for(std::vector<BaseProperty*>::iterator it = face_props_.begin();
-            it != face_props_.end(); ++it) {
-
-        (*it)->set_non_persistent();
-        (*it)->set_ref_count(1u);
+    persistent_heprops_.clear();
+    for(std::vector<BaseProperty*>::iterator it = persistent_fprops_.begin();
+            it != persistent_fprops_.end(); ++it) {
         delete *it;
     }
-    face_props_.clear();
-    for(std::vector<BaseProperty*>::iterator it = halfface_props_.begin();
-            it != halfface_props_.end(); ++it) {
-
-        (*it)->set_non_persistent();
-        (*it)->set_ref_count(1u);
+    persistent_fprops_.clear();
+    for(std::vector<BaseProperty*>::iterator it = persistent_hfprops_.begin();
+            it != persistent_hfprops_.end(); ++it) {
         delete *it;
     }
-    halfface_props_.clear();
-    for(std::vector<BaseProperty*>::iterator it = cell_props_.begin();
-            it != cell_props_.end(); ++it) {
-
-        (*it)->set_non_persistent();
-        (*it)->set_ref_count(1u);
+    persistent_hfprops_.clear();
+    for(std::vector<BaseProperty*>::iterator it = persistent_cprops_.begin();
+            it != persistent_cprops_.end(); ++it) {
         delete *it;
     }
-    cell_props_.clear();
-    for(std::vector<BaseProperty*>::iterator it = mesh_props_.begin();
-            it != mesh_props_.end(); ++it) {
-
-        (*it)->set_non_persistent();
-        (*it)->set_ref_count(1u);
+    persistent_cprops_.clear();
+    for(std::vector<BaseProperty*>::iterator it = persistent_mprops_.begin();
+            it != persistent_mprops_.end(); ++it) {
         delete *it;
     }
-    mesh_props_.clear();
-
+    persistent_mprops_.clear();
 }
 
 void ResourceManager::resize_vprops(unsigned int _nv) {
@@ -260,34 +238,6 @@ void ResourceManager::released_property(MeshPropHandle _handle) {
     for(; it < mesh_props_.end(); ++it) {
         (*it)->set_handle(decrHandle);
     }
-}
-
-void ResourceManager::set_persistent_copy(VertexPropHandle _handle) {
-    (*(vertex_props_.begin() + _handle.idx()))->set_master_copy(true);
-}
-
-void ResourceManager::set_persistent_copy(EdgePropHandle _handle) {
-    (*(edge_props_.begin() + _handle.idx()))->set_master_copy(true);
-}
-
-void ResourceManager::set_persistent_copy(HalfEdgePropHandle _handle) {
-    (*(halfedge_props_.begin() + _handle.idx()))->set_master_copy(true);
-}
-
-void ResourceManager::set_persistent_copy(FacePropHandle _handle) {
-    (*(face_props_.begin() + _handle.idx()))->set_master_copy(true);
-}
-
-void ResourceManager::set_persistent_copy(HalfFacePropHandle _handle) {
-    (*(halfface_props_.begin() + _handle.idx()))->set_master_copy(true);
-}
-
-void ResourceManager::set_persistent_copy(CellPropHandle _handle) {
-    (*(cell_props_.begin() + _handle.idx()))->set_master_copy(true);
-}
-
-void ResourceManager::set_persistent_copy(MeshPropHandle _handle) {
-    (*(mesh_props_.begin() + _handle.idx()))->set_master_copy(true);
 }
 
 } // Namespace OpenVolumeMesh

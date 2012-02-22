@@ -61,8 +61,8 @@ PropertyPtr<PropT,HandleT>::PropertyPtr(const PropertyPtr<PropT,HandleT>& _cpy) 
 
 template <class PropT, class HandleT>
 PropertyPtr<PropT,HandleT>::~PropertyPtr() {
-    if(--h_->count_ == 0 && !persistent()) {
-        if(!master_copy()) resMan_.released_property(handle_);
+    if(--h_->count_ == 0) {
+        resMan_.released_property(handle_);
         delete h_;
     }
 }
@@ -120,34 +120,8 @@ PropT& PropertyPtr<PropT,HandleT>::operator*()  {
 }
 
 template <class PropT, class HandleT>
-void PropertyPtr<PropT,HandleT>::set_persistent() {
-    h_->ptr_->set_persistent(true);
-    resMan_.set_persistent_copy(handle_);
-}
-
-template <class PropT, class HandleT>
-bool PropertyPtr<PropT,HandleT>::persistent() const {
-    return h_->ptr_->persistent();
-}
-
-template <class PropT, class HandleT>
 void PropertyPtr<PropT,HandleT>::delete_element(size_t _idx) {
     h_->ptr_->delete_element(_idx);
-}
-
-template <class PropT, class HandleT>
-void PropertyPtr<PropT,HandleT>::set_non_persistent() {
-    h_->ptr_->set_persistent(false);
-}
-
-template <class PropT, class HandleT>
-void PropertyPtr<PropT,HandleT>::set_ref_count(unsigned int _c) {
-    h_->count_ = _c;
-}
-
-template <class PropT, class HandleT>
-unsigned int PropertyPtr<PropT,HandleT>::ref_count() const {
-    return h_->count_;
 }
 
 template <class PropT, class HandleT>
