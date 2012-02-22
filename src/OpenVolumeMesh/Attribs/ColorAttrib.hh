@@ -34,83 +34,128 @@
 
 /*===========================================================================*\
  *                                                                           *
- *   $Revision$                                                         *
- *   $Date$                    *
- *   $LastChangedBy$                                                *
+ *   $Revision: 36 $                                                         *
+ *   $Date: 2012-01-10 18:00:06 +0100 (Di, 10 Jan 2012) $                    *
+ *   $LastChangedBy: kremer $                                                *
  *                                                                           *
 \*===========================================================================*/
 
-#ifndef NORMALATTRIB_HH_
-#define NORMALATTRIB_HH_
+#ifndef COLORATTRIB_HH_
+#define COLORATTRIB_HH_
 
 #include <cassert>
 
 #include "../Core/OpenVolumeMeshHandle.hh"
 #include "OpenVolumeMeshStatus.hh"
 #include "../Core/PropertyDefines.hh"
+#include "../Core/TopologyKernel.hh"
 
 namespace OpenVolumeMesh {
 
-template <class GeomKernelT>
-class NormalAttrib {
+//== CLASS DEF ================================================================
+
+template <class ColT>
+class ColorAttrib {
 public:
 
-    NormalAttrib(GeomKernelT& _kernel);
-    virtual ~NormalAttrib();
+    ColorAttrib(TopologyKernel& _kernel);
 
-    /** \brief A simple heuristic to estimate the vertex normals
-     *
-     * This function takes the vertices' surrounding outside
-     * face normals into account and computes an average
-     * out of it.
-     */
-    void update_vertex_normals();
+    virtual ~ColorAttrib();
 
-    /** \brief Compute face normals
-     *
-     * This is accomplished by taking two adjacent half-edges
-     * that are incident to the faces and compute their
-     * cross product. Note that this method looses accuracy
-     * in case the faces in question is not planar.
-     */
-    void update_face_normals();
-
-    const typename GeomKernelT::PointT& operator[](const VertexHandle& _h) const {
-        assert((unsigned int)_h.idx() < v_normals_.size());
-        return v_normals_[_h.idx()];
+    //==================
+    // Vertices
+    //==================
+    const ColT& operator[](const VertexHandle& _h) const {
+        assert((unsigned int)_h.idx() < vcolor_prop_.size());
+        return vcolor_prop_[_h.idx()];
     }
 
-    const typename GeomKernelT::PointT& operator[](const FaceHandle& _h) const {
-        assert((unsigned int)_h.idx() < f_normals_.size());
-        return f_normals_[_h.idx()];
-    }
-
-    typename GeomKernelT::PointT& operator[](const VertexHandle& _h) {
+    ColT& operator[](const VertexHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_vertices());
-        return v_normals_[_h.idx()];
+        return vcolor_prop_[_h.idx()];
     }
 
-    typename GeomKernelT::PointT& operator[](const FaceHandle& _h) {
+    //==================
+    // Edges
+    //==================
+    const ColT& operator[](const EdgeHandle& _h) const {
+        assert((unsigned int)_h.idx() < ecolor_prop_.size());
+        return ecolor_prop_[_h.idx()];
+    }
+
+    ColT& operator[](const EdgeHandle& _h) {
+        assert((unsigned int)_h.idx() < kernel_.n_edges());
+        return ecolor_prop_[_h.idx()];
+    }
+
+    //==================
+    // Half-Edges
+    //==================
+    const ColT& operator[](const HalfEdgeHandle& _h) const {
+        assert((unsigned int)_h.idx() < hecolor_prop_.size());
+        return hecolor_prop_[_h.idx()];
+    }
+
+    ColT& operator[](const HalfEdgeHandle& _h) {
+        assert((unsigned int)_h.idx() < kernel_.n_halfedges());
+        return hecolor_prop_[_h.idx()];
+    }
+
+    //==================
+    // Faces
+    //==================
+    const ColT& operator[](const FaceHandle& _h) const {
+        assert((unsigned int)_h.idx() < fcolor_prop_.size());
+        return fcolor_prop_[_h.idx()];
+    }
+
+    ColT& operator[](const FaceHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_faces());
-        return f_normals_[_h.idx()];
+        return fcolor_prop_[_h.idx()];
+    }
+
+    //==================
+    // Half-Faces
+    //==================
+    const ColT& operator[](const HalfFaceHandle& _h) const {
+        assert((unsigned int)_h.idx() < hfcolor_prop_.size());
+        return hfcolor_prop_[_h.idx()];
+    }
+
+    ColT& operator[](const HalfFaceHandle& _h) {
+        assert((unsigned int)_h.idx() < kernel_.n_halffaces());
+        return hfcolor_prop_[_h.idx()];
+    }
+
+    //==================
+    // Cells
+    //==================
+    const ColT& operator[](const CellHandle& _h) const {
+        assert((unsigned int)_h.idx() < ccolor_prop_.size());
+        return ccolor_prop_[_h.idx()];
+    }
+
+    ColT& operator[](const CellHandle& _h) {
+        assert((unsigned int)_h.idx() < kernel_.n_cells());
+        return ccolor_prop_[_h.idx()];
     }
 
 private:
 
-    void compute_vertex_normal(const VertexHandle& _vh);
+    VertexPropertyT<ColT> vcolor_prop_;
+    EdgePropertyT<ColT> ecolor_prop_;
+    HalfEdgePropertyT<ColT> hecolor_prop_;
+    FacePropertyT<ColT> fcolor_prop_;
+    HalfFacePropertyT<ColT> hfcolor_prop_;
+    CellPropertyT<ColT> ccolor_prop_;
 
-    void compute_face_normal(const FaceHandle& _fh);
-
-    GeomKernelT& kernel_;
-
-    VertexPropertyT<typename GeomKernelT::PointT> v_normals_;
-    FacePropertyT<typename GeomKernelT::PointT> f_normals_;
+    TopologyKernel& kernel_;
 };
 
 } // Namespace OpenVolumeMesh
 
-#if defined(INCLUDE_TEMPLATES) && !defined(NORMALATTRIBT_CC)
-#include "NormalAttribT.cc"
+#if defined(INCLUDE_TEMPLATES) && !defined(COLORATTRIBT_CC)
+#include "ColorAttribT.cc"
 #endif
 
-#endif /* NORMALATTRIB_HH_ */
+#endif /* COLORATTRIB_HH_ */

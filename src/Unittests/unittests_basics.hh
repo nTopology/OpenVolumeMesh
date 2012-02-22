@@ -6,6 +6,7 @@
 
 #include <OpenVolumeMesh/Attribs/StatusAttrib.hh>
 #include <OpenVolumeMesh/Attribs/NormalAttrib.hh>
+#include <OpenVolumeMesh/Attribs/ColorAttrib.hh>
 
 using namespace OpenVolumeMesh;
 
@@ -607,6 +608,48 @@ TEST_F(PolyhedralMeshBase, PolyhedralMeshStatusTest) {
     EXPECT_TRUE(status[VertexHandle(8)].selected());
     EXPECT_FALSE(status[VertexHandle(1)].selected());
     EXPECT_FALSE(status[VertexHandle(9)].selected());
+}
+
+TEST_F(PolyhedralMeshBase, PolyhedralMeshColoTest) {
+
+    generatePolyhedralMesh(mesh_);
+
+    typedef OpenVolumeMesh::Geometry::Vec4f Vec4f;
+
+    // Request colors
+    ColorAttrib<Vec4f> colors(mesh_);
+
+    colors[VertexHandle(7)] = Vec4f(1.0f, 1.0f, 0.0f, 1.0f);
+    colors[EdgeHandle(6)] = Vec4f(1.0f, 1.0f, 0.0f, 1.0f);
+    colors[HalfEdgeHandle(5)] = Vec4f(1.0f, 1.0f, 0.0f, 1.0f);
+    colors[FaceHandle(4)] = Vec4f(1.0f, 1.0f, 0.0f, 1.0f);
+    colors[HalfFaceHandle(3)] = Vec4f(1.0f, 1.0f, 0.0f, 1.0f);
+    colors[CellHandle(1)] = Vec4f(1.0f, 1.0f, 0.0f, 1.0f);
+
+    EXPECT_FLOAT_EQ(1.0f, colors[VertexHandle(7)][0]);
+    EXPECT_FLOAT_EQ(1.0f, colors[VertexHandle(7)][1]);
+    EXPECT_FLOAT_EQ(0.0f, colors[VertexHandle(7)][2]);
+    EXPECT_FLOAT_EQ(1.0f, colors[VertexHandle(7)][3]);
+    EXPECT_FLOAT_EQ(1.0f, colors[EdgeHandle(6)][0]);
+    EXPECT_FLOAT_EQ(1.0f, colors[EdgeHandle(6)][1]);
+    EXPECT_FLOAT_EQ(0.0f, colors[EdgeHandle(6)][2]);
+    EXPECT_FLOAT_EQ(1.0f, colors[EdgeHandle(6)][3]);
+    EXPECT_FLOAT_EQ(1.0f, colors[HalfEdgeHandle(5)][0]);
+    EXPECT_FLOAT_EQ(1.0f, colors[HalfEdgeHandle(5)][1]);
+    EXPECT_FLOAT_EQ(0.0f, colors[HalfEdgeHandle(5)][2]);
+    EXPECT_FLOAT_EQ(1.0f, colors[HalfEdgeHandle(5)][3]);
+    EXPECT_FLOAT_EQ(1.0f, colors[FaceHandle(4)][0]);
+    EXPECT_FLOAT_EQ(1.0f, colors[FaceHandle(4)][1]);
+    EXPECT_FLOAT_EQ(0.0f, colors[FaceHandle(4)][2]);
+    EXPECT_FLOAT_EQ(1.0f, colors[FaceHandle(4)][3]);
+    EXPECT_FLOAT_EQ(1.0f, colors[HalfFaceHandle(3)][0]);
+    EXPECT_FLOAT_EQ(1.0f, colors[HalfFaceHandle(3)][1]);
+    EXPECT_FLOAT_EQ(0.0f, colors[HalfFaceHandle(3)][2]);
+    EXPECT_FLOAT_EQ(1.0f, colors[HalfFaceHandle(3)][3]);
+    EXPECT_FLOAT_EQ(1.0f, colors[CellHandle(1)][0]);
+    EXPECT_FLOAT_EQ(1.0f, colors[CellHandle(1)][1]);
+    EXPECT_FLOAT_EQ(0.0f, colors[CellHandle(1)][2]);
+    EXPECT_FLOAT_EQ(1.0f, colors[CellHandle(1)][3]);
 }
 
 TEST_F(PolyhedralMeshBase, PolyhedralMeshProperties) {

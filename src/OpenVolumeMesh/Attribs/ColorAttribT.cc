@@ -34,83 +34,33 @@
 
 /*===========================================================================*\
  *                                                                           *
- *   $Revision$                                                         *
- *   $Date$                    *
- *   $LastChangedBy$                                                *
+ *   $Revision: 36 $                                                         *
+ *   $Date: 2012-01-10 18:00:06 +0100 (Di, 10 Jan 2012) $                    *
+ *   $LastChangedBy: kremer $                                                *
  *                                                                           *
 \*===========================================================================*/
 
-#ifndef NORMALATTRIB_HH_
-#define NORMALATTRIB_HH_
+#define COLORATTRIBT_CC
 
-#include <cassert>
-
-#include "../Core/OpenVolumeMeshHandle.hh"
-#include "OpenVolumeMeshStatus.hh"
-#include "../Core/PropertyDefines.hh"
+#include "ColorAttrib.hh"
 
 namespace OpenVolumeMesh {
 
-template <class GeomKernelT>
-class NormalAttrib {
-public:
+template <class ColT>
+ColorAttrib<ColT>::ColorAttrib(TopologyKernel& _kernel) :
+        vcolor_prop_(_kernel.request_vertex_property<ColT>("vertex_color")),
+        ecolor_prop_(_kernel.request_edge_property<ColT>("edge_color")),
+        hecolor_prop_(_kernel.request_halfedge_property<ColT>("halfedge_color")),
+        fcolor_prop_(_kernel.request_face_property<ColT>("face_color")),
+        hfcolor_prop_(_kernel.request_halfface_property<ColT>("halfface_color")),
+        ccolor_prop_(_kernel.request_cell_property<ColT>("cell_color")),
+        kernel_(_kernel) {
 
-    NormalAttrib(GeomKernelT& _kernel);
-    virtual ~NormalAttrib();
+}
 
-    /** \brief A simple heuristic to estimate the vertex normals
-     *
-     * This function takes the vertices' surrounding outside
-     * face normals into account and computes an average
-     * out of it.
-     */
-    void update_vertex_normals();
+template <class ColT>
+ColorAttrib<ColT>::~ColorAttrib() {
 
-    /** \brief Compute face normals
-     *
-     * This is accomplished by taking two adjacent half-edges
-     * that are incident to the faces and compute their
-     * cross product. Note that this method looses accuracy
-     * in case the faces in question is not planar.
-     */
-    void update_face_normals();
-
-    const typename GeomKernelT::PointT& operator[](const VertexHandle& _h) const {
-        assert((unsigned int)_h.idx() < v_normals_.size());
-        return v_normals_[_h.idx()];
-    }
-
-    const typename GeomKernelT::PointT& operator[](const FaceHandle& _h) const {
-        assert((unsigned int)_h.idx() < f_normals_.size());
-        return f_normals_[_h.idx()];
-    }
-
-    typename GeomKernelT::PointT& operator[](const VertexHandle& _h) {
-        assert((unsigned int)_h.idx() < kernel_.n_vertices());
-        return v_normals_[_h.idx()];
-    }
-
-    typename GeomKernelT::PointT& operator[](const FaceHandle& _h) {
-        assert((unsigned int)_h.idx() < kernel_.n_faces());
-        return f_normals_[_h.idx()];
-    }
-
-private:
-
-    void compute_vertex_normal(const VertexHandle& _vh);
-
-    void compute_face_normal(const FaceHandle& _fh);
-
-    GeomKernelT& kernel_;
-
-    VertexPropertyT<typename GeomKernelT::PointT> v_normals_;
-    FacePropertyT<typename GeomKernelT::PointT> f_normals_;
-};
+}
 
 } // Namespace OpenVolumeMesh
-
-#if defined(INCLUDE_TEMPLATES) && !defined(NORMALATTRIBT_CC)
-#include "NormalAttribT.cc"
-#endif
-
-#endif /* NORMALATTRIB_HH_ */
