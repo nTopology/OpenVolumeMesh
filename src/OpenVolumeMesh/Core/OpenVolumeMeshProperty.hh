@@ -47,6 +47,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 #include <algorithm>
 #include <numeric>
 #include <cassert>
@@ -145,6 +146,17 @@ public:
             _ostr << *it << std::endl;
         }
         return _ostr;
+    }
+
+    // Function to deserialize a property
+    virtual std::istream& deserialize(std::istream& _istr) {
+        OpenVolumeMeshBaseProperty::deserialize(_istr);
+        for(unsigned int i = 0; i < n_elements(); ++i) {
+            value_type val;
+            _istr >> val;
+            data_[i] = val;
+        }
+        return _istr;
     }
 
 public:

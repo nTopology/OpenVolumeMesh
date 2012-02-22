@@ -112,6 +112,14 @@ public:
 	    return _ostr;
 	}
 
+	// Function to deserialize a property
+    virtual std::istream& deserialize(std::istream& _istr) {
+        std::string str;
+        _istr >> str;
+        name_ = str;
+        return _istr;
+    }
+
 public:
 	// I/O support
 

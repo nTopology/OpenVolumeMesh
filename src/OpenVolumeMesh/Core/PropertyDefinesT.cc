@@ -56,9 +56,15 @@ VertexPropertyT<T>::VertexPropertyT(const std::string& _name, ResourceManager& _
 
 template<class T>
 std::ostream& VertexPropertyT<T>::serialize(std::ostream& _ostr) const {
-    _ostr << "VProp " << std::endl;
+    _ostr << "VProp" << std::endl;
     _ostr << PropertyPtr<OpenVolumeMeshPropertyT<T>, VertexPropHandle>::h_->ptr_->serialize(_ostr);
     return _ostr;
+}
+
+template<class T>
+std::istream& VertexPropertyT<T>::deserialize(std::istream& _istr) {
+    PropertyPtr<OpenVolumeMeshPropertyT<T>, VertexPropHandle>::h_->ptr_->deserialize(_istr);
+    return _istr;
 }
 
 template<class T>
@@ -69,9 +75,15 @@ EdgePropertyT<T>::EdgePropertyT(const std::string& _name, ResourceManager& _resM
 
 template<class T>
 std::ostream& EdgePropertyT<T>::serialize(std::ostream& _ostr) const {
-    _ostr << "EProp " << std::endl;
+    _ostr << "EProp" << std::endl;
     _ostr << PropertyPtr<OpenVolumeMeshPropertyT<T>, EdgePropHandle>::h_->ptr_->serialize(_ostr);
     return _ostr;
+}
+
+template<class T>
+std::istream& EdgePropertyT<T>::deserialize(std::istream& _istr) {
+    PropertyPtr<OpenVolumeMeshPropertyT<T>, EdgePropHandle>::h_->ptr_->deserialize(_istr);
+    return _istr;
 }
 
 template<class T>
@@ -82,9 +94,15 @@ HalfEdgePropertyT<T>::HalfEdgePropertyT(const std::string& _name, ResourceManage
 
 template<class T>
 std::ostream& HalfEdgePropertyT<T>::serialize(std::ostream& _ostr) const {
-    _ostr << "HEProp " << std::endl;
+    _ostr << "HEProp" << std::endl;
     _ostr << PropertyPtr<OpenVolumeMeshPropertyT<T>, HalfEdgePropHandle>::h_->ptr_->serialize(_ostr);
     return _ostr;
+}
+
+template<class T>
+std::istream& HalfEdgePropertyT<T>::deserialize(std::istream& _istr) {
+    PropertyPtr<OpenVolumeMeshPropertyT<T>, HalfEdgePropHandle>::h_->ptr_->deserialize(_istr);
+    return _istr;
 }
 
 template<class T>
@@ -95,9 +113,15 @@ FacePropertyT<T>::FacePropertyT(const std::string& _name, ResourceManager& _resM
 
 template<class T>
 std::ostream& FacePropertyT<T>::serialize(std::ostream& _ostr) const {
-    _ostr << "FProp " << std::endl;
+    _ostr << "FProp" << std::endl;
     _ostr << PropertyPtr<OpenVolumeMeshPropertyT<T>, FacePropHandle>::h_->ptr_->serialize(_ostr);
     return _ostr;
+}
+
+template<class T>
+std::istream& FacePropertyT<T>::deserialize(std::istream& _istr) {
+    PropertyPtr<OpenVolumeMeshPropertyT<T>, FacePropHandle>::h_->ptr_->deserialize(_istr);
+    return _istr;
 }
 
 template<class T>
@@ -108,9 +132,15 @@ HalfFacePropertyT<T>::HalfFacePropertyT(const std::string& _name, ResourceManage
 
 template<class T>
 std::ostream& HalfFacePropertyT<T>::serialize(std::ostream& _ostr) const {
-    _ostr << "HFProp " << std::endl;
+    _ostr << "HFProp" << std::endl;
     _ostr << PropertyPtr<OpenVolumeMeshPropertyT<T>, HalfFacePropHandle>::h_->ptr_->serialize(_ostr);
     return _ostr;
+}
+
+template<class T>
+std::istream& HalfFacePropertyT<T>::deserialize(std::istream& _istr) {
+    PropertyPtr<OpenVolumeMeshPropertyT<T>, HalfFacePropHandle>::h_->ptr_->deserialize(_istr);
+    return _istr;
 }
 
 template<class T>
@@ -121,9 +151,15 @@ CellPropertyT<T>::CellPropertyT(const std::string& _name, ResourceManager& _resM
 
 template<class T>
 std::ostream& CellPropertyT<T>::serialize(std::ostream& _ostr) const {
-    _ostr << "CProp " << std::endl;
+    _ostr << "CProp" << std::endl;
     _ostr << PropertyPtr<OpenVolumeMeshPropertyT<T>, CellPropHandle>::h_->ptr_->serialize(_ostr);
     return _ostr;
+}
+
+template<class T>
+std::istream& CellPropertyT<T>::deserialize(std::istream& _istr) {
+    PropertyPtr<OpenVolumeMeshPropertyT<T>, CellPropHandle>::h_->ptr_->deserialize(_istr);
+    return _istr;
 }
 
 template<class T>
@@ -134,9 +170,15 @@ MeshPropertyT<T>::MeshPropertyT(const std::string& _name, ResourceManager& _resM
 
 template<class T>
 std::ostream& MeshPropertyT<T>::serialize(std::ostream& _ostr) const {
-    _ostr << "MProp " << std::endl;
+    _ostr << "MProp" << std::endl;
     _ostr << PropertyPtr<OpenVolumeMeshPropertyT<T>, MeshPropHandle>::h_->ptr_->serialize(_ostr);
     return _ostr;
+}
+
+template<class T>
+std::istream& MeshPropertyT<T>::deserialize(std::istream& _istr) {
+    PropertyPtr<OpenVolumeMeshPropertyT<T>, MeshPropHandle>::h_->ptr_->deserialize(_istr);
+    return _istr;
 }
 
 } // Namespace OpenVolumeMesh

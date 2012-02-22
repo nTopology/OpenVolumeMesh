@@ -79,10 +79,9 @@ private:
     bool deleted_;
 };
 
-inline std::ostream& operator<<(std::ostream& _ostr, const OpenVolumeMeshStatus& _status) {
-    _ostr << _status.selected() << " " << _status.tagged() << " " << _status.deleted() << std::endl;
-    return _ostr;
-}
+std::ostream& operator<<(std::ostream& _ostr, const OpenVolumeMeshStatus& _status);
+
+std::istream& operator>>(std::istream& _istr, OpenVolumeMeshStatus& _status);
 
 } // Namespace OpenVolumeMesh
 

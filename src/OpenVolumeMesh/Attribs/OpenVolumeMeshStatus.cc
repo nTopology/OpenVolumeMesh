@@ -34,72 +34,30 @@
 
 /*===========================================================================*\
  *                                                                           *
- *   $Revision$                                                         *
- *   $Date$                    *
- *   $LastChangedBy$                                                *
+ *   $Revision: 36 $                                                         *
+ *   $Date: 2012-01-10 18:00:06 +0100 (Di, 10 Jan 2012) $                    *
+ *   $LastChangedBy: kremer $                                                *
  *                                                                           *
 \*===========================================================================*/
 
-#ifndef BASEPROPERTY_HH_
-#define BASEPROPERTY_HH_
-
-#include <string>
-
-#include "OpenVolumeMeshHandle.hh"
+#include "OpenVolumeMeshStatus.hh"
 
 namespace OpenVolumeMesh {
 
-class ResourceManager;
+std::ostream& operator<<(std::ostream& _ostr, const OpenVolumeMeshStatus& _status) {
+    _ostr << _status.selected() << " " << _status.tagged() << " " << _status.deleted() << std::endl;
+    return _ostr;
+}
 
-class BaseProperty {
-public:
-    friend class ResourceManager;
-
-    BaseProperty(ResourceManager& _resMan) : resMan_(_resMan), masterCopy_(false) {}
-
-    BaseProperty(const BaseProperty& _cpy) : resMan_(_cpy.resMan_), masterCopy_(_cpy.masterCopy_) {}
-
-    virtual ~BaseProperty() {}
-
-    virtual BaseProperty& operator= (const BaseProperty& _rhs);
-
-    virtual BaseProperty& operator= (BaseProperty& _rhs);
-
-    virtual void resize(unsigned int /*_size*/) = 0;
-
-    virtual const std::string& name() const = 0;
-
-    virtual void set_persistent() = 0;
-
-    virtual bool persistent() const = 0;
-
-    virtual void delete_element(size_t _idx) = 0;
-
-    virtual std::ostream& serialize(std::ostream& _ostr) const = 0;
-
-    virtual std::istream& deserialize(std::istream& _istr) = 0;
-
-protected:
-
-    virtual void set_non_persistent() = 0;
-
-    void set_master_copy(bool _b) { masterCopy_ = _b; }
-
-    bool master_copy() const { return masterCopy_; }
-
-    virtual void set_ref_count(unsigned int /*_c*/) = 0;
-
-    virtual unsigned int ref_count() const = 0;
-
-    virtual void set_handle(const OpenVolumeMeshHandle& /*_handle*/) = 0;
-
-    virtual OpenVolumeMeshHandle handle() const = 0;
-
-    ResourceManager& resMan_;
-
-    bool masterCopy_;
-};
+std::istream& operator>>(std::istream& _istr, OpenVolumeMeshStatus& _status) {
+    bool b = false;
+    _istr >> b;
+    _status.set_selected(b);
+    _istr >> b;
+    _status.set_tagged(b);
+    _istr >> b;
+    _status.set_deleted(b);
+    return _istr;
+}
 
 } // Namespace OpenVolumeMesh
-
-#endif /* BASEPROPERTY_HH_ */
