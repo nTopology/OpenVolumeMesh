@@ -68,7 +68,59 @@ topology of the mesh is completely initialized. Note that each time the topology
 of the mesh has changed, the bottom-up adjacencies have to be updated.
 Note also that most of the iterators and circulators rely on these adjacency lists,
 so, many of them do not work unless OpenVolumeMesh::PolyhedralMesh::update_adjacencies()
-is called.
+is called. Bottom-up adjacencies can optionally be computed on a per-entity basis.
+This is useful in cases where only a subset of these adjacency relations is required
+while at the same time keeping the data structure as compact as possible
+allocating only a minimum of storage overhead.
+
+\section modularity Modularity - Take only what you need
+
+There exist numerous applications for volumetric mesh data structures including
+mesh generation, finite element analysis, rendering, etc. Each of them focussing
+on different design goals such as maximum efficiency, compactness or
+comfortable navigation. Since our data structure claims to be versatile,
+it is designed to be as modular as possible such that it suits many of the
+mentioned application cases. Figure 3 shows the class diagram of the core components
+of %OpenVolumeMesh. With this architecture it is possible to only instanciate
+what is really needed in a particular use case. For instance, we make a clear distinction
+between the geometry and topology of a mesh, such that the choice of whether a mesh (graph) requires
+a geometric embedding or not is up to the user. This may save a lot of unnecessary memory
+overhead in cases where only topological information of a mesh is needed.
+The topology kernel implements only a minimal set of (intrinsic) operations on
+a mesh such as adding/deleting entities, computing adjacency relations and instantiate
+iterator objects. All other additional functions are provided by the so-called attribute classes
+which are presented in the next section.
+
+\image html ovm_class_diagram.png "Figure 3. The class diagram of the OpenVolumeMesh core" width=600
+
+\section attribs Using attributes to provide extra functionality
+
+Due to the fact that %OpenVolumeMesh is designed to be as compact as possible providing
+the opportunity to only code that is really needed a particular case, all extra
+functionality can be obtained by so-called attribute classes. Attribute objects
+are instanciated at run-time and expect a mesh reference to be injected.
+Usually they request a certain set of properties from the mesh and provide
+functions that allow operating on these properties. The major advantage of
+the use of these attributes is that they exclusively use additional memory
+during their life-time cycle. As soon as an attribute object looses scope
+and is thus destroyed, all allocated memory is automatically released again.
+The following lines of code show how to use attributes (in this case the
+status attribute providing functions for selecting, tagging and deleting
+entities):
+
+\code
+// Create mesh object
+GeometricPolyhedralMeshV3d myMesh;
+
+// Fill mesh with entities
+...
+
+// Create status attribute object
+StatusAttrib status(myMesh);
+
+// Select vertex with handle 0
+status[VertexHandle(0)].set_selected(true);
+\endcode
 
 \section index_based Using handles to address the entities of a mesh
 
@@ -82,7 +134,7 @@ elements at compile time. The handle classes are each derived from a common
 base class called, OpenVolumeMesh::OpenVolumeMeshHandle. The iterators as well
 as the circulators are designed to return a handle to an entity on dereference
 rather than a reference to the entity itself. A special constant,
-OpenVolumeMesh::PolyhedralMesh::InvalidVertexHandle, etc., for each entity
+OpenVolumeMesh::TopologyKernel::InvalidVertexHandle, etc., for each entity
 is used when trying to access non-existing entities.
 
 \section genericity Genericity
@@ -102,7 +154,7 @@ So, let's say we want to create a polyhedral mesh whose vertices are elements of
 
 \code
 #include <OpenVolumeMesh/Geometry/VectorT.hh>
-#include <OpenVolumeMesh/PolyhedralMesh/PolyhedralMesh.hh>
+#include <OpenVolumeMesh/Mesh/PolyhedralMesh.hh>
 
 void SomeClass::someFunction() {
 
@@ -114,7 +166,7 @@ void SomeClass::someFunction() {
   // Vec2ui stands for "two-dimensional vector of unsigned integers"
 
   // Our mesh using Vec2ui as vector type
-  OpenVolumeMesh::PolyhedralMesh< Vec2ui > myMesh;
+  OpenVolumeMesh::GeometryKernel< Vec2ui > myMesh;
 
   ...
 
