@@ -44,6 +44,7 @@
 #define HEXAHEDRALMESH_HH_
 
 #include "HexahedralMeshTopologyKernel.hh"
+#include "../Core/GeometryKernel.hh"
 
 namespace OpenVolumeMesh {
 
