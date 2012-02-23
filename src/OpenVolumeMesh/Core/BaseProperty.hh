@@ -77,6 +77,8 @@ public:
 
 protected:
 
+    virtual const void* ptr() const = 0;
+
     virtual void set_handle(const OpenVolumeMeshHandle& /*_handle*/) = 0;
 
     virtual OpenVolumeMeshHandle handle() const = 0;

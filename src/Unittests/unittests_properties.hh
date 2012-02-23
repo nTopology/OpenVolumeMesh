@@ -110,6 +110,39 @@ TEST_F(HexahedralMeshBase, PropertySmartPointerPersistencyTest2) {
     EXPECT_EQ(0u, mesh_.n_vertex_props());
 }
 
+TEST_F(HexahedralMeshBase, AnonymousPropertiesTest1) {
+
+    generateHexahedralMesh(mesh_);
+
+    CellPropertyT<float> c_prop = mesh_.request_cell_property<float>();
+    CellPropertyT<float> c_prop2 = c_prop;
+
+    EXPECT_EQ(1u, mesh_.n_cell_props());
+
+    mesh_.set_persistent(c_prop);
+
+    EXPECT_EQ(1u, mesh_.n_cell_props());
+
+    mesh_.set_persistent(c_prop2, false);
+
+    EXPECT_EQ(1u, mesh_.n_cell_props());
+}
+
+TEST_F(HexahedralMeshBase, AnonymousPropertiesTest2) {
+
+    generateHexahedralMesh(mesh_);
+
+    CellPropertyT<float> c_prop1 = mesh_.request_cell_property<float>();
+
+    for(int i = 0; i < 1; ++i) {
+
+        CellPropertyT<float> c_prop2 = mesh_.request_cell_property<float>();
+        EXPECT_EQ(2u, mesh_.n_cell_props());
+    }
+
+    EXPECT_EQ(1u, mesh_.n_cell_props());
+}
+
 TEST_F(PolyhedralMeshBase, StatusTest) {
 
     generatePolyhedralMesh(mesh_);

@@ -129,6 +129,8 @@ public:
 
 protected:
 
+    virtual const void* ptr() const { return h_->ptr_; }
+
     virtual void set_handle(const OpenVolumeMeshHandle& _handle);
 
     virtual OpenVolumeMeshHandle handle() const;

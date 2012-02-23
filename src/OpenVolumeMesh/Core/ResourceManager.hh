@@ -106,19 +106,19 @@ public:
     /// Get number of cells in mesh
     virtual unsigned int n_cells() const = 0;
 
-    template<class T> VertexPropertyT<T> request_vertex_property(const std::string& _name);
+    template<class T> VertexPropertyT<T> request_vertex_property(const std::string& _name = std::string());
 
-    template<class T> EdgePropertyT<T> request_edge_property(const std::string& _name);
+    template<class T> EdgePropertyT<T> request_edge_property(const std::string& _name = std::string());
 
-    template<class T> HalfEdgePropertyT<T> request_halfedge_property(const std::string& _name);
+    template<class T> HalfEdgePropertyT<T> request_halfedge_property(const std::string& _name = std::string());
 
-    template<class T> FacePropertyT<T> request_face_property(const std::string& _name);
+    template<class T> FacePropertyT<T> request_face_property(const std::string& _name = std::string());
 
-    template<class T> HalfFacePropertyT<T> request_halfface_property(const std::string& _name);
+    template<class T> HalfFacePropertyT<T> request_halfface_property(const std::string& _name = std::string());
 
-    template<class T> CellPropertyT<T> request_cell_property(const std::string& _name);
+    template<class T> CellPropertyT<T> request_cell_property(const std::string& _name = std::string());
 
-    template<class T> MeshPropertyT<T> request_mesh_property(const std::string& _name);
+    template<class T> MeshPropertyT<T> request_mesh_property(const std::string& _name = std::string());
 
     void released_property(VertexPropHandle _handle);
 
