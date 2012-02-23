@@ -242,6 +242,8 @@ MeshPropertyT<T> ResourceManager::request_mesh_property(const std::string& _name
 template<class T>
 void ResourceManager::set_persistent(VertexPropertyT<T>& _prop) {
 
+    if(_prop.h_->persistent_) return;
+    _prop.h_->persistent_ = true;
     VertexPropertyT<T>* prop = new VertexPropertyT<T>(_prop);
     persistent_vprops_.push_back(prop);
 }
@@ -249,6 +251,8 @@ void ResourceManager::set_persistent(VertexPropertyT<T>& _prop) {
 template<class T>
 void ResourceManager::set_persistent(EdgePropertyT<T>& _prop) {
 
+    if(_prop.h_->persistent_) return;
+    _prop.h_->persistent_ = true;
     EdgePropertyT<T>* prop = new EdgePropertyT<T>(_prop);
     persistent_eprops_.push_back(prop);
 }
@@ -256,6 +260,8 @@ void ResourceManager::set_persistent(EdgePropertyT<T>& _prop) {
 template<class T>
 void ResourceManager::set_persistent(HalfEdgePropertyT<T>& _prop) {
 
+    if(_prop.h_->persistent_) return;
+    _prop.h_->persistent_ = true;
     HalfEdgePropertyT<T>* prop = new HalfEdgePropertyT<T>(_prop);
     persistent_heprops_.push_back(prop);
 }
@@ -263,6 +269,8 @@ void ResourceManager::set_persistent(HalfEdgePropertyT<T>& _prop) {
 template<class T>
 void ResourceManager::set_persistent(FacePropertyT<T>& _prop) {
 
+    if(_prop.h_->persistent_) return;
+    _prop.h_->persistent_ = true;
     FacePropertyT<T>* prop = new FacePropertyT<T>(_prop);
     persistent_fprops_.push_back(prop);
 }
@@ -270,6 +278,8 @@ void ResourceManager::set_persistent(FacePropertyT<T>& _prop) {
 template<class T>
 void ResourceManager::set_persistent(HalfFacePropertyT<T>& _prop) {
 
+    if(_prop.h_->persistent_) return;
+    _prop.h_->persistent_ = true;
     HalfFacePropertyT<T>* prop = new HalfFacePropertyT<T>(_prop);
     persistent_hfprops_.push_back(prop);
 }
@@ -277,6 +287,8 @@ void ResourceManager::set_persistent(HalfFacePropertyT<T>& _prop) {
 template<class T>
 void ResourceManager::set_persistent(CellPropertyT<T>& _prop) {
 
+    if(_prop.h_->persistent_) return;
+    _prop.h_->persistent_ = true;
     CellPropertyT<T>* prop = new CellPropertyT<T>(_prop);
     persistent_cprops_.push_back(prop);
 }
@@ -284,6 +296,8 @@ void ResourceManager::set_persistent(CellPropertyT<T>& _prop) {
 template<class T>
 void ResourceManager::set_persistent(MeshPropertyT<T>& _prop) {
 
+    if(_prop.h_->persistent_) return;
+    _prop.h_->persistent_ = true;
     MeshPropertyT<T>* prop = new MeshPropertyT<T>(_prop);
     persistent_mprops_.push_back(prop);
 }

@@ -73,7 +73,7 @@ protected:
      */
     class Holder {
     public:
-        Holder(PropT* _ptr) : ptr_(_ptr), count_(1u) {}
+        Holder(PropT* _ptr) : ptr_(_ptr), count_(1u), persistent_(false) {}
         ~Holder() {
             if(ptr_ != NULL) {
                 delete ptr_;
@@ -83,6 +83,7 @@ protected:
 
         PropT* ptr_;
         unsigned int count_;
+        bool persistent_;
     };
 
     Holder* h_;
