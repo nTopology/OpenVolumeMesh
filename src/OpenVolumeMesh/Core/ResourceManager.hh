@@ -148,19 +148,19 @@ public:
 
     unsigned int n_mesh_props() const { return mesh_props_.size(); }
 
-    template<class T> void set_persistent(VertexPropertyT<T>& _prop);
+    template<class T> void set_persistent(VertexPropertyT<T>& _prop, bool _flag = true);
 
-    template<class T> void set_persistent(EdgePropertyT<T>& _prop);
+    template<class T> void set_persistent(EdgePropertyT<T>& _prop, bool _flag = true);
 
-    template<class T> void set_persistent(HalfEdgePropertyT<T>& _prop);
+    template<class T> void set_persistent(HalfEdgePropertyT<T>& _prop, bool _flag = true);
 
-    template<class T> void set_persistent(FacePropertyT<T>& _prop);
+    template<class T> void set_persistent(FacePropertyT<T>& _prop, bool _flag = true);
 
-    template<class T> void set_persistent(HalfFacePropertyT<T>& _prop);
+    template<class T> void set_persistent(HalfFacePropertyT<T>& _prop, bool _flag = true);
 
-    template<class T> void set_persistent(CellPropertyT<T>& _prop);
+    template<class T> void set_persistent(CellPropertyT<T>& _prop, bool _flag = true);
 
-    template<class T> void set_persistent(MeshPropertyT<T>& _prop);
+    template<class T> void set_persistent(MeshPropertyT<T>& _prop, bool _flag = true);
 
 private:
 

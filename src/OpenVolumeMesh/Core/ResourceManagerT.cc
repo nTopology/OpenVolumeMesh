@@ -240,66 +240,157 @@ MeshPropertyT<T> ResourceManager::request_mesh_property(const std::string& _name
 }
 
 template<class T>
-void ResourceManager::set_persistent(VertexPropertyT<T>& _prop) {
+void ResourceManager::set_persistent(VertexPropertyT<T>& _prop, bool _flag) {
 
-    if(_prop.h_->persistent_) return;
-    _prop.h_->persistent_ = true;
-    VertexPropertyT<T>* prop = new VertexPropertyT<T>(_prop);
-    persistent_vprops_.push_back(prop);
+    if(_flag == _prop.h_->persistent_) return;
+
+    if(!_flag) {
+        for(std::vector<BaseProperty*>::iterator it = persistent_vprops_.begin();
+                it != persistent_vprops_.end(); ++it) {
+            if((*it)->name() == _prop.name()) {
+                _prop.h_->persistent_ = false;
+                delete (*it);
+                persistent_vprops_.erase(it);
+                break;
+            }
+        }
+    } else {
+        _prop.h_->persistent_ = true;
+        VertexPropertyT<T>* prop = new VertexPropertyT<T>(_prop);
+        persistent_vprops_.push_back(prop);
+    }
 }
 
 template<class T>
-void ResourceManager::set_persistent(EdgePropertyT<T>& _prop) {
+void ResourceManager::set_persistent(EdgePropertyT<T>& _prop, bool _flag) {
 
-    if(_prop.h_->persistent_) return;
-    _prop.h_->persistent_ = true;
-    EdgePropertyT<T>* prop = new EdgePropertyT<T>(_prop);
-    persistent_eprops_.push_back(prop);
+    if(_flag == _prop.h_->persistent_) return;
+
+    if(!_flag) {
+        for(std::vector<BaseProperty*>::iterator it = persistent_eprops_.begin();
+                it != persistent_eprops_.end(); ++it) {
+            if((*it)->name() == _prop.name()) {
+                _prop.h_->persistent_ = false;
+                delete (*it);
+                persistent_eprops_.erase(it);
+                break;
+            }
+        }
+    } else {
+        _prop.h_->persistent_ = true;
+        EdgePropertyT<T>* prop = new EdgePropertyT<T>(_prop);
+        persistent_eprops_.push_back(prop);
+    }
 }
 
 template<class T>
-void ResourceManager::set_persistent(HalfEdgePropertyT<T>& _prop) {
+void ResourceManager::set_persistent(HalfEdgePropertyT<T>& _prop, bool _flag) {
 
-    if(_prop.h_->persistent_) return;
-    _prop.h_->persistent_ = true;
-    HalfEdgePropertyT<T>* prop = new HalfEdgePropertyT<T>(_prop);
-    persistent_heprops_.push_back(prop);
+    if(_flag == _prop.h_->persistent_) return;
+
+    if(!_flag) {
+        for(std::vector<BaseProperty*>::iterator it = persistent_heprops_.begin();
+                it != persistent_heprops_.end(); ++it) {
+            if((*it)->name() == _prop.name()) {
+                _prop.h_->persistent_ = false;
+                delete (*it);
+                persistent_heprops_.erase(it);
+                break;
+            }
+        }
+    } else {
+        _prop.h_->persistent_ = true;
+        HalfEdgePropertyT<T>* prop = new HalfEdgePropertyT<T>(_prop);
+        persistent_heprops_.push_back(prop);
+    }
 }
 
 template<class T>
-void ResourceManager::set_persistent(FacePropertyT<T>& _prop) {
+void ResourceManager::set_persistent(FacePropertyT<T>& _prop, bool _flag) {
 
-    if(_prop.h_->persistent_) return;
-    _prop.h_->persistent_ = true;
-    FacePropertyT<T>* prop = new FacePropertyT<T>(_prop);
-    persistent_fprops_.push_back(prop);
+    if(_flag == _prop.h_->persistent_) return;
+
+    if(!_flag) {
+        for(std::vector<BaseProperty*>::iterator it = persistent_fprops_.begin();
+                it != persistent_fprops_.end(); ++it) {
+            if((*it)->name() == _prop.name()) {
+                _prop.h_->persistent_ = false;
+                delete (*it);
+                persistent_fprops_.erase(it);
+                break;
+            }
+        }
+    } else {
+        _prop.h_->persistent_ = true;
+        FacePropertyT<T>* prop = new FacePropertyT<T>(_prop);
+        persistent_fprops_.push_back(prop);
+    }
 }
 
 template<class T>
-void ResourceManager::set_persistent(HalfFacePropertyT<T>& _prop) {
+void ResourceManager::set_persistent(HalfFacePropertyT<T>& _prop, bool _flag) {
 
-    if(_prop.h_->persistent_) return;
-    _prop.h_->persistent_ = true;
-    HalfFacePropertyT<T>* prop = new HalfFacePropertyT<T>(_prop);
-    persistent_hfprops_.push_back(prop);
+    if(_flag == _prop.h_->persistent_) return;
+
+    if(!_flag) {
+        for(std::vector<BaseProperty*>::iterator it = persistent_hfprops_.begin();
+                it != persistent_hfprops_.end(); ++it) {
+            if((*it)->name() == _prop.name()) {
+                _prop.h_->persistent_ = false;
+                delete (*it);
+                persistent_hfprops_.erase(it);
+                break;
+            }
+        }
+    } else {
+        _prop.h_->persistent_ = true;
+        HalfFacePropertyT<T>* prop = new HalfFacePropertyT<T>(_prop);
+        persistent_hfprops_.push_back(prop);
+    }
 }
 
 template<class T>
-void ResourceManager::set_persistent(CellPropertyT<T>& _prop) {
+void ResourceManager::set_persistent(CellPropertyT<T>& _prop, bool _flag) {
 
-    if(_prop.h_->persistent_) return;
-    _prop.h_->persistent_ = true;
-    CellPropertyT<T>* prop = new CellPropertyT<T>(_prop);
-    persistent_cprops_.push_back(prop);
+    if(_flag == _prop.h_->persistent_) return;
+
+    if(!_flag) {
+        for(std::vector<BaseProperty*>::iterator it = persistent_cprops_.begin();
+                it != persistent_cprops_.end(); ++it) {
+            if((*it)->name() == _prop.name()) {
+                _prop.h_->persistent_ = false;
+                delete (*it);
+                persistent_cprops_.erase(it);
+                break;
+            }
+        }
+    } else {
+        _prop.h_->persistent_ = true;
+        CellPropertyT<T>* prop = new CellPropertyT<T>(_prop);
+        persistent_cprops_.push_back(prop);
+    }
 }
 
 template<class T>
-void ResourceManager::set_persistent(MeshPropertyT<T>& _prop) {
+void ResourceManager::set_persistent(MeshPropertyT<T>& _prop, bool _flag) {
 
-    if(_prop.h_->persistent_) return;
-    _prop.h_->persistent_ = true;
-    MeshPropertyT<T>* prop = new MeshPropertyT<T>(_prop);
-    persistent_mprops_.push_back(prop);
+    if(_flag == _prop.h_->persistent_) return;
+
+    if(!_flag) {
+        for(std::vector<BaseProperty*>::iterator it = persistent_mprops_.begin();
+                it != persistent_mprops_.end(); ++it) {
+            if((*it)->name() == _prop.name()) {
+                _prop.h_->persistent_ = false;
+                delete (*it);
+                persistent_mprops_.erase(it);
+                break;
+            }
+        }
+    } else {
+        _prop.h_->persistent_ = true;
+        MeshPropertyT<T>* prop = new MeshPropertyT<T>(_prop);
+        persistent_mprops_.push_back(prop);
+    }
 }
 
 } // Namespace OpenVolumeMesh

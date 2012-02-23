@@ -85,6 +85,31 @@ TEST_F(HexahedralMeshBase, PropertySmartPointerPersistencyTest1) {
     EXPECT_FLOAT_EQ(2.34f, v_prop2[11]);
 }
 
+TEST_F(HexahedralMeshBase, PropertySmartPointerPersistencyTest2) {
+
+    generateHexahedralMesh(mesh_);
+
+    for(int i = 0; i < 1; ++i) {
+
+        VertexPropertyT<float> v_prop = mesh_.request_vertex_property<float>("FloatVProp");
+
+        mesh_.set_persistent(v_prop);
+    }
+
+    EXPECT_EQ(1u, mesh_.n_vertex_props());
+
+    for(int i = 0; i < 1; ++i) {
+
+        VertexPropertyT<float> v_prop = mesh_.request_vertex_property<float>("FloatVProp");
+
+        EXPECT_EQ(1u, mesh_.n_vertex_props());
+
+        mesh_.set_persistent(v_prop, false);
+    }
+
+    EXPECT_EQ(0u, mesh_.n_vertex_props());
+}
+
 TEST_F(PolyhedralMeshBase, StatusTest) {
 
     generatePolyhedralMesh(mesh_);
