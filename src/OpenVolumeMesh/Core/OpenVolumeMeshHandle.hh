@@ -43,6 +43,8 @@
 #ifndef OPENVOLUMEMESHHANDLE_HH_
 #define OPENVOLUMEMESHHANDLE_HH_
 
+#include <iostream>
+
 namespace OpenVolumeMesh {
 
 // Define handle types in order to distinguish different entities by their indices
