@@ -82,8 +82,6 @@ protected:
     virtual OpenVolumeMeshHandle handle() const = 0;
 
     ResourceManager& resMan_;
-
-    bool masterCopy_;
 };
 
 } // Namespace OpenVolumeMesh
