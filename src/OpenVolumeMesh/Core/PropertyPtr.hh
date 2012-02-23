@@ -113,8 +113,6 @@ public:
 
     typename PropT::reference operator[](size_t _idx);
 
-    virtual void resize(unsigned int _size);
-
     virtual const std::string& name() const;
 
     /// Access the encapsulated pointer
@@ -128,6 +126,8 @@ public:
     unsigned int counter() const { return h_->count_; }
 
 protected:
+
+    virtual void resize(unsigned int _size);
 
     virtual const void* ptr() const { return h_->ptr_; }
 

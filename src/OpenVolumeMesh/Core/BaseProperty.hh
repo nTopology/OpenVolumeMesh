@@ -65,8 +65,6 @@ public:
 
     virtual BaseProperty& operator= (BaseProperty& _rhs);
 
-    virtual void resize(unsigned int /*_size*/) = 0;
-
     virtual const std::string& name() const = 0;
 
     virtual void delete_element(size_t _idx) = 0;
@@ -76,6 +74,7 @@ public:
     virtual std::istream& deserialize(std::istream& _istr) = 0;
 
 protected:
+    virtual void resize(unsigned int /*_size*/) = 0;
 
     virtual const void* ptr() const = 0;
 
