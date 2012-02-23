@@ -55,9 +55,9 @@ class BaseProperty {
 public:
     friend class ResourceManager;
 
-    BaseProperty(ResourceManager& _resMan) : resMan_(_resMan), masterCopy_(false) {}
+    BaseProperty(ResourceManager& _resMan) : resMan_(_resMan) {}
 
-    BaseProperty(const BaseProperty& _cpy) : resMan_(_cpy.resMan_), masterCopy_(_cpy.masterCopy_) {}
+    BaseProperty(const BaseProperty& _cpy) : resMan_(_cpy.resMan_) {}
 
     virtual ~BaseProperty() {}
 
