@@ -12,16 +12,14 @@ In the first example, we simply iterate over all half-edges of a mesh using
 the OpenVolumeMesh::HalfEdgeIter iterator class:
 
 \code
-typedef OpenVolumeMesh::Geometry::Vec3f Vec3f;
-
-// Instantiate e.g. a hexahedral mesh
-OpenVolumeMesh::HexahedralMesh<Vec3f> myMesh;
+// Instantiate e.g. a geometric hexahedral mesh
+OpenVolumeMesh::GeometricHexahedralMeshV3d myMesh;
 
 // Fill mesh with geometry
 ...
 
 // Iterate over all half-edges
-for(OpenVolumeMesh::HexahedralMesh<Vec3f>::HalfEdgeIter he_it = myMesh.halfedges_begin();
+for(OpenVolumeMesh::HalfEdgeIter he_it = myMesh.halfedges_begin();
         he_it != myMesh.halfedges_end(); ++he_it) {
 
     // Now dereferencing he_it returns a half-edge handle
@@ -30,15 +28,13 @@ for(OpenVolumeMesh::HexahedralMesh<Vec3f>::HalfEdgeIter he_it = myMesh.halfedges
 \endcode
 
 In the next example, we iterate over all incident outgoing half-edges of a given
-vertex. Note that this iterator need bottom-up adjacencies to be computed for
-the mesh. Otherwise, the iterator would not be valid. See Section \ref concepts
+vertex. Note that this iterator needs bottom-up adjacencies to be computed for
+the mesh. Otherwise, the iterator would not be valid. See Section \ref bottom_up
 for information on the bottom-up adjacencies.
 
 \code
-typedef OpenVolumeMesh::Geometry::Vec3f Vec3f;
-
 // Instantiate a polyhedral mesh
-OpenVolumeMesh::PolyhedralMesh<Vec3f> myMesh;
+OpenVolumeMesh::GeometricPolyhedralMeshV3f myMesh;
 
 // Fill mesh with geometry
 ...
@@ -46,13 +42,13 @@ OpenVolumeMesh::PolyhedralMesh<Vec3f> myMesh;
 // Compute bottom-up adjacencies
 myMesh.update_adjacencies();
 
-typedef OpenVolumeMesh::PolyhedralMesh<Vec3f>::VertexHandle VertexHandle;
+typedef OpenVolumeMesh::VertexHandle VertexHandle;
 
 // Get first vertex in mesh
 VertexHandle vh = *(myMesh.vertices_begin());
 
 // Iterate over all outgoing half-edges of vertex vh
-for(OpenVolumeMesh::PolyhedralMesh<Vec3f>::VertexOHalfEdgeIter voh_it = myMesh.voh_iter(vh);
+for(OpenVolumeMesh::VertexOHalfEdgeIter voh_it = myMesh.voh_iter(vh);
         voh_it.valid(); ++voh_it) {
 
     // Now dereferencing voh_it returns a half-edge handle
@@ -77,12 +73,8 @@ iterates over all directly adjacent cells in the same sheet (those hexahedra tha
 face with the reference hexahedron). Consider the following code:
 
 \code
-typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
-
-typdef OpenVolumeMesh::HexahedralMesh<Vec3d> HexahedralMeshV3d;
-
 // Instantiate a hexahedral mesh
-HexahedralMeshV3d myMesh;
+OpenVolumeMesh::GeometricHexahedralMeshV3d myMesh;
 
 // Fill mesh with geometry
 ...
@@ -91,11 +83,11 @@ HexahedralMeshV3d myMesh;
 myMesh.update_adjacencies();
 
 // Get handle of first cell
-HexahedralMeshV3d::CellHandle ch = *(myMesh.cells_begin());
+OpenVolumeMesh::CellHandle ch = *(myMesh.cells_begin());
 
 // Iterate over the hexahedra in the same sheet that are adjacent
 // to the reference hexahedron (cell handle ch)
-for(HexahedralMeshV3d::CellSheetCellIter csc_it = myMesh.csc_iter(ch);
+for(OpenVolumeMesh::CellSheetCellIter csc_it = myMesh.csc_iter(ch);
         csc_it.valid(); ++csc_it) {
 
     // Now dereferencing csc_it returns a cell handle

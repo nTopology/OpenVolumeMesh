@@ -37,6 +37,7 @@ n_c                         # The total number of cells (>= 0)
 d hf1_1 ... hfd_1           # The first polyhedron's valence followed
 ...                         # by its incident half-faces' indices
 d hf1_n ... hfd_n           # The last polyhedron's definition
+# Properties coming soon...
 \endverbatim
 
 \section file_example A Simple Example File

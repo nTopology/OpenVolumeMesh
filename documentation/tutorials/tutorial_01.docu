@@ -16,16 +16,33 @@ included, too:
 
 \code
 // Hexahedral meshes
-#include <OpenVolumeMesh/HexahedralMesh/HexahedralMesh.hh>
+#include <OpenVolumeMesh/Mesh/HexahedralMesh.hh>
 
 // Polyhedral meshes
-#include <OpenVolumeMesh/PolyhedralMesh/PolyhedralMesh.hh>
+#include <OpenVolumeMesh/Mesh/PolyhedralMesh.hh>
 \endcode
 
-Note that you can also handle hexahedral meshes with the
-OpenVolumeMesh::PolyhedralMesh class, but class OpenVolumeMesh::HexahedralMesh
-provides some specific topology checks and, more importantly,
-a set of specialized iterators.
+This provides two different mesh types each:
+
+\li A topological 3D mesh (graph) without geometric embedding which is derived from OpenVolumeMesh::TopologyKernel
+\li A topological 3D with a geometric embedding which is derived from OpenVolumeMesh::GeometryKernel
+
+The first header, for example, predefines a set of commonly used mesh types:
+
+\li \b TopologicPolyhedralMesh: A purely topological polyhedral mesh (no embedding)
+\li \b GeometricPolyhedralMeshV3i: A geometric polyhedral mesh with embedding in \f$\mathrm{Z}^3\f$
+\li \b GeometricPolyhedralMeshV3ui: A geometric polyhedral mesh with embedding in \f$\mathrm{N}_0^3\f$
+\li \b GeometricPolyhedralMeshV3f: A geometric polyhedral mesh with embedding in \f$\mathrm{R}^3\f$, single precision
+\li \b GeometricPolyhedralMeshV3d: A geometric polyhedral mesh with embedding in \f$\mathrm{R}^3\f$, double precision
+\li \b GeometricPolyhedralMeshV3c: A geometric polyhedral mesh with embedding in \f$[-128,127]^3\f$
+\li \b GeometricPolyhedralMeshV3uc: A geometric polyhedral mesh with embedding in \f$[0,256]^3\f$
+
+Of course, the second header defines the same mesh types for hexahedral meshes.
+Just replace Polyhedral by Hexahedral.
+
+\note Note that you can also represent hexahedral meshes using the polyhedral mesh kernel,
+\note but the hexahedral mesh classes are equipped with some specialized functionality
+\note and iterators for hexahedral meshes.
 
 The following code creates a polyhedral mesh instance and fills it
 with two adjacent tetrahedra. Note that when defining cells in %OpenVolumeMesh,
@@ -35,54 +52,51 @@ This particularly implies that they are supposed to have the same orientation
 but convention assumes the half-face normals to point inside the cell).
 %OpenVolumeMesh per default performs a check whether the specified half-faces
 form a two-manifold when adding a cell. This check can explicitly turned off
-by passing false as second parameter to OpenVolumeMesh::PolyhedralMesh<VecT>::add_face().
+by passing false as second parameter to OpenVolumeMesh::TopologyKernel::add_face().
 Note that in these cases, it is not guaranteed that a given mesh is three-manifold.
 
 \code
-typedef OpenVolumeMesh::Geometry::Vec3f Vec3f
-typedef OpenVolumeMesh::PolyhedralMesh<Vec3f> PolyhedralMeshV3f;
-
 // Create mesh object
-PolyhedralMeshV3f myMesh;
+GeometricPolyhedralMeshV3f myMesh;
 
 // Add eight vertices
-PolyhedralMeshV3f::VertexHandle v0 = myMesh.add_vertex(Vec3f(-1.0, 0.0, 0.0));
-PolyhedralMeshV3f::VertexHandle v1 = myMesh.add_vertex(Vec3f( 0.0, 0.0, 1.0));
-PolyhedralMeshV3f::VertexHandle v2 = myMesh.add_vertex(Vec3f( 1.0, 0.0, 0.0));
-PolyhedralMeshV3f::VertexHandle v3 = myMesh.add_vertex(Vec3f( 0.0, 0.0,-1.0));
-PolyhedralMeshV3f::VertexHandle v4 = myMesh.add_vertex(Vec3f( 0.0, 1.0, 0.0));
+OpenVolumeMesh::VertexHandle v0 = myMesh.add_vertex(Vec3f(-1.0, 0.0, 0.0));
+OpenVolumeMesh::VertexHandle v1 = myMesh.add_vertex(Vec3f( 0.0, 0.0, 1.0));
+OpenVolumeMesh::VertexHandle v2 = myMesh.add_vertex(Vec3f( 1.0, 0.0, 0.0));
+OpenVolumeMesh::VertexHandle v3 = myMesh.add_vertex(Vec3f( 0.0, 0.0,-1.0));
+OpenVolumeMesh::VertexHandle v4 = myMesh.add_vertex(Vec3f( 0.0, 1.0, 0.0));
 
-std::vector<PolyhedralMeshV3f::VertexHandle> vertices;
+std::vector<OpenVolumeMesh::VertexHandle> vertices;
 
 // Add faces
 vertices.push_back(v0); vertices.push_back(v1);vertices.push_back(v4);
-PolyhedralMeshV3f::FaceHandle f0 = myMesh.add_face(vertices);
+OpenVolumeMesh::FaceHandle f0 = myMesh.add_face(vertices);
 
 vertices.clear();
 vertices.push_back(v1); vertices.push_back(v2);vertices.push_back(v4);
-PolyhedralMeshV3f::FaceHandle f1 = myMesh.add_face(vertices);
+OpenVolumeMesh::FaceHandle f1 = myMesh.add_face(vertices);
 
 vertices.clear();
 vertices.push_back(v0); vertices.push_back(v1);vertices.push_back(v2);
-PolyhedralMeshV3f::FaceHandle f2 = myMesh.add_face(vertices);
+OpenVolumeMesh::FaceHandle f2 = myMesh.add_face(vertices);
 
 vertices.clear();
 vertices.push_back(v0); vertices.push_back(v4);vertices.push_back(v2);
-PolyhedralMeshV3f::FaceHandle f3 = myMesh.add_face(vertices);
+OpenVolumeMesh::FaceHandle f3 = myMesh.add_face(vertices);
 
 vertices.clear();
 vertices.push_back(v0); vertices.push_back(v4);vertices.push_back(v3);
-PolyhedralMeshV3f::FaceHandle f4 = myMesh.add_face(vertices);
+OpenVolumeMesh::FaceHandle f4 = myMesh.add_face(vertices);
 
 vertices.clear();
 vertices.push_back(v2); vertices.push_back(v3);vertices.push_back(v4);
-PolyhedralMeshV3f::FaceHandle f5 = myMesh.add_face(vertices);
+OpenVolumeMesh::FaceHandle f5 = myMesh.add_face(vertices);
 
 vertices.clear();
 vertices.push_back(v0); vertices.push_back(v2);vertices.push_back(v3);
-PolyhedralMeshV3f::FaceHandle f6 = myMesh.add_face(vertices);
+OpenVolumeMesh::FaceHandle f6 = myMesh.add_face(vertices);
 
-std::vector<PolyhedralMeshV3f::HalfFaceHandle> halffaces;
+std::vector<OpenVolumeMesh::HalfFaceHandle> halffaces;
 
 // Add first tetrahedron
 halffaces.push_back(myMesh.halfface_handle(f0, 1));

@@ -10,7 +10,7 @@ For further reading on the concepts of %OpenMesh, refer to \cite Botsch02OpenMes
 between \e vertices, \e edges, and \e faces. The main idea in %OpenMesh is to represent the
 edges as a pair of so-called half-edges that have opposing orientations. Additional local adjacency
 information is stored for each half-edge such that the navigation on the mesh can be completely
-accomplished by using only this local links to adjacent structures (similar to e.g. a linked list).
+accomplished by using only these local links to adjacent structures (similar to e.g. a linked list).
 This, of course, assumes the surface mesh to be two-manifold.
  
 The main concept of %OpenVolumeMesh is slightly different but shares some of its ideas with
@@ -20,10 +20,10 @@ In %OpenVolumeMesh, all entities are stored in arrays (STL vectors) rather than
 in adjacency linked lists. This has the major advantage that the data structure allows
 for configurations that are not three-manifold (since this is desired in some applications).
 For example, a set of vertices or just a two-manifold surface can be respresented by
-%OpenVolumeMesh as well as an entirely three-manifold tetrahedral mesh.
+%OpenVolumeMesh as well as an entirely three-manifold polyhedral mesh.
 In order to offer the possibility to locally navigate on the meshes, we carry over
 the idea of splitting edges into half-edges to the faces. This leads to the separation
-of the faces into a pair of so-called half-faces. Each of the half-faces has opposite
+of the faces into pairs of so-called half-faces. Each of the half-faces has opposite
 orientation to its counter-part. The orientation of a half-face is uniquely determined
 by its incident half-edges. See Figure 1 for an illustration of this concept.
 
@@ -63,12 +63,14 @@ following information for the respective entity type in additional caches:
 \li \b Half-Face: The handle to an incident cell or none if it is a boundary half-face.
 
 The computation of this adjacency relations is performed in linear time complexity.
-Call function OpenVolumeMesh::PolyhedralMesh::update_adjacencies() after the
-topology of the mesh is completely initialized. Note that each time the topology
-of the mesh has changed, the bottom-up adjacencies have to be updated.
-Note also that most of the iterators and circulators rely on these adjacency lists,
-so, many of them do not work unless OpenVolumeMesh::PolyhedralMesh::update_adjacencies()
-is called. Bottom-up adjacencies can optionally be computed on a per-entity basis.
+Call function TopologyKernel::update_adjacencies() after the
+topology of the mesh is completely initialized.
+
+\note Note that each time the topology of the mesh has changed, the bottom-up adjacencies have to be updated.
+
+\note Note also that most of the iterators and circulators rely on these adjacency lists, so, many of them do not work unless TopologyKernel::update_adjacencies() is called.
+
+Bottom-up adjacencies can optionally be computed on a per-entity basis.
 This is useful in cases where only a subset of these adjacency relations is required
 while at the same time keeping the data structure as compact as possible
 allocating only a minimum of storage overhead.
@@ -96,7 +98,7 @@ which are presented in the next section.
 \section attribs Using attributes to provide extra functionality
 
 Due to the fact that %OpenVolumeMesh is designed to be as compact as possible providing
-the opportunity to only code that is really needed a particular case, all extra
+the opportunity to only use code that is really needed in a particular case, all extra
 functionality can be obtained by so-called attribute classes. Attribute objects
 are instanciated at run-time and expect a mesh reference to be injected.
 Usually they request a certain set of properties from the mesh and provide
@@ -129,9 +131,9 @@ are stored in linear memory arrays (STL vectors). So, each of the entities
 is uniquely defined through its handle which is a simple class that encapsulates
 the index of it in the respective array it is stored in. This makes sure
 the entities can be accessed in \f$O(1)\f$. Each of the distinct entity
-types has its own handle class in order to avoid ambiguity when accessing
+types has its own type-safe handle class in order to avoid ambiguity when accessing
 elements at compile time. The handle classes are each derived from a common
-base class called, OpenVolumeMesh::OpenVolumeMeshHandle. The iterators as well
+base class called OpenVolumeMesh::OpenVolumeMeshHandle. The iterators as well
 as the circulators are designed to return a handle to an entity on dereference
 rather than a reference to the entity itself. A special constant,
 OpenVolumeMesh::TopologyKernel::InvalidVertexHandle, etc., for each entity
@@ -146,7 +148,7 @@ the developer can choose the vector space into which a mesh is embedded. For exa
 most instances require their vertices being elements of \f$\mathrm{R}^3\f$.
 But in some cases, one might want e.g. two-dimensional integer coordinates,
 so elements in \f$\mathrm{N}_0^2\f$. In %OpenVolumeMesh, the embedded vector
-type can be specified as template parameter. The libraray is shipped with a vector
+type can be specified as template parameter. The library is shipped with a vector
 class that also specifies all necessary operations on vectors (such as dot- and cross-product,
 several norms, etc.). The most common vector types are predefined in VectorT.hh.
 So, let's say we want to create a polyhedral mesh whose vertices are elements of
@@ -178,8 +180,17 @@ void SomeClass::someFunction() {
 Similar to the %OpenMesh data structure, it is possible to attach multiple properties
 to any of the entities in %OpenVolumeMesh. The underlying property container class makes
 use of C++ template programming concepts in order to allow the encapsulated property data
-to be of any data type. Let's assume, we want to attach a label to the vertices and
-some real valued weight to the edges of a mesh. Consider the following code:
+to be of any data type. However, we have adapted and improved the property concept of OpenMesh
+such that the allocation of properties is now completely managed by a resource
+manager implemented in OpenVolumeMesh::ResourceManager. Properties are now allocated
+and returned as a shared pointer that automatically are destroyed and entirely released
+once they loose scope. This drastically improves the ease-of-use at one hand and
+demands less care about memory management at the other hand. Nevertheless, properties
+may also (in analogy to the property system of OpenMesh) be declared persistent.
+When declaring a property persistent, the ownership of the property memory is given back
+to the mesh (from the user context) which makes sure it is not destroyed before
+the mesh is. Let's assume, we want to attach a label to the vertices and
+some real valued weight to the edges of a mesh. Consider the following example code:
 
 \code
 #include <string>
@@ -193,43 +204,38 @@ void SomeClass::someFunction {
 
   // Create mesh
   typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
-  OpenVolumeMesh::PolyhedralMesh< Vec3d > myMesh;
+  OpenVolumeMesh::GeometryKernel< Vec3d > myMesh;
 
   // Fill mesh
   ...
 
   // Attach label property (data type std::string) to the mesh
-  OpenVolumeMesh::VPropHandleT< std::string > label;
-  myMesh.add_property(label, "LabelProperty");
+  OpenVolumeMesh::VertexPropertyT< std::string > label =
+  		myMesh.request_vertex_property< std::string >("LabelProperty");
 
   // Fill property values
-  for(OpenVolumeMesh::PolyhedralMesh< Vec3d >::VertexIter v_it = myMesh.vertices_begin();
+  for(OpenVolumeMesh::VertexIter v_it = myMesh.vertices_begin();
         v_it != myMesh.vertices_end(); ++v_it) {
 
     // Assign same label to each vertex
-    myMesh.property(label, *v_it) = "My Label";
+    label[*v_it] = "My Label";
   }
   
   // Now, attach weight property (data type float) to the mesh
-  OpenVolumeMesh::EPropHandleT< float > weight;
-  myMesh.add_property(weight, "EdgeWeightProperty");
+  OpenVolumeMesh::EdgePropertyT< float > weight =
+  		myMesh.request_edge_property< float >(); // Also anonymous properties are supported
 
   // Fill property values
-  for(OpenVolumeMesh::PolyhedralMesh< Vec3d >::EdgeIter e_it = myMesh.edges_begin();
+  for(OpenVolumeMesh::EdgeIter e_it = myMesh.edges_begin();
         e_it != myMesh.edges_end(); ++e_it) {
 
     // Assign same weight to each edge
-    myMesh.property(weight, *e_it) = 3.14f;
+    weight[*e_it] = 3.14f;
   }
 
-  // Finally, remove properties from the mesh
-  myMesh.remove_property(label);
-  myMesh.remove_property(weight);
-
-  ...
+  // The properties are automatically released
+  // when leaving scope
 }
 \endcode
-
-This, of course, also works for all half-entities (half-edges and half-faces).
 
 **/

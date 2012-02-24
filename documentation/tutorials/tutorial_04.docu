@@ -4,7 +4,7 @@
 
 The %OpenVolumeMesh library is equipped with a file manager class that
 allows reading polyhedral meshes from file as well as writing mesh objects
-to files. The format for these files is specified in \ref file_format.
+to files. The format for these files is specified in Section \ref file_format.
 
 In this tutorial, we will learn how to use the file manager in order to
 permanently store mesh objects and read them.
@@ -16,15 +16,13 @@ Consider the following code for an example on how to write a polyhedral mesh to 
 #include <OpenVolumeMesh/FileManager/FileManager.hh>
 
 // Include the polyhedral mesh header
-#include <OpenVolumeMesh/PolyhedralMesh/PolyhedralMesh.hh>
+#include <OpenVolumeMesh/Mesh/PolyhedralMesh.hh>
 ...
-
-typedef OpenVolumeMesh::PolyhedralMesh<Vec3f> PolyhedralMeshV3f;
 
 void someFunction() {
 
     // Create mesh object
-    PolyhedralMeshV3f myMesh;
+    OpenVolumeMesh::GeometricPolyhedralMeshV3f myMesh;
 
     // Fill mesh with geometry
     ...
@@ -45,15 +43,13 @@ following code for an example.
 #include <OpenVolumeMesh/FileManager/FileManager.hh>
 
 // Include the polyhedral mesh header
-#include <OpenVolumeMesh/PolyhedralMesh/PolyhedralMesh.hh>
+#include <OpenVolumeMesh/Mesh/PolyhedralMesh.hh>
 ...
-
-typedef OpenVolumeMesh::PolyhedralMesh<Vec3f> PolyhedralMeshV3f;
 
 void someFunction() {
 
     // Create an empty mesh object
-    PolyhedralMeshV3f myMesh;
+    OpenVolumeMesh::GeometricPolyhedralMeshV3f myMesh;
 
    // Create file manager object
    OpenVolumeMesh::IO::FileManager fileManager;
@@ -61,15 +57,14 @@ void someFunction() {
    // Read mesh from file "myMesh.ovm" in the current directory
    fileManager.readFile("myMesh.ovm", myMesh);
 
-   // Now myMesh contains the geometry specified in file "myMesh.ovm"
+   // Now myMesh contains the mesh specified in file "myMesh.ovm"
 }
 \endcode
 
-Function OpenVolumeMesh::IO::FileManager::readFile() expects a total of five parameters,
-two of which are mandatory (file name and mesh reference). The other three parameters
-are optional flags that control whether bottom-up adjacencies should be computed automatically,
-whether the topology check should be performed when adding faces and cells and
-also whether face normals should be computed automatically. All three flags are turned on
-per default.
+Function OpenVolumeMesh::IO::FileManager::readFile() expects a total of four parameters,
+two of which are mandatory (file name and mesh reference). The other two parameters
+are optional flags that control whether bottom-up adjacencies should be computed automatically and
+whether a topology check should be performed when adding faces and cells.
+The two flags are turned on per default.
 
 **/
