@@ -50,7 +50,24 @@ namespace OpenVolumeMesh {
 /*
  * Predefines for most common mesh types
  */
+typedef GeometryKernel<Geometry::Vec2i, TopologyKernel> GeometricPolyhedralMeshV2i;
+typedef GeometryKernel<Geometry::Vec2ui, TopologyKernel> GeometricPolyhedralMeshV2ui;
+typedef GeometryKernel<Geometry::Vec2f, TopologyKernel> GeometricPolyhedralMeshV2f;
+typedef GeometryKernel<Geometry::Vec2d, TopologyKernel> GeometricPolyhedralMeshV2d;
+typedef GeometryKernel<Geometry::Vec2c, TopologyKernel> GeometricPolyhedralMeshV2c;
+typedef GeometryKernel<Geometry::Vec2uc, TopologyKernel> GeometricPolyhedralMeshV2uc;
+typedef GeometryKernel<Geometry::Vec3i, TopologyKernel> GeometricPolyhedralMeshV3i;
+typedef GeometryKernel<Geometry::Vec3ui, TopologyKernel> GeometricPolyhedralMeshV3ui;
+typedef GeometryKernel<Geometry::Vec3f, TopologyKernel> GeometricPolyhedralMeshV3f;
 typedef GeometryKernel<Geometry::Vec3d, TopologyKernel> GeometricPolyhedralMeshV3d;
+typedef GeometryKernel<Geometry::Vec3c, TopologyKernel> GeometricPolyhedralMeshV3c;
+typedef GeometryKernel<Geometry::Vec3uc, TopologyKernel> GeometricPolyhedralMeshV3uc;
+typedef GeometryKernel<Geometry::Vec4i, TopologyKernel> GeometricPolyhedralMeshV4i;
+typedef GeometryKernel<Geometry::Vec4ui, TopologyKernel> GeometricPolyhedralMeshV4ui;
+typedef GeometryKernel<Geometry::Vec4f, TopologyKernel> GeometricPolyhedralMeshV4f;
+typedef GeometryKernel<Geometry::Vec4d, TopologyKernel> GeometricPolyhedralMeshV4d;
+typedef GeometryKernel<Geometry::Vec4c, TopologyKernel> GeometricPolyhedralMeshV4c;
+typedef GeometryKernel<Geometry::Vec4uc, TopologyKernel> GeometricPolyhedralMeshV4uc;
 
 typedef TopologyKernel TopologicPolyhedralMesh;
 

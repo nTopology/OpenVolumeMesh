@@ -51,7 +51,24 @@ namespace OpenVolumeMesh {
 /*
  * Predefines for most common mesh types
  */
+typedef GeometryKernel<Geometry::Vec2i, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV2i;
+typedef GeometryKernel<Geometry::Vec2ui, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV2ui;
+typedef GeometryKernel<Geometry::Vec2f, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV2f;
+typedef GeometryKernel<Geometry::Vec2d, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV2d;
+typedef GeometryKernel<Geometry::Vec2c, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV2c;
+typedef GeometryKernel<Geometry::Vec2uc, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV2uc;
+typedef GeometryKernel<Geometry::Vec3i, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV3i;
+typedef GeometryKernel<Geometry::Vec3ui, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV3ui;
+typedef GeometryKernel<Geometry::Vec3f, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV3f;
 typedef GeometryKernel<Geometry::Vec3d, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV3d;
+typedef GeometryKernel<Geometry::Vec3c, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV3c;
+typedef GeometryKernel<Geometry::Vec3uc, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV3uc;
+typedef GeometryKernel<Geometry::Vec4i, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV4i;
+typedef GeometryKernel<Geometry::Vec4ui, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV4ui;
+typedef GeometryKernel<Geometry::Vec4f, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV4f;
+typedef GeometryKernel<Geometry::Vec4d, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV4d;
+typedef GeometryKernel<Geometry::Vec4c, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV4c;
+typedef GeometryKernel<Geometry::Vec4uc, HexahedralMeshTopologyKernel> GeometricHexahedralMeshV4uc;
 
 typedef HexahedralMeshTopologyKernel TopologicHexahedralMesh;
 
