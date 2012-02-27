@@ -117,6 +117,85 @@ public:
         return m_status_[h];
     }
 
+    // Iterator access
+    VertexPropertyT<OpenVolumeMeshStatus>::const_iterator vstatus_begin() const {
+        return v_status_.begin();
+    }
+    VertexPropertyT<OpenVolumeMeshStatus>::iterator vstatus_begin() {
+        return v_status_.begin();
+    }
+    VertexPropertyT<OpenVolumeMeshStatus>::const_iterator vstatus_end() const {
+        return v_status_.end();
+    }
+    VertexPropertyT<OpenVolumeMeshStatus>::iterator vstatus_end() {
+        return v_status_.end();
+    }
+
+    EdgePropertyT<OpenVolumeMeshStatus>::const_iterator estatus_begin() const {
+        return e_status_.begin();
+    }
+    EdgePropertyT<OpenVolumeMeshStatus>::iterator estatus_begin() {
+        return e_status_.begin();
+    }
+    EdgePropertyT<OpenVolumeMeshStatus>::const_iterator estatus_end() const {
+        return e_status_.end();
+    }
+    EdgePropertyT<OpenVolumeMeshStatus>::iterator estatus_end() {
+        return e_status_.end();
+    }
+
+    HalfEdgePropertyT<OpenVolumeMeshStatus>::const_iterator hestatus_begin() const {
+        return he_status_.begin();
+    }
+    HalfEdgePropertyT<OpenVolumeMeshStatus>::iterator hestatus_begin() {
+        return he_status_.begin();
+    }
+    HalfEdgePropertyT<OpenVolumeMeshStatus>::const_iterator hestatus_end() const {
+        return he_status_.end();
+    }
+    HalfEdgePropertyT<OpenVolumeMeshStatus>::iterator hestatus_end() {
+        return he_status_.end();
+    }
+
+    FacePropertyT<OpenVolumeMeshStatus>::const_iterator fstatus_begin() const {
+        return f_status_.begin();
+    }
+    FacePropertyT<OpenVolumeMeshStatus>::iterator fstatus_begin() {
+        return f_status_.begin();
+    }
+    FacePropertyT<OpenVolumeMeshStatus>::const_iterator fstatus_end() const {
+        return f_status_.end();
+    }
+    FacePropertyT<OpenVolumeMeshStatus>::iterator fstatus_end() {
+        return f_status_.end();
+    }
+
+    HalfFacePropertyT<OpenVolumeMeshStatus>::const_iterator hfstatus_begin() const {
+        return hf_status_.begin();
+    }
+    HalfFacePropertyT<OpenVolumeMeshStatus>::iterator hfstatus_begin() {
+        return hf_status_.begin();
+    }
+    HalfFacePropertyT<OpenVolumeMeshStatus>::const_iterator hfstatus_end() const {
+        return hf_status_.end();
+    }
+    HalfFacePropertyT<OpenVolumeMeshStatus>::iterator hfstatus_end() {
+        return hf_status_.end();
+    }
+
+    CellPropertyT<OpenVolumeMeshStatus>::const_iterator cstatus_begin() const {
+        return c_status_.begin();
+    }
+    CellPropertyT<OpenVolumeMeshStatus>::iterator cstatus_begin() {
+        return c_status_.begin();
+    }
+    CellPropertyT<OpenVolumeMeshStatus>::const_iterator cstatus_end() const {
+        return c_status_.end();
+    }
+    CellPropertyT<OpenVolumeMeshStatus>::iterator cstatus_end() {
+        return c_status_.end();
+    }
+
     /**
      * \brief Delete all entities that have been marked as deleted
      *

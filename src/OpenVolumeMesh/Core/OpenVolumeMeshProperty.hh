@@ -195,6 +195,14 @@ public:
 		return p;
 	}
 
+	typename vector_type::const_iterator begin() const { return data_.begin(); }
+
+	typename vector_type::iterator begin() { return data_.begin(); }
+
+	typename vector_type::const_iterator end() const { return data_.end(); }
+
+    typename vector_type::iterator end() { return data_.end(); }
+
 private:
 
 	vector_type data_;

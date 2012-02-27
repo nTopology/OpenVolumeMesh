@@ -94,6 +94,9 @@ public:
 
     typedef HandleT Handle;
 
+    typedef typename PropT::vector_type::const_iterator const_iterator;
+    typedef typename PropT::vector_type::iterator       iterator;
+
     /// Constructor
     PropertyPtr(PropT* _ptr, ResourceManager& _resMan, Handle _handle);
 
@@ -124,6 +127,14 @@ public:
     virtual void delete_element(size_t _idx);
 
     unsigned int counter() const { return h_->count_; }
+
+    const_iterator begin() const { return h_->ptr_->begin(); }
+
+    iterator begin() { return h_->ptr_->begin(); }
+
+    const_iterator end() const { return h_->ptr_->end(); }
+
+    iterator end() { return h_->ptr_->end(); }
 
 protected:
 
