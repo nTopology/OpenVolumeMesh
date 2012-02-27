@@ -482,7 +482,8 @@ void TopologyKernel::update_vertex_adjacencies() {
     outgoing_hes_per_vertex_.resize(n_vertices());
 
     // Store outgoing halfedges per vertex
-    for(unsigned int i = 0; i < edges_.size(); ++i) {
+    unsigned int n_vertices = edges_.size();
+    for(unsigned int i = 0; i < n_vertices; ++i) {
 
         VertexHandle from = edges_[i].from_vertex();
         if((unsigned int)from >= outgoing_hes_per_vertex_.size()) {
@@ -512,7 +513,8 @@ void TopologyKernel::update_edge_adjacencies() {
     incident_hfs_per_he_.resize(edges_.size() * 2u);
 
     // Store incident halffaces per halfedge
-    for(unsigned int i = 0; i < faces_.size(); ++i) {
+    unsigned int n_faces = faces_.size();
+    for(unsigned int i = 0; i < n_faces; ++i) {
 
         std::vector<HalfEdgeHandle> halfedges = faces_[i].halfedges();
 
@@ -537,7 +539,8 @@ void TopologyKernel::update_face_adjacencies() {
     incident_cell_per_hf_.clear();
     incident_cell_per_hf_.resize(faces_.size() * 2u, InvalidCellHandle);
 
-    for(unsigned int i = 0; i < cells_.size(); ++i) {
+    unsigned int n_cells = cells_.size();
+    for(unsigned int i = 0; i < n_cells; ++i) {
 
         std::vector<HalfFaceHandle> halffaces = cells_[i].halffaces();
 
@@ -574,7 +577,8 @@ void TopologyKernel::update_face_adjacencies() {
      * will address the related entities in an arbitrary fashion.
      */
 
-    for(unsigned int i = 0; i < edges_.size(); ++i) {
+    unsigned int n_edges = edges_.size();
+    for(unsigned int i = 0; i < n_edges; ++i) {
 
         for(unsigned char s = 0; s <= 1; s++) {
 
@@ -642,7 +646,8 @@ void TopologyKernel::update_face_adjacencies() {
     boundary_faces_.clear();
 
     // Get boundary faces
-    for(unsigned int i = 0; i < faces_.size(); ++i) {
+    unsigned int n_faces = faces_.size();
+    for(unsigned int i = 0; i < n_faces; ++i) {
 
         if(incident_cell_per_hf_[halfface_handle(FaceHandle(i), 0)] == InvalidCellHandle ||
            incident_cell_per_hf_[halfface_handle(FaceHandle(i), 1)] == InvalidCellHandle) {
@@ -702,7 +707,7 @@ TopologyKernel::adjacent_halfface_in_cell(const HalfFaceHandle& _halfFaceHandle,
 
 CellHandle TopologyKernel::incident_cell(const HalfFaceHandle& _halfFaceHandle) const {
 
-    if((unsigned int)_halfFaceHandle >= incident_cell_per_hf_.size() || _halfFaceHandle < 0) {
+    if((unsigned int)_halfFaceHandle >= incident_cell_per_hf_.size() || _halfFaceHandle.idx() < 0) {
         return InvalidCellHandle;
     }
 
