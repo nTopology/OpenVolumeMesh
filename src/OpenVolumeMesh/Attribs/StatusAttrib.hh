@@ -117,6 +117,19 @@ public:
         return m_status_[h];
     }
 
+    typedef VertexPropertyT<OpenVolumeMeshStatus>::const_iterator   const_vstatus_iterator;
+    typedef VertexPropertyT<OpenVolumeMeshStatus>::iterator         vstatus_iterator;
+    typedef EdgePropertyT<OpenVolumeMeshStatus>::const_iterator     const_estatus_iterator;
+    typedef EdgePropertyT<OpenVolumeMeshStatus>::iterator           estatus_iterator;
+    typedef HalfEdgePropertyT<OpenVolumeMeshStatus>::const_iterator const_hestatus_iterator;
+    typedef HalfEdgePropertyT<OpenVolumeMeshStatus>::iterator       hestatus_iterator;
+    typedef FacePropertyT<OpenVolumeMeshStatus>::const_iterator     const_fstatus_iterator;
+    typedef FacePropertyT<OpenVolumeMeshStatus>::iterator           fstatus_iterator;
+    typedef HalfFacePropertyT<OpenVolumeMeshStatus>::const_iterator const_hfstatus_iterator;
+    typedef HalfFacePropertyT<OpenVolumeMeshStatus>::iterator       hfstatus_iterator;
+    typedef CellPropertyT<OpenVolumeMeshStatus>::const_iterator     const_cstatus_iterator;
+    typedef CellPropertyT<OpenVolumeMeshStatus>::iterator           cstatus_iterator;
+
     // Iterator access
     VertexPropertyT<OpenVolumeMeshStatus>::const_iterator vstatus_begin() const {
         return v_status_.begin();
