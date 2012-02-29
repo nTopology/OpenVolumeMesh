@@ -293,6 +293,14 @@ public:
 		return p;
 	}
 
+	vector_type::const_iterator begin() const { return data_.begin(); }
+
+    vector_type::iterator begin() { return data_.begin(); }
+
+    vector_type::const_iterator end() const { return data_.end(); }
+
+    vector_type::iterator end() { return data_.end(); }
+
 private:
 
 	vector_type data_;
@@ -394,6 +402,14 @@ public:
 				value_type> (*this);
 		return p;
 	}
+
+	vector_type::const_iterator begin() const { return data_.begin(); }
+
+    vector_type::iterator begin() { return data_.begin(); }
+
+    vector_type::const_iterator end() const { return data_.end(); }
+
+    vector_type::iterator end() { return data_.end(); }
 
 private:
 
