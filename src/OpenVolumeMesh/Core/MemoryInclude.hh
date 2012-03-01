@@ -34,26 +34,41 @@
 
 /*===========================================================================*\
  *                                                                           *
- *   $Revision$                                                         *
- *   $Date$                    *
- *   $LastChangedBy$                                                *
+ *   $Revision: 36 $                                                         *
+ *   $Date: 2012-01-10 18:00:06 +0100 (Di, 10 Jan 2012) $                    *
+ *   $LastChangedBy: kremer $                                                *
  *                                                                           *
 \*===========================================================================*/
 
-#include "BaseProperty.hh"
+#ifndef MEMORYINCLUDE_HH_
+#define MEMORYINCLUDE_HH_
 
-#include "ResourceManager.hh"
+/** This set of defines maps the pointer namespaces to the namespace ptr depending on
+ *  the current architecture and compilers.
+ */
+#if (__cplusplus >= 201103L)
+   // C++11:
+   #include <memory>
+   namespace ptr = std;
+   #define ACG_UNIQUE_POINTER_SUPPORTED 1
+#elif defined(__GXX_EXPERIMENTAL_CXX0X__)
+   // C++11 via -std=c++0x on gcc:
+   #include <memory>
+   namespace ptr = std;
+   #define ACG_UNIQUE_POINTER_SUPPORTED 1
+#else
+   // C++98 and TR1:
+   #if (_MSC_VER >= 1600)
+     // VStudio 2010 supports some C++11 features
+     #include <memory>
+     namespace ptr = std;
+     #define ACG_UNIQUE_POINTER_SUPPORTED 1
+   #else
+     // hope for TR1 equivalents
+     #include <tr1/memory>
+     namespace ptr = std::tr1;
+     #define ACG_UNIQUE_POINTER_SUPPORTED 0
+   #endif
+#endif
 
-namespace OpenVolumeMesh {
-
-BaseProperty& BaseProperty::operator= (const BaseProperty& _rhs) {
-    resMan_ = _rhs.resMan_;
-    return *this;
-}
-
-BaseProperty& BaseProperty::operator= (BaseProperty& _rhs) {
-    resMan_ = _rhs.resMan_;
-    return *this;
-}
-
-} // Namespace OpenVolumeMesh
+#endif /* MEMORYINCLUDE_HH_ */

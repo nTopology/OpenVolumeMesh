@@ -50,6 +50,8 @@
 #include "BaseProperty.hh"
 #include "PropertyHandles.hh"
 
+#include "MemoryInclude.hh"
+
 namespace OpenVolumeMesh {
 
 class ResourceManager;
@@ -63,31 +65,7 @@ class ResourceManager;
  */
 
 template <class PropT, class HandleT>
-class PropertyPtr : public BaseProperty {
-protected:
-
-    /**
-     * \class Holder
-     * A helper class that encapsulates a pointer
-     * to an object and counts its number of references.
-     */
-    class Holder {
-    public:
-        Holder(PropT* _ptr) : ptr_(_ptr), count_(1u), persistent_(false) {}
-        ~Holder() {
-            if(ptr_ != NULL) {
-                delete ptr_;
-                ptr_ = NULL;
-            }
-        }
-
-        PropT* ptr_;
-        unsigned int count_;
-        bool persistent_;
-    };
-
-    Holder* h_;
-
+class PropertyPtr : public ptr::shared_ptr<PropT>, public BaseProperty {
 public:
 
     friend class ResourceManager;
@@ -96,55 +74,37 @@ public:
 
     typedef typename PropT::vector_type::const_iterator const_iterator;
     typedef typename PropT::vector_type::iterator       iterator;
+    typedef typename PropT::reference                   reference;
+    typedef typename PropT::const_reference             const_reference;
 
     /// Constructor
     PropertyPtr(PropT* _ptr, ResourceManager& _resMan, Handle _handle);
 
-    /// Copy Constructor
-    PropertyPtr(const PropertyPtr<PropT,HandleT>& _cpy);
-
     /// Destructor
     virtual ~PropertyPtr();
 
-    /// Assignment operator with const reference
-    PropertyPtr<PropT,HandleT>& operator= (const PropertyPtr<PropT,HandleT>& _rhs);
-
-    /// Assignment operator with non-const reference
-    PropertyPtr<PropT,HandleT>& operator= (PropertyPtr<PropT,HandleT>& _rhs);
-
-    const typename PropT::const_reference operator[](size_t _idx) const;
-
-    typename PropT::reference operator[](size_t _idx);
-
     virtual const std::string& name() const;
-
-    /// Access the encapsulated pointer
-    PropT* operator->();
-
-    /// Access the encapsulated dereferenced pointer
-    PropT& operator*();
 
     virtual void delete_element(size_t _idx);
 
-    unsigned int counter() const { return h_->count_; }
+    const_iterator begin() const { return ptr::shared_ptr<PropT>::get()->begin(); }
+    iterator begin() { return ptr::shared_ptr<PropT>::get()->begin(); }
 
-    const_iterator begin() const { return h_->ptr_->begin(); }
+    const_iterator end() const { return ptr::shared_ptr<PropT>::get()->end(); }
+    iterator end() { return ptr::shared_ptr<PropT>::get()->end(); }
 
-    iterator begin() { return h_->ptr_->begin(); }
+    reference operator[](size_t _idx) { return (*ptr::shared_ptr<PropT>::get())[_idx]; }
+    const_reference operator[](size_t _idx) const { return (*ptr::shared_ptr<PropT>::get())[_idx]; }
 
-    const_iterator end() const { return h_->ptr_->end(); }
+    virtual OpenVolumeMeshHandle handle() const;
 
-    iterator end() { return h_->ptr_->end(); }
+    virtual bool persistent() const { return ptr::shared_ptr<PropT>::get()->persistent(); }
 
 protected:
 
     virtual void resize(unsigned int _size);
 
-    virtual const void* ptr() const { return h_->ptr_; }
-
     virtual void set_handle(const OpenVolumeMeshHandle& _handle);
-
-    virtual OpenVolumeMeshHandle handle() const;
 
 private:
 

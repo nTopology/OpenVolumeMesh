@@ -55,15 +55,9 @@ class BaseProperty {
 public:
     friend class ResourceManager;
 
-    BaseProperty(ResourceManager& _resMan) : resMan_(_resMan) {}
-
-    BaseProperty(const BaseProperty& _cpy) : resMan_(_cpy.resMan_) {}
+    BaseProperty(ResourceManager& _resMan) : resMan_(_resMan), lock_(false) {}
 
     virtual ~BaseProperty() {}
-
-    virtual BaseProperty& operator= (const BaseProperty& _rhs);
-
-    virtual BaseProperty& operator= (BaseProperty& _rhs);
 
     virtual const std::string& name() const = 0;
 
@@ -73,16 +67,24 @@ public:
 
     virtual std::istream& deserialize(std::istream& _istr) = 0;
 
+    virtual OpenVolumeMeshHandle handle() const = 0;
+
+    virtual bool persistent() const = 0;
+
 protected:
     virtual void resize(unsigned int /*_size*/) = 0;
 
-    virtual const void* ptr() const = 0;
-
     virtual void set_handle(const OpenVolumeMeshHandle& /*_handle*/) = 0;
 
-    virtual OpenVolumeMeshHandle handle() const = 0;
+    void lock() { lock_ = true; }
+
+    void unlock() { lock_ = false; }
+
+    bool locked() const { return lock_; }
 
     ResourceManager& resMan_;
+
+    bool lock_;
 };
 
 } // Namespace OpenVolumeMesh

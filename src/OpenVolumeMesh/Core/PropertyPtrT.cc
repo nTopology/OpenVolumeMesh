@@ -49,85 +49,37 @@
 namespace OpenVolumeMesh {
 
 template <class PropT, class HandleT>
-PropertyPtr<PropT,HandleT>::PropertyPtr(PropT* _ptr, ResourceManager& _resMan, Handle _handle) :
-    BaseProperty(_resMan), h_(new Holder(_ptr)), handle_(_handle) {
-}
-
-template <class PropT, class HandleT>
-PropertyPtr<PropT,HandleT>::PropertyPtr(const PropertyPtr<PropT,HandleT>& _cpy) :
-    BaseProperty(_cpy), h_(_cpy.h_), handle_(_cpy.handle_) {
-    ++h_->count_;
+PropertyPtr<PropT,HandleT>::PropertyPtr(PropT* _ptr, ResourceManager& _resMan, HandleT _handle) :
+    ptr::shared_ptr<PropT>(_ptr), BaseProperty(_resMan), handle_(_handle) {
 }
 
 template <class PropT, class HandleT>
 PropertyPtr<PropT,HandleT>::~PropertyPtr() {
-    if(--h_->count_ == 0) {
-        resMan_.released_property(handle_);
-        delete h_;
+
+    /*
+     * If use count is 2 and prop is not set persistent,
+     * remove it, since the resource manager is the
+     * only one who stores the property.
+     */
+    if(!locked() && !persistent() && ptr::shared_ptr<PropT>::use_count() == 2) {
+        resMan_.release_property(handle_);
+        unlock();
     }
 }
 
 template <class PropT, class HandleT>
-PropertyPtr<PropT,HandleT>&
-PropertyPtr<PropT,HandleT>::operator= (const PropertyPtr<PropT,HandleT>& _rhs) {
-
-    if(--h_->count_ == 0) delete h_;
-
-    h_ = _rhs.h_;
-    ++h_->count_;
-
-    return *this;
-}
-
-template <class PropT, class HandleT>
-PropertyPtr<PropT,HandleT>&
-PropertyPtr<PropT,HandleT>::operator= (PropertyPtr<PropT,HandleT>& _rhs) {
-
-    if(--h_->count_ == 0) delete h_;
-
-    h_ = _rhs.h_;
-    ++h_->count_;
-
-    return *this;
-}
-
-template <class PropT, class HandleT>
-const typename PropT::const_reference
-PropertyPtr<PropT,HandleT>::operator[](size_t _idx) const {
-    assert(h_->ptr_->n_elements() > _idx);
-    return (*h_->ptr_)[_idx];
-}
-
-template <class PropT, class HandleT>
-typename PropT::reference
-PropertyPtr<PropT,HandleT>::operator[](size_t _idx) {
-    assert(h_->ptr_->n_elements() > _idx);
-    return (*h_->ptr_)[_idx];
-}
-
-template <class PropT, class HandleT>
 void PropertyPtr<PropT,HandleT>::resize(unsigned int _size) {
-    h_->ptr_->resize(_size);
+    ptr::shared_ptr<PropT>::get()->resize(_size);
 }
 
 template <class PropT, class HandleT>
 const std::string& PropertyPtr<PropT,HandleT>::name() const {
-    return h_->ptr_->name();
-}
-
-template <class PropT, class HandleT>
-PropT* PropertyPtr<PropT,HandleT>::operator->() {
-    return h_->ptr_;
-}
-
-template <class PropT, class HandleT>
-PropT& PropertyPtr<PropT,HandleT>::operator*()  {
-    return *h_->ptr_;
+    return ptr::shared_ptr<PropT>::get()->name();
 }
 
 template <class PropT, class HandleT>
 void PropertyPtr<PropT,HandleT>::delete_element(size_t _idx) {
-    h_->ptr_->delete_element(_idx);
+    ptr::shared_ptr<PropT>::get()->delete_element(_idx);
 }
 
 template <class PropT, class HandleT>

@@ -11,6 +11,16 @@
 
 using namespace OpenVolumeMesh;
 
+TEST_F(PolyhedralMeshBase, PropertySmartPointerTestSimple) {
+
+    generatePolyhedralMesh(mesh_);
+
+    for(int i = 0; i < 1; ++i) {
+
+        VertexPropertyT<float> v_prop = mesh_.request_vertex_property<float>("SimpleTestProp");
+    }
+}
+
 TEST_F(PolyhedralMeshBase, PropertySmartPointerTest1) {
 
     generatePolyhedralMesh(mesh_);

@@ -120,19 +120,19 @@ public:
 
     template<class T> MeshPropertyT<T> request_mesh_property(const std::string& _name = std::string());
 
-    void released_property(VertexPropHandle _handle);
+    void release_property(VertexPropHandle _handle);
 
-    void released_property(EdgePropHandle _handle);
+    void release_property(EdgePropHandle _handle);
 
-    void released_property(HalfEdgePropHandle _handle);
+    void release_property(HalfEdgePropHandle _handle);
 
-    void released_property(FacePropHandle _handle);
+    void release_property(FacePropHandle _handle);
 
-    void released_property(HalfFacePropHandle _handle);
+    void release_property(HalfFacePropHandle _handle);
 
-    void released_property(CellPropHandle _handle);
+    void release_property(CellPropHandle _handle);
 
-    void released_property(MeshPropHandle _handle);
+    void release_property(MeshPropHandle _handle);
 
     unsigned int n_vertex_props() const { return vertex_props_.size(); }
 
@@ -164,6 +164,24 @@ public:
 
 private:
 
+    template<class StdVecT>
+    void resize_props(StdVecT& _vec, unsigned int _n);
+
+    template<class StdVecT>
+    void entity_deleted(StdVecT& _vec, const OpenVolumeMeshHandle& _h);
+
+    template<class StdVecT>
+    void remove_property(StdVecT& _vec, size_t _idx);
+
+    template<class StdVecT, class PropT, class HandleT>
+    PropT request_property(StdVecT& _vec, const std::string& _name, size_t _size);
+
+    template<class PropT>
+    void set_persistentT(PropT& _prop, bool _flag);
+
+    template<class StdVecT>
+    void clearVec(StdVecT& _vec);
+
     std::vector<BaseProperty*> vertex_props_;
 
     std::vector<BaseProperty*> edge_props_;
@@ -177,20 +195,6 @@ private:
     std::vector<BaseProperty*> cell_props_;
 
     std::vector<BaseProperty*> mesh_props_;
-
-    std::vector<BaseProperty*> persistent_vprops_;
-
-    std::vector<BaseProperty*> persistent_eprops_;
-
-    std::vector<BaseProperty*> persistent_heprops_;
-
-    std::vector<BaseProperty*> persistent_fprops_;
-
-    std::vector<BaseProperty*> persistent_hfprops_;
-
-    std::vector<BaseProperty*> persistent_cprops_;
-
-    std::vector<BaseProperty*> persistent_mprops_;
 };
 
 }
