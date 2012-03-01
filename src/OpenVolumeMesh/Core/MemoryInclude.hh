@@ -63,6 +63,11 @@
      #include <memory>
      namespace ptr = std;
      #define ACG_UNIQUE_POINTER_SUPPORTED 1
+   #elif (_MSC_VER >= 1500)
+     // hope for TR1 equivalents
+     #include <memory>
+     namespace ptr = std::tr1;
+     #define ACG_UNIQUE_POINTER_SUPPORTED 0
    #else
      // hope for TR1 equivalents
      #include <tr1/memory>
