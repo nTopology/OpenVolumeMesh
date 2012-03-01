@@ -172,7 +172,7 @@ void ResourceManager::cell_deleted(const CellHandle& _h) {
 
 void ResourceManager::released_property(VertexPropHandle _handle) {
 
-    delete (*(vertex_props_.begin() + _handle.idx()));
+    //delete (*(vertex_props_.begin() + _handle.idx()));
     std::vector<BaseProperty*>::iterator it = vertex_props_.erase(vertex_props_.begin() + _handle.idx());
     VertexPropHandle decrHandle(_handle.idx());
     for(; it < vertex_props_.end(); ++it) {
@@ -183,7 +183,7 @@ void ResourceManager::released_property(VertexPropHandle _handle) {
 
 void ResourceManager::released_property(EdgePropHandle _handle) {
 
-    delete (*(edge_props_.begin() + _handle.idx()));
+    //delete (*(edge_props_.begin() + _handle.idx()));
     std::vector<BaseProperty*>::iterator it = edge_props_.erase(edge_props_.begin() + _handle.idx());
     EdgePropHandle decrHandle(_handle.idx());
     for(; it < edge_props_.end(); ++it) {
@@ -194,7 +194,7 @@ void ResourceManager::released_property(EdgePropHandle _handle) {
 
 void ResourceManager::released_property(HalfEdgePropHandle _handle) {
 
-    delete (*(halfedge_props_.begin() + _handle.idx()));
+    //delete (*(halfedge_props_.begin() + _handle.idx()));
     std::vector<BaseProperty*>::iterator it = halfedge_props_.erase(halfedge_props_.begin() + _handle.idx());
     HalfEdgePropHandle decrHandle(_handle.idx());
     for(; it < halfedge_props_.end(); ++it) {
@@ -205,7 +205,7 @@ void ResourceManager::released_property(HalfEdgePropHandle _handle) {
 
 void ResourceManager::released_property(FacePropHandle _handle) {
 
-    delete (*(face_props_.begin() + _handle.idx()));
+    //delete (*(face_props_.begin() + _handle.idx()));
     std::vector<BaseProperty*>::iterator it = face_props_.erase(face_props_.begin() + _handle.idx());
     FacePropHandle decrHandle(_handle.idx());
     for(; it < face_props_.end(); ++it) {
@@ -216,7 +216,7 @@ void ResourceManager::released_property(FacePropHandle _handle) {
 
 void ResourceManager::released_property(HalfFacePropHandle _handle) {
 
-    delete (*(halfface_props_.begin() + _handle.idx()));
+    //delete (*(halfface_props_.begin() + _handle.idx()));
     std::vector<BaseProperty*>::iterator it = halfface_props_.erase(halfface_props_.begin() + _handle.idx());
     HalfFacePropHandle decrHandle(_handle.idx());
     for(; it < halfface_props_.end(); ++it) {
@@ -227,7 +227,7 @@ void ResourceManager::released_property(HalfFacePropHandle _handle) {
 
 void ResourceManager::released_property(CellPropHandle _handle) {
 
-    delete (*(cell_props_.begin() + _handle.idx()));
+    //delete (*(cell_props_.begin() + _handle.idx()));
     std::vector<BaseProperty*>::iterator it = cell_props_.erase(cell_props_.begin() + _handle.idx());
     CellPropHandle decrHandle(_handle.idx());
     for(; it < cell_props_.end(); ++it) {
@@ -238,7 +238,7 @@ void ResourceManager::released_property(CellPropHandle _handle) {
 
 void ResourceManager::released_property(MeshPropHandle _handle) {
 
-    delete (*(mesh_props_.begin() + _handle.idx()));
+    //delete (*(mesh_props_.begin() + _handle.idx()));
     std::vector<BaseProperty*>::iterator it = mesh_props_.erase(mesh_props_.begin() + _handle.idx());
     MeshPropHandle decrHandle(_handle.idx());
     for(; it < mesh_props_.end(); ++it) {
