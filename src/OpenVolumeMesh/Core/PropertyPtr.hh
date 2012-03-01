@@ -50,7 +50,7 @@
 #include "BaseProperty.hh"
 #include "PropertyHandles.hh"
 
-#include "MemoryInclude.hh"
+#include "../System/MemoryInclude.hh"
 
 namespace OpenVolumeMesh {
 
@@ -70,15 +70,13 @@ public:
 
     friend class ResourceManager;
 
-    typedef HandleT Handle;
-
     typedef typename PropT::vector_type::const_iterator const_iterator;
     typedef typename PropT::vector_type::iterator       iterator;
     typedef typename PropT::reference                   reference;
     typedef typename PropT::const_reference             const_reference;
 
     /// Constructor
-    PropertyPtr(PropT* _ptr, ResourceManager& _resMan, Handle _handle);
+    PropertyPtr(PropT* _ptr, ResourceManager& _resMan, HandleT _handle);
 
     /// Destructor
     virtual ~PropertyPtr();
@@ -105,10 +103,6 @@ protected:
     virtual void resize(unsigned int _size);
 
     virtual void set_handle(const OpenVolumeMeshHandle& _handle);
-
-private:
-
-     Handle handle_;
 };
 
 } // Namespace OpenVolumeMesh

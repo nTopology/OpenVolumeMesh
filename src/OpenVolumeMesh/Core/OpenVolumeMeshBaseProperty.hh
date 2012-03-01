@@ -48,6 +48,8 @@
 #include <string>
 #include <iostream>
 
+#include "OpenVolumeMeshHandle.hh"
+
 //== CLASS DEFINITION =========================================================
 
 /** \class OpenVolumeMeshBaseProperty
@@ -67,11 +69,11 @@ public:
 public:
 
 	OpenVolumeMeshBaseProperty(const std::string& _name = "<unknown>") :
-		name_(_name), persistent_(false) {
+		name_(_name), persistent_(false), handle_(-1) {
 	}
 
 	OpenVolumeMeshBaseProperty(const OpenVolumeMeshBaseProperty& _rhs) :
-		name_(_rhs.name_), persistent_(_rhs.persistent_) {
+		name_(_rhs.name_), persistent_(_rhs.persistent_), handle_(_rhs.handle_.idx()) {
 	}
 
 	virtual ~OpenVolumeMeshBaseProperty() {}
@@ -145,11 +147,17 @@ public:
 				: UnknownSize;
 	}
 
+	const OpenVolumeMeshHandle& handle() const { return handle_; }
+
+	void set_handle(const OpenVolumeMeshHandle& _handle) { handle_.idx(_handle.idx()); }
+
 private:
 
 	std::string name_;
 
 	bool persistent_;
+
+	OpenVolumeMeshHandle handle_;
 };
 
 } // Namespace OpenVolumeMesh

@@ -50,7 +50,7 @@ namespace OpenVolumeMesh {
 
 template <class PropT, class HandleT>
 PropertyPtr<PropT,HandleT>::PropertyPtr(PropT* _ptr, ResourceManager& _resMan, HandleT _handle) :
-    ptr::shared_ptr<PropT>(_ptr), BaseProperty(_resMan), handle_(_handle) {
+    ptr::shared_ptr<PropT>(_ptr), BaseProperty(_resMan) {
 }
 
 template <class PropT, class HandleT>
@@ -62,7 +62,8 @@ PropertyPtr<PropT,HandleT>::~PropertyPtr() {
      * only one who stores the property.
      */
     if(!locked() && !persistent() && ptr::shared_ptr<PropT>::use_count() == 2) {
-        resMan_.release_property(handle_);
+        std::cerr << "Trying to release property " << ptr::shared_ptr<PropT>::get() << std::endl;
+        resMan_.release_property(HandleT(handle().idx()));
         unlock();
     }
 }
@@ -84,12 +85,12 @@ void PropertyPtr<PropT,HandleT>::delete_element(size_t _idx) {
 
 template <class PropT, class HandleT>
 void PropertyPtr<PropT,HandleT>::set_handle(const OpenVolumeMeshHandle& _handle) {
-    handle_.idx(_handle.idx());
+    return ptr::shared_ptr<PropT>::get()->set_handle(_handle);
 }
 
 template <class PropT, class HandleT>
 OpenVolumeMeshHandle PropertyPtr<PropT,HandleT>::handle() const {
-    return handle_;
+    return ptr::shared_ptr<PropT>::get()->handle();
 }
 
 } // Namespace OpenVolumeMesh

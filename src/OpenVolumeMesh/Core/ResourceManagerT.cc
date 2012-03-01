@@ -172,7 +172,10 @@ void ResourceManager::remove_property(StdVecT& _vec, size_t _idx) {
 
     (*(_vec.begin() + _idx))->lock();
     delete *(_vec.begin() + _idx);
+    std::cerr << "Before erase with idx " << _idx << std::endl;
+    std::cerr << "Vector still has " << _vec.size() << " elements" << std::endl;
     _vec.erase(_vec.begin() + _idx);
+    std::cerr << "After erase" << std::endl;
     size_t n = _vec.size();
     for(size_t i = 0; i < n; ++i) {
         _vec[i]->set_handle(OpenVolumeMeshHandle(i));
