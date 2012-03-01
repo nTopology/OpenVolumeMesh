@@ -34,63 +34,22 @@
 
 /*===========================================================================*\
  *                                                                           *
- *   $Revision$                                                         *
- *   $Date$                    *
- *   $LastChangedBy$                                                *
+ *   $Revision: 36 $                                                         *
+ *   $Date: 2012-01-10 18:00:06 +0100 (Di, 10 Jan 2012) $                    *
+ *   $LastChangedBy: kremer $                                                *
  *                                                                           *
 \*===========================================================================*/
 
-#ifndef BASEPROPERTY_HH_
-#define BASEPROPERTY_HH_
+#include "BaseProperty.hh"
 
-#include <string>
-
-#include "OpenVolumeMeshHandle.hh"
+#include "ResourceManager.hh"
 
 namespace OpenVolumeMesh {
 
-class ResourceManager;
-
-class BaseProperty {
-public:
-    friend class ResourceManager;
-
-    BaseProperty(ResourceManager& _resMan) : resMan_(_resMan), lock_(false) {}
-
-    BaseProperty(const BaseProperty& _cpy) : resMan_(_cpy.resMan_), lock_(_cpy.lock_) {}
-
-    BaseProperty& operator=(const BaseProperty& _cpy);
-
-    virtual ~BaseProperty() {}
-
-    virtual const std::string& name() const = 0;
-
-    virtual void delete_element(size_t _idx) = 0;
-
-    virtual std::ostream& serialize(std::ostream& _ostr) const = 0;
-
-    virtual std::istream& deserialize(std::istream& _istr) = 0;
-
-    virtual OpenVolumeMeshHandle handle() const = 0;
-
-    virtual bool persistent() const = 0;
-
-protected:
-    virtual void resize(unsigned int /*_size*/) = 0;
-
-    virtual void set_handle(const OpenVolumeMeshHandle& /*_handle*/) = 0;
-
-    void lock() { lock_ = true; }
-
-    void unlock() { lock_ = false; }
-
-    bool locked() const { return lock_; }
-
-    ResourceManager& resMan_;
-
-    bool lock_;
-};
+BaseProperty& BaseProperty::operator=(const BaseProperty& _cpy) {
+    resMan_ = _cpy.resMan_;
+    lock_ = _cpy.lock_;
+    return *this;
+}
 
 } // Namespace OpenVolumeMesh
-
-#endif /* BASEPROPERTY_HH_ */
