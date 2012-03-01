@@ -65,9 +65,13 @@
      #define ACG_UNIQUE_POINTER_SUPPORTED 1
    #elif (_MSC_VER >= 1500)
      // hope for TR1 equivalents
+    #if(_HAS_TR1)
      #include <memory>
      namespace ptr = std::tr1;
      #define ACG_UNIQUE_POINTER_SUPPORTED 0
+    #else
+     #pragma warning "TR1 not available! Please install Visual Studio Service Pack 1!"
+    #endif
    #else
      // hope for TR1 equivalents
      #include <tr1/memory>
