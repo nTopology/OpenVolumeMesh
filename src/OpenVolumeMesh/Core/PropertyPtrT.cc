@@ -63,7 +63,6 @@ PropertyPtr<PropT,HandleT>::~PropertyPtr() {
      * only one who stores the property.
      */
     if(!locked() && !persistent() && ptr::shared_ptr<PropT>::use_count() == 2) {
-        std::cerr << "Trying to release property " << ptr::shared_ptr<PropT>::get() << std::endl;
         resMan_.release_property(HandleT(handle().idx()));
         unlock();
     }
