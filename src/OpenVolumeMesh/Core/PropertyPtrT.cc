@@ -70,18 +70,24 @@ PropertyPtr<PropT,HandleT>::~PropertyPtr() {
 template <class PropT, class HandleT>
 PropertyPtr<PropT,HandleT>&
 PropertyPtr<PropT,HandleT>::operator= (const PropertyPtr<PropT,HandleT>& _rhs) {
-    ++_rhs.h_->count_;
+
     if(--h_->count_ == 0) delete h_;
+
     h_ = _rhs.h_;
+    ++h_->count_;
+
     return *this;
 }
 
 template <class PropT, class HandleT>
 PropertyPtr<PropT,HandleT>&
 PropertyPtr<PropT,HandleT>::operator= (PropertyPtr<PropT,HandleT>& _rhs) {
-    ++_rhs.h_->count_;
-    if (--h_->count_ == 0) delete h_;
+
+    if(--h_->count_ == 0) delete h_;
+
     h_ = _rhs.h_;
+    ++h_->count_;
+
     return *this;
 }
 
