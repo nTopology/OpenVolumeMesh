@@ -73,7 +73,7 @@ public:
         vertices_.push_back(_p);
 
         // Resize vertex props
-        resize_vprops(vertices_.size());
+        KernelT::resize_vprops(vertices_.size());
 
         // Get handle of recently created vertex
         return VertexHandle(vertices_.size() - 1);
