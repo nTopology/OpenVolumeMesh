@@ -67,11 +67,15 @@ template <class T>
 class CellPropertyT;
 template <class T>
 class MeshPropertyT;
+template <class PropT, class HandleT>
+class PropertyPtr;
 
 class ResourceManager {
 public:
     ResourceManager();
     virtual ~ResourceManager();
+
+    template <class PropT, class HandleT> friend class PropertyPtr;
 
     /// Change size of stored vertex properties
     void resize_vprops(unsigned int _nv);
@@ -120,6 +124,8 @@ public:
 
     template<class T> MeshPropertyT<T> request_mesh_property(const std::string& _name = std::string());
 
+private:
+
     void release_property(VertexPropHandle _handle);
 
     void release_property(EdgePropHandle _handle);
@@ -133,6 +139,8 @@ public:
     void release_property(CellPropHandle _handle);
 
     void release_property(MeshPropHandle _handle);
+
+public:
 
     unsigned int n_vertex_props() const { return vertex_props_.size(); }
 
