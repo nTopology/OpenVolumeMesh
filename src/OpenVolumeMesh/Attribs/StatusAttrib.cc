@@ -68,19 +68,12 @@ StatusAttrib::~StatusAttrib() {
 void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
 
     /*
-     * Perform these steps from vertex to cell:
-     * ===========================================
-     * 1. Delete entity with handle h from vector
-     * 2. Delete all higher dimensional entities
-     *    containing a handle to the delete entity (set delete flag)
-     * 3. Replace all handle indices h_i > h with (h_i - 1) in all
-     *    higher dimensional entities (steps 2 and 3 can be combined)
-     * 4. Delete property and status data of h
-     * ===========================================
-     * 5. Call update_adjacencies() (if required)
-     * ===========================================
-     * 6. Preserve manifoldness
-     *    (optional, requires bottom-up adjacencies)
+     * This is not a real garbage collection in its conventional
+     * sense. What happens in this routine are the following steps:
+     *
+     * 1. Delete all entities marked as deleted from bottom to top.
+     * 2. Preserve manifoldness (optionally) by deleting all
+     *    isolated entities in a top-down fashion afterwards.
      */
 
     for(VertexIter v_it = kernel_.vertices_begin(); v_it != kernel_.vertices_end();) {
