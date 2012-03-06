@@ -207,12 +207,6 @@ FaceHandle TopologyKernel::add_face(const std::vector<VertexHandle>& _vertices) 
 /// Add cell via incident halffaces
 CellHandle TopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck) {
 
-    // Test if _halffaces contains at least four halffaces
-    if(_halffaces.size() < 4u) {
-        std::cerr << "A cell must consist of at least four faces!" << std::endl;
-        return InvalidCellHandle;
-    }
-
     // Test if halffaces have valid indices
     for(std::vector<HalfFaceHandle>::const_iterator it = _halffaces.begin();
             it != _halffaces.end(); ++it) {
