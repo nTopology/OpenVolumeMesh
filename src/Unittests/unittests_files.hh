@@ -18,6 +18,18 @@ TEST_F(PolyhedralMeshBase, LoadFile) {
   EXPECT_EQ(288u, mesh_.n_cells());
 }
 
+TEST_F(PolyhedralMeshBase, LoadNonManifoldMesh) {
+
+  OpenVolumeMesh::IO::FileManager fileManager;
+
+  ASSERT_TRUE(fileManager.readFile("NonManifold.ovm", mesh_));
+
+  EXPECT_EQ(12u, mesh_.n_vertices());
+  EXPECT_EQ(20u, mesh_.n_edges());
+  EXPECT_EQ(11u, mesh_.n_faces());
+  EXPECT_EQ(2u, mesh_.n_cells());
+}
+
 TEST_F(HexahedralMeshBase, LoadFile) {
 
   OpenVolumeMesh::IO::FileManager fileManager;
