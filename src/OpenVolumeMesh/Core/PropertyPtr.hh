@@ -70,6 +70,7 @@ public:
 
     friend class ResourceManager;
 
+    typedef typename PropT::value_type                  value_type;
     typedef typename PropT::vector_type::const_iterator const_iterator;
     typedef typename PropT::vector_type::iterator       iterator;
     typedef typename PropT::reference                   reference;
