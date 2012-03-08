@@ -7,21 +7,26 @@
 
 \image html volume_mesh.png
 
-Welcome to the %OpenVolumeMesh documentation. %OpenVolumeMesh is a generic data structure
-for the comfortable handling of arbitrary polyhedral meshes. Its concepts are closely related
-to OpenMesh (http://www.openmesh.org). In particular, %OpenVolumeMesh carries the general idea
-of storing edges as so-called (directed) half-edges over to the face definitions.
-So, faces are split up into so-called half-faces having opposing orientations.
-Furthermore, in %OpenVolumeMesh the data is arranged in a \e top-down hierarchy,
-meaning that each entity of dimension n is defined through a (ordered) tuple of entities of
-dimension (n-1). These are the intrinsic adjacency
-relations of the volumentric meshes. One can additionally compute \e bottom-up adjacencies
-which means that for each entity of dimension n, we also store its local adjacencies to
-entities of dimension (n+1). These adjacency relations have to be computed explicitly
-which can be performed in linear time complexity. Both adjacency relations, the top-down
-and the bottom-up adjacencies, are used to provide a set of iterators and circulators that
-are comfortable in use. As in OpenMesh, %OpenVolumeMesh provides an entirely generic underlying
-property system that allows attaching properties of any kind to the entities.
+Welcome to the %OpenVolumeMesh documentation.
+
+%OpenVolumeMesh is a generic data structure for the comfortable handling of arbitrary polyhedral
+meshes. Its concepts are closely related to OpenMesh (http://www.openmesh.org). In particular,
+%OpenVolumeMesh carries the general idea of storing edges as so-called (directed) half-edges over
+to the face definitions. So, faces are split up into so-called half-faces having opposing orientations.
+But unlike in the original concept of half-edges, local adjacency information is not stored on a per
+half-edge basis. Instead, all entities are arranged in arrays, which makes %OpenVolumeMesh an
+index-based data structure where the access to entities via handles is accomplished in constant
+time complexity. By making the data structure index-based, we alleviate the major drawback of
+the half-edge data structure of only being capable to represent manifold meshes. In our concept,
+each entity of dimension \f$n\f$ only stores an (ordered) tuple of handles (or indices) pointing to the
+incident entities of dimension \f$(n-1)\f$. These adjacency relations are called the top-down adjacencies.
+They are intrinsic to the implemented concept of volumentric meshes. One can additionally compute
+bottom-up adjacencies, which means that for each entity of dimension \f$n\f$, we also store handles to
+adjacent entities of dimension \f$(n+1)\f$. These adjacency relations have to be computed explicitly which
+can be performed in linear time complexity. Both adjacency relations, the top-down and the bottom-up
+adjacencies, are used to provide a set of iterators and circulators that are comfortable in use.
+As in OpenMesh, %OpenVolumeMesh provides an entirely generic underlying property system that allows
+attaching properties of any kind to the entities. 
 
 In this documentation, we first give a concise overview of the implemented concepts
 in Section \ref concepts. In Section \ref iterators_and_circulators, we introduce
