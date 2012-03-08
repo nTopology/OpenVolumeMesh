@@ -14,17 +14,20 @@ accomplished by using only these local links to adjacent structures (similar to 
 This, of course, assumes the surface mesh to be two-manifold.
  
 The main concept of %OpenVolumeMesh is slightly different but shares some of its ideas with
-%OpenMesh. In order to represent volumetric meshes (three-manifolds),
-%OpenVolumeMesh extends the set of entities by \e cells.
-In %OpenVolumeMesh, all entities are stored in arrays (STL vectors) rather than
-in adjacency linked lists. This has the major advantage that the data structure allows
-for configurations that are not three-manifold (since this is desired in some applications).
+%OpenMesh. In order to represent volumetric meshes (three-manifolds) that consist of a
+set of polyhedra, %OpenVolumeMesh extends the set of entities by \e cells.
+But unlike in the original idea of half-edge data structure,
+in %OpenVolumeMesh all entities are stored in arrays (STL vectors) rather than
+in adjacency linked lists. This is why %OpenVolumeMesh is index-based which
+has the major advantage that the data structure can handle configurations that are
+not three-manifold (since this is desired in some applications).
 For example, a set of vertices or just a two-manifold surface can be respresented by
 %OpenVolumeMesh as well as an entirely three-manifold polyhedral mesh.
 In order to offer the possibility to locally navigate on the meshes, we carry over
 the idea of splitting edges into half-edges to the faces. This leads to the separation
 of the faces into pairs of so-called half-faces. Each of the half-faces has opposite
-orientation to its counter-part. The orientation of a half-face is uniquely determined
+orientation to its counter-part and can be either incident to a cell or not which
+makes the half-face a boundary half-face. The orientation of a half-face is uniquely determined
 by its incident half-edges. See Figure 1 for an illustration of this concept.
 
 \image html halfedge_halfface.png "Figure 1. Left: Two half-edges as in OpenMesh. Right: A face split into two half-faces."
