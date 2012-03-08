@@ -98,35 +98,6 @@ which are presented in the next section.
 
 \image html ovm_class_diagram.png "Figure 3. The class diagram of the OpenVolumeMesh core" width=600
 
-\section attribs Using attributes to provide extra functionality
-
-Due to the fact that %OpenVolumeMesh is designed to be as compact as possible providing
-the opportunity to only use code that is really needed in a particular case, all extra
-functionality can be obtained by so-called attribute classes. Attribute objects
-are instanciated at run-time and expect a mesh reference to be injected.
-Usually they request a certain set of properties from the mesh and provide
-functions that allow operating on these properties. The major advantage of
-the use of these attributes is that they exclusively use additional memory
-during their life-time cycle. As soon as an attribute object looses scope
-and is thus destroyed, all allocated memory is automatically released again.
-The following lines of code show how to use attributes (in this case the
-status attribute providing functions for selecting, tagging and deleting
-entities):
-
-\code
-// Create mesh object
-GeometricPolyhedralMeshV3d myMesh;
-
-// Fill mesh with entities
-...
-
-// Create status attribute object
-StatusAttrib status(myMesh);
-
-// Select vertex with handle 0
-status[VertexHandle(0)].set_selected(true);
-\endcode
-
 \section index_based Using handles to address the entities of a mesh
 
 %OpenVolumeMesh is an index-based data structure where generally all entities
@@ -178,10 +149,10 @@ void SomeClass::someFunction() {
 }
 \endcode
 
-\subsection generic_properties Generic Properties
+\subsection generic_properties Generic Dynamic Properties
 
-Similar to the %OpenMesh data structure, it is possible to attach multiple properties
-to any of the entities in %OpenVolumeMesh. The underlying property container class makes
+Similar to the %OpenMesh data structure, it is possible to attach multiple dynamic properties
+to any of the entities in %OpenVolumeMesh at run-time. The underlying property container class makes
 use of C++ template programming concepts in order to allow the encapsulated property data
 to be of any data type. However, we have adapted and improved the property concept of OpenMesh
 such that the allocation of properties is now completely managed by a resource
@@ -239,6 +210,37 @@ void SomeClass::someFunction {
   // The properties are automatically released
   // when leaving scope
 }
+\endcode
+
+\section attribs Using attributes to provide extra functionality
+
+Due to the fact that %OpenVolumeMesh is designed to be as compact as possible providing
+the opportunity to only use code that is really needed in a particular case, all extra
+functionality can be suspended to so-called attribute classes. In this context,
+attributes are not to be understood as those used in the C++ STL concepts.
+Attribute objects in %OpenVolumeMesh are objects instanciated at run-time which
+expect a mesh reference to be injected.
+Usually they request a certain set of properties from the mesh and provide
+functions that allow operating on these properties or the mesh itself.
+The major advantage of the use of these attributes is that they exclusively
+use additional memory during their life-time cycle. As soon as an attribute object
+looses scope and is thus destroyed, all allocated memory is automatically released again.
+The following lines of code show how to use attributes (in this case the
+status attribute providing functions for selecting, tagging and deleting
+entities):
+
+\code
+// Create mesh object
+GeometricPolyhedralMeshV3d myMesh;
+
+// Fill mesh with entities
+...
+
+// Create status attribute object
+StatusAttrib status(myMesh);
+
+// Select vertex with handle 0
+status[VertexHandle(0)].set_selected(true);
 \endcode
 
 **/
