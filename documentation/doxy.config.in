@@ -701,7 +701,8 @@ EXCLUDE_SYMLINKS       = NO
 # against the file with absolute path, so to exclude all test directories
 # for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       = .svn \
+EXCLUDE_PATTERNS       = .git \
+                         .svn \
                          *.moc.cc
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
