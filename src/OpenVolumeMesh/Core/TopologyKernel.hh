@@ -461,7 +461,7 @@ public:
     }
 
     /// Clear whole mesh
-    virtual void clear() {
+    virtual void clear(bool _clearProps = true) {
 
         edges_.clear();
         faces_.clear();
@@ -471,11 +471,24 @@ public:
         incident_cell_per_hf_.clear();
         boundary_faces_.clear();
 
-        // Resize props
-        resize_vprops(0u);
-        resize_eprops(0u);
-        resize_fprops(0u);
-        resize_cprops(0u);
+        if(_clearProps) {
+
+            // Delete all property data
+            clear_vertex_props();
+            clear_edge_props();
+            clear_halfedge_props();
+            clear_face_props();
+            clear_halfface_props();
+            clear_cell_props();
+            clear_mesh_props();
+
+        } else {
+            // Resize props
+            resize_vprops(0u);
+            resize_eprops(0u);
+            resize_fprops(0u);
+            resize_cprops(0u);
+        }
     }
 
     //=====================================================================

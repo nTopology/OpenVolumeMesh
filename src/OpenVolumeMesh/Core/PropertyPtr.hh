@@ -99,6 +99,8 @@ public:
 
     virtual bool persistent() const { return ptr::shared_ptr<PropT>::get()->persistent(); }
 
+    virtual bool anonymous() const { return ptr::shared_ptr<PropT>::get()->name().empty(); }
+
 protected:
 
     virtual void resize(unsigned int _size);

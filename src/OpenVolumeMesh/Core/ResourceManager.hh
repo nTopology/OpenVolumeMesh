@@ -89,6 +89,8 @@ public:
     /// Change size of stored cell properties
     void resize_cprops(unsigned int _nc);
 
+protected:
+
     void vertex_deleted(const VertexHandle& _h);
 
     void edge_deleted(const EdgeHandle& _h);
@@ -96,6 +98,22 @@ public:
     void face_deleted(const FaceHandle& _h);
 
     void cell_deleted(const CellHandle& _h);
+
+public:
+
+    void clear_vertex_props() { clearVec(vertex_props_); }
+
+    void clear_edge_props() { clearVec(edge_props_); }
+
+    void clear_halfedge_props() { clearVec(halfedge_props_); }
+
+    void clear_face_props() { clearVec(face_props_); }
+
+    void clear_halfface_props() { clearVec(halfface_props_); }
+
+    void clear_cell_props() { clearVec(cell_props_); }
+
+    void clear_mesh_props() { clearVec(mesh_props_); }
 
     /// Get number of vertices in mesh
     virtual unsigned int n_vertices() const = 0;
@@ -170,6 +188,36 @@ public:
 
     template<class T> void set_persistent(MeshPropertyT<T>& _prop, bool _flag = true);
 
+    typedef std::vector<BaseProperty*> Properties;
+
+    Properties::const_iterator vertex_props_begin() const { return vertex_props_.begin(); }
+
+    Properties::const_iterator vertex_props_end() const { return vertex_props_.end(); }
+
+    Properties::const_iterator edge_props_begin() const { return edge_props_.begin(); }
+
+    Properties::const_iterator edge_props_end() const { return edge_props_.end(); }
+
+    Properties::const_iterator halfedge_props_begin() const { return halfedge_props_.begin(); }
+
+    Properties::const_iterator halfedge_props_end() const { return halfedge_props_.end(); }
+
+    Properties::const_iterator face_props_begin() const { return face_props_.begin(); }
+
+    Properties::const_iterator face_props_end() const { return face_props_.end(); }
+
+    Properties::const_iterator halfface_props_begin() const { return halfface_props_.begin(); }
+
+    Properties::const_iterator halfface_props_end() const { return halfface_props_.end(); }
+
+    Properties::const_iterator cell_props_begin() const { return cell_props_.begin(); }
+
+    Properties::const_iterator cell_props_end() const { return cell_props_.end(); }
+
+    Properties::const_iterator mesh_props_begin() const { return mesh_props_.begin(); }
+
+    Properties::const_iterator mesh_props_end() const { return mesh_props_.end(); }
+
 private:
 
     template<class StdVecT>
@@ -190,19 +238,19 @@ private:
     template<class StdVecT>
     void clearVec(StdVecT& _vec);
 
-    std::vector<BaseProperty*> vertex_props_;
+    Properties vertex_props_;
 
-    std::vector<BaseProperty*> edge_props_;
+    Properties edge_props_;
 
-    std::vector<BaseProperty*> halfedge_props_;
+    Properties halfedge_props_;
 
-    std::vector<BaseProperty*> face_props_;
+    Properties face_props_;
 
-    std::vector<BaseProperty*> halfface_props_;
+    Properties halfface_props_;
 
-    std::vector<BaseProperty*> cell_props_;
+    Properties cell_props_;
 
-    std::vector<BaseProperty*> mesh_props_;
+    Properties mesh_props_;
 };
 
 }

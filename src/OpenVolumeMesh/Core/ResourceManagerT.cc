@@ -202,6 +202,15 @@ void ResourceManager::clearVec(StdVecT& _vec) {
 
     for(typename StdVecT::iterator it = _vec.begin();
             it != _vec.end(); ++it) {
+        if(!(*it)->persistent()) {
+            std::cerr << "Could not clear properties since at " <<
+                    "least one property is still in use!" << std::endl;
+            return;
+        }
+    }
+
+    for(typename StdVecT::iterator it = _vec.begin();
+            it != _vec.end(); ++it) {
         delete *it;
     }
     _vec.clear();

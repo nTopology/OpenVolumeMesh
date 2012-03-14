@@ -67,15 +67,18 @@ public:
 
     virtual void delete_element(size_t _idx) = 0;
 
-    virtual std::ostream& serialize(std::ostream& _ostr) const = 0;
+    virtual void serialize(std::ostream& _ostr) const = 0;
 
-    virtual std::istream& deserialize(std::istream& _istr) = 0;
+    virtual void deserialize(std::istream& _istr) = 0;
 
     virtual OpenVolumeMeshHandle handle() const = 0;
 
     virtual bool persistent() const = 0;
 
+    virtual bool anonymous() const = 0;
+
 protected:
+
     virtual void resize(unsigned int /*_size*/) = 0;
 
     virtual void set_handle(const OpenVolumeMeshHandle& /*_handle*/) = 0;

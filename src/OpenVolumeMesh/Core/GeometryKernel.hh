@@ -107,10 +107,10 @@ public:
         return nV;
     }
 
-    virtual void clear() {
+    virtual void clear(bool _clearProps = true) {
 
         vertices_.clear();
-        TopologyKernelT::clear();
+        TopologyKernelT::clear(_clearProps);
     }
 
 private:

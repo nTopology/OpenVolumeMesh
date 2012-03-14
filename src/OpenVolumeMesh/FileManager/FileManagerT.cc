@@ -370,9 +370,41 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
         off << std::endl;
     }
 
+    // write vertex props
+    writeProps(off, _mesh.vertex_props_begin(), _mesh.vertex_props_end());
+    // write edge props
+    writeProps(off, _mesh.edge_props_begin(), _mesh.edge_props_end());
+    // write halfedge props
+    writeProps(off, _mesh.halfedge_props_begin(), _mesh.halfedge_props_end());
+    // write face props
+    writeProps(off, _mesh.face_props_begin(), _mesh.face_props_end());
+    // write halfface props
+    writeProps(off, _mesh.halfface_props_begin(), _mesh.halfface_props_end());
+    // write cell props
+    writeProps(off, _mesh.cell_props_begin(), _mesh.cell_props_end());
+    // write mesh props
+    writeProps(off, _mesh.mesh_props_begin(), _mesh.mesh_props_end());
+
     off.close();
 
     return true;
+}
+
+//==================================================
+
+template<class IteratorT>
+void FileManager::writeProps(std::ostream& _ostr, const IteratorT& _begin, const IteratorT& _end) const {
+
+    // write props
+    for(IteratorT p_it = _begin;
+            p_it != _end; ++p_it) {
+        if(!(*p_it)->persistent()) continue;
+        if((*p_it)->anonymous()) {
+            std::cerr << "Serialization of anonymous properties is not supported!" << std::endl;
+            continue;
+        }
+        (*p_it)->serialize(_ostr);
+    }
 }
 
 //==================================================

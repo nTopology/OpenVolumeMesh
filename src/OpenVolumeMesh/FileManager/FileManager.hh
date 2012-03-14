@@ -109,6 +109,10 @@ public:
 
 private:
 
+  // Write props
+  template<class IteratorT>
+  void writeProps(std::ostream& _ostr, const IteratorT& _begin, const IteratorT& _end) const;
+
   // Remove leading and trailing whitespaces
   void trimString(std::string& _string) const;
 

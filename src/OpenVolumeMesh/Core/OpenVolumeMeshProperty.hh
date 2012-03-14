@@ -139,24 +139,22 @@ public:
 	}
 
 	// Function to serialize a property
-    virtual std::ostream& serialize(std::ostream& _ostr) const {
-        _ostr << OpenVolumeMeshBaseProperty::serialize(_ostr);
+    virtual void serialize(std::ostream& _ostr) const {
+        OpenVolumeMeshBaseProperty::serialize(_ostr);
         for(typename vector_type::const_iterator it = data_.begin();
                 it != data_.end(); ++it) {
             _ostr << *it << std::endl;
         }
-        return _ostr;
     }
 
     // Function to deserialize a property
-    virtual std::istream& deserialize(std::istream& _istr) {
+    virtual void deserialize(std::istream& _istr) {
         OpenVolumeMeshBaseProperty::deserialize(_istr);
         for(unsigned int i = 0; i < n_elements(); ++i) {
             value_type val;
             _istr >> val;
             data_[i] = val;
         }
-        return _istr;
     }
 
 public:
