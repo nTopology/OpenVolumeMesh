@@ -104,64 +104,74 @@ TEST_F(PolyhedralMeshBase, SaveFileWithProps) {
   EXPECT_EQ(960u, mesh_.n_faces());
   EXPECT_EQ(288u, mesh_.n_cells());
 
-  EXPECT_EQ(0u, mesh_.n_halfface_props());
-  EXPECT_EQ(0u, mesh_.n_vertex_props());
+  EXPECT_EQ(1u, mesh_.n_halfface_props());
+  EXPECT_EQ(1u, mesh_.n_vertex_props());
+
+  HalfFacePropertyT<float> hfprop2 = mesh_.request_halfface_property<float>("MyHalfFaceProp");
+  VertexPropertyT<unsigned int> vprop2 = mesh_.request_vertex_property<unsigned int>("MyVertexProp");
+
+  for(unsigned int i = 0; i < mesh_.n_halffaces(); ++i) {
+      EXPECT_FLOAT_EQ((float)i/2.0f, hfprop2[i]);
+  }
+  for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
+      EXPECT_EQ(i, vprop2[i]);
+  }
 }
 
-//TEST_F(PolyhedralMeshBase, LoadFileWithProps) {
-//
-//  OpenVolumeMesh::IO::FileManager fileManager;
-//
-//  ASSERT_TRUE(fileManager.readFile("Cube_with_props.ovm", mesh_));
-//
-//  EXPECT_EQ(8u, mesh_.n_vertices());
-//  EXPECT_EQ(12u, mesh_.n_edges());
-//  EXPECT_EQ(6u, mesh_.n_faces());
-//  EXPECT_EQ(1u, mesh_.n_cells());
-//
-//  EXPECT_EQ(1u, mesh_.n_vprops());
-//  EXPECT_EQ(1u, mesh_.n_eprops());
-//  EXPECT_EQ(0u, mesh_.n_heprops());
-//  EXPECT_EQ(1u, mesh_.n_fprops());
-//  EXPECT_EQ(1u, mesh_.n_hfprops());
-//  EXPECT_EQ(0u, mesh_.n_cprops());
-//}
-//
-//TEST_F(PolyhedralMeshBase, SaveFileWithProps) {
-//
-//  OpenVolumeMesh::IO::FileManager fileManager;
-//
-//  ASSERT_TRUE(fileManager.readFile("Cube_with_props.ovm", mesh_));
-//
-//  EXPECT_EQ(8u, mesh_.n_vertices());
-//  EXPECT_EQ(12u, mesh_.n_edges());
-//  EXPECT_EQ(6u, mesh_.n_faces());
-//  EXPECT_EQ(1u, mesh_.n_cells());
-//
-//  EXPECT_EQ(1u, mesh_.n_vprops());
-//  EXPECT_EQ(1u, mesh_.n_eprops());
-//  EXPECT_EQ(0u, mesh_.n_heprops());
-//  EXPECT_EQ(1u, mesh_.n_fprops());
-//  EXPECT_EQ(1u, mesh_.n_hfprops());
-//  EXPECT_EQ(0u, mesh_.n_cprops());
-//
-//  ASSERT_TRUE(fileManager.writeFile("Cube_with_props.copy.ovm", mesh_));
-//
-//  mesh_.clear();
-//
-//  ASSERT_TRUE(fileManager.readFile("Cube_with_props.copy.ovm", mesh_));
-//
-//  EXPECT_EQ(8u, mesh_.n_vertices());
-//  EXPECT_EQ(12u, mesh_.n_edges());
-//  EXPECT_EQ(6u, mesh_.n_faces());
-//  EXPECT_EQ(1u, mesh_.n_cells());
-//
-//  EXPECT_EQ(1u, mesh_.n_vprops());
-//  EXPECT_EQ(1u, mesh_.n_eprops());
-//  EXPECT_EQ(0u, mesh_.n_heprops());
-//  EXPECT_EQ(1u, mesh_.n_fprops());
-//  EXPECT_EQ(1u, mesh_.n_hfprops());
-//  EXPECT_EQ(0u, mesh_.n_cprops());
-//}
+TEST_F(PolyhedralMeshBase, LoadFileWithProps) {
+
+  OpenVolumeMesh::IO::FileManager fileManager;
+
+  ASSERT_TRUE(fileManager.readFile("Cube_with_props.ovm", mesh_));
+
+  EXPECT_EQ(8u, mesh_.n_vertices());
+  EXPECT_EQ(12u, mesh_.n_edges());
+  EXPECT_EQ(6u, mesh_.n_faces());
+  EXPECT_EQ(1u, mesh_.n_cells());
+
+  EXPECT_EQ(1u, mesh_.n_vertex_props());
+  EXPECT_EQ(1u, mesh_.n_edge_props());
+  EXPECT_EQ(0u, mesh_.n_halfedge_props());
+  EXPECT_EQ(1u, mesh_.n_face_props());
+  EXPECT_EQ(1u, mesh_.n_halfface_props());
+  EXPECT_EQ(0u, mesh_.n_cell_props());
+}
+
+TEST_F(PolyhedralMeshBase, SaveFileWithProps2) {
+
+  OpenVolumeMesh::IO::FileManager fileManager;
+
+  ASSERT_TRUE(fileManager.readFile("Cube_with_props.ovm", mesh_));
+
+  EXPECT_EQ(8u, mesh_.n_vertices());
+  EXPECT_EQ(12u, mesh_.n_edges());
+  EXPECT_EQ(6u, mesh_.n_faces());
+  EXPECT_EQ(1u, mesh_.n_cells());
+
+  EXPECT_EQ(1u, mesh_.n_vertex_props());
+  EXPECT_EQ(1u, mesh_.n_edge_props());
+  EXPECT_EQ(0u, mesh_.n_halfedge_props());
+  EXPECT_EQ(1u, mesh_.n_face_props());
+  EXPECT_EQ(1u, mesh_.n_halfface_props());
+  EXPECT_EQ(0u, mesh_.n_cell_props());
+
+  ASSERT_TRUE(fileManager.writeFile("Cube_with_props.copy.ovm", mesh_));
+
+  mesh_.clear();
+
+  ASSERT_TRUE(fileManager.readFile("Cube_with_props.copy.ovm", mesh_));
+
+  EXPECT_EQ(8u, mesh_.n_vertices());
+  EXPECT_EQ(12u, mesh_.n_edges());
+  EXPECT_EQ(6u, mesh_.n_faces());
+  EXPECT_EQ(1u, mesh_.n_cells());
+
+  EXPECT_EQ(1u, mesh_.n_vertex_props());
+  EXPECT_EQ(1u, mesh_.n_edge_props());
+  EXPECT_EQ(0u, mesh_.n_halfedge_props());
+  EXPECT_EQ(1u, mesh_.n_face_props());
+  EXPECT_EQ(1u, mesh_.n_halfface_props());
+  EXPECT_EQ(0u, mesh_.n_cell_props());
+}
 
 #endif // INCLUDE GUARD

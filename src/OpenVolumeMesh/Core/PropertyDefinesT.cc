@@ -174,4 +174,9 @@ void MeshPropertyT<T>::deserialize(std::istream& _istr) {
     PropertyPtr<OpenVolumeMeshPropertyT<T>, MeshPropHandle>::get()->deserialize(_istr);
 }
 
+template <class T>
+const std::string typeName() {
+    throw std::runtime_error("Serialization is not supported for these data types!");
+}
+
 } // Namespace OpenVolumeMesh

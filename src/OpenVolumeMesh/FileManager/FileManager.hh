@@ -109,6 +109,14 @@ public:
 
 private:
 
+  // Read property
+  template <class MeshT>
+  void readProperty(std::istream& _iff, MeshT& _mesh) const;
+
+  template <class PropT, class MeshT>
+  void generateGenericProperty(const std::string& _entity_t, const std::string& _name,
+                               std::istream& _iff, MeshT& _mesh) const;
+
   // Write props
   template<class IteratorT>
   void writeProps(std::ostream& _ostr, const IteratorT& _begin, const IteratorT& _end) const;

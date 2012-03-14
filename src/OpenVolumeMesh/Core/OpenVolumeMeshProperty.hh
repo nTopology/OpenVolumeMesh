@@ -149,7 +149,6 @@ public:
 
     // Function to deserialize a property
     virtual void deserialize(std::istream& _istr) {
-        OpenVolumeMeshBaseProperty::deserialize(_istr);
         for(unsigned int i = 0; i < n_elements(); ++i) {
             value_type val;
             _istr >> val;

@@ -266,6 +266,14 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
         }
     }
 
+    while(!iff.eof()) {
+        // "End of file reached while searching for input!"
+        // is thrown here. \TODO Fix it!
+
+        // Read property
+        readProperty(iff, _mesh);
+    }
+
     iff.close();
 
     // Compute top-down-adjacencies
@@ -281,6 +289,77 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     std::cerr << "######################################" << std::endl;
 
     return true;
+}
+
+//==================================================
+
+template <class MeshT>
+void FileManager::readProperty(std::istream& _iff, MeshT& _mesh) const {
+
+    std::string line, entity_t, prop_t, name;
+    std::stringstream sstr;
+
+    getCleanLine(_iff, line);
+
+    if(line.empty()) return;
+
+    sstr.clear();
+    sstr.str(line);
+    sstr >> entity_t;
+    std::transform(entity_t.begin(), entity_t.end(), entity_t.begin(), ::tolower);
+    sstr >> prop_t;
+    std::transform(prop_t.begin(), prop_t.end(), prop_t.begin(), ::tolower);
+    name = line;
+    extractQuotedText(name);
+
+    if(prop_t == typeName<int>()) generateGenericProperty<int, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<unsigned int>()) generateGenericProperty<unsigned int, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<short>()) generateGenericProperty<short, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<long>()) generateGenericProperty<long, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<unsigned long>()) generateGenericProperty<unsigned long, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<char>()) generateGenericProperty<char, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<unsigned char>()) generateGenericProperty<unsigned char, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<bool>()) generateGenericProperty<bool, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<float>()) generateGenericProperty<float, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<double>()) generateGenericProperty<double, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<std::string>()) generateGenericProperty<std::string, MeshT>(entity_t, name, _iff, _mesh);
+}
+
+//==================================================
+
+template <class PropT, class MeshT>
+void FileManager::generateGenericProperty(const std::string& _entity_t, const std::string& _name,
+                                          std::istream& _iff, MeshT& _mesh) const {
+
+    if(_entity_t == "vprop") {
+        VertexPropertyT<PropT> prop = _mesh.template request_vertex_property<PropT>(_name);
+        prop.deserialize(_iff);
+        _mesh.set_persistent(prop);
+    } else if(_entity_t == "eprop") {
+        EdgePropertyT<PropT> prop = _mesh.template request_edge_property<PropT>(_name);
+        prop.deserialize(_iff);
+        _mesh.set_persistent(prop);
+    } else if(_entity_t == "heprop") {
+        HalfEdgePropertyT<PropT> prop = _mesh.template request_halfedge_property<PropT>(_name);
+        prop.deserialize(_iff);
+        _mesh.set_persistent(prop);
+    } else if(_entity_t == "fprop") {
+        FacePropertyT<PropT> prop = _mesh.template request_face_property<PropT>(_name);
+        prop.deserialize(_iff);
+        _mesh.set_persistent(prop);
+    } else if(_entity_t == "hfprop") {
+        HalfFacePropertyT<PropT> prop = _mesh.template request_halfface_property<PropT>(_name);
+        prop.deserialize(_iff);
+        _mesh.set_persistent(prop);
+    } else if(_entity_t == "cprop") {
+        CellPropertyT<PropT> prop = _mesh.template request_cell_property<PropT>(_name);
+        prop.deserialize(_iff);
+        _mesh.set_persistent(prop);
+    } else if(_entity_t == "mprop") {
+        MeshPropertyT<PropT> prop = _mesh.template request_mesh_property<PropT>(_name);
+        prop.deserialize(_iff);
+        _mesh.set_persistent(prop);
+    }
 }
 
 //==================================================

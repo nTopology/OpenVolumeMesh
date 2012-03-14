@@ -9,16 +9,6 @@ Vertices
 1.0 -1.0 1.0
 1.0 1.0 1.0
 -1.0 1.0 1.0
-Vertex_Property "Vertex Weights"
-float
-1.363
-6.334
-2.766
-8.348
-4.214
-2.136
-7.114
-0.651
 Edges
 12
 0 1
@@ -33,20 +23,6 @@ Edges
 1 5
 2 6
 3 7
-Edge_Property "Edge Tag"
-bool
-1
-1
-0
-1
-1
-0
-0
-1
-0
-0
-1
-1
 Faces
 6
 4 0 2 4 6
@@ -55,16 +31,39 @@ Faces
 4 16 15 23 6
 4 20 12 23 5
 4 0 18 9 17
-Face_Property "Face Selection"
-bool
+Polyhedra
+1
+6 1 2 5 6 9 10
+VProp float "Vertex Weights"
+1.363
+6.334
+2.766
+8.348
+4.214
+2.136
+7.114
+0.651
+EProp bool "Edge Tag"
 1
 1
 0
 1
 1
 0
-HalfFace_Property "HalfFace Constraints"
-double
+0
+1
+0
+0
+1
+1
+FProp bool "Face Selection"
+1
+1
+0
+1
+1
+0
+HFProp double "HalfFace Constraints"
 1.22354
 0.11698
 1.83562
@@ -77,6 +76,3 @@ double
 2.22457
 0.10957
 1.09758
-Polyhedra
-1
-6 1 2 5 6 9 10
