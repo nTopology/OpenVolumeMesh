@@ -118,19 +118,7 @@ public:
 };
 
 template <class T>
-const std::string typeName();
-
-template <> const std::string typeName<int>();
-template <> const std::string typeName<unsigned int>();
-template <> const std::string typeName<short>();
-template <> const std::string typeName<long>();
-template <> const std::string typeName<unsigned long>();
-template <> const std::string typeName<char>();
-template <> const std::string typeName<unsigned char>();
-template <> const std::string typeName<bool>();
-template <> const std::string typeName<float>();
-template <> const std::string typeName<double>();
-template <> const std::string typeName<std::string>();
+const std::string typeName() { return typeid(T).name(); }
 
 } // Namespace OpenVolumeMesh
 
