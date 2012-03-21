@@ -465,62 +465,6 @@ void TopologyKernel::update_adjacencies() {
     update_edge_adjacencies();
 
     update_face_adjacencies();
-}
-
-//========================================================================================
-
-void TopologyKernel::update_vertex_adjacencies() {
-
-    // Clear adjacencies
-    outgoing_hes_per_vertex_.clear();
-    outgoing_hes_per_vertex_.resize(n_vertices());
-
-    // Store outgoing halfedges per vertex
-    unsigned int n_vertices = edges_.size();
-    for(unsigned int i = 0; i < n_vertices; ++i) {
-
-        VertexHandle from = edges_[i].from_vertex();
-        if((unsigned int)from >= outgoing_hes_per_vertex_.size()) {
-            std::cerr << "update_adjacencies(): Vertex handle is out of bounds!" << std::endl;
-            return;
-        }
-        outgoing_hes_per_vertex_[from].push_back(halfedge_handle(EdgeHandle(i), 0));
-
-        VertexHandle to = edges_[i].to_vertex();
-        if((unsigned int)to >= outgoing_hes_per_vertex_.size()) {
-            std::cerr << "update_adjacencies(): Vertex handle is out of bounds!" << std::endl;
-            return;
-        }
-        // Store opposite halfedge handle
-        outgoing_hes_per_vertex_[to].push_back(halfedge_handle(EdgeHandle(i), 1));
-    }
-
-    has_vertex_adjacencies_ = true;
-}
-
-//========================================================================================
-
-void TopologyKernel::update_edge_adjacencies() {
-
-    // Clear
-    incident_hfs_per_he_.clear();
-    incident_hfs_per_he_.resize(edges_.size() * 2u);
-
-    // Store incident halffaces per halfedge
-    unsigned int n_faces = faces_.size();
-    for(unsigned int i = 0; i < n_faces; ++i) {
-
-        std::vector<HalfEdgeHandle> halfedges = faces_[i].halfedges();
-
-        // Go over all halfedges
-        for(std::vector<HalfEdgeHandle>::const_iterator he_it = halfedges.begin();
-                he_it != halfedges.end(); ++he_it) {
-
-            incident_hfs_per_he_[*he_it].push_back(halfface_handle(FaceHandle(i), 0));
-            incident_hfs_per_he_[opposite_halfedge_handle(*he_it)].push_back(
-                    halfface_handle(FaceHandle(i), 1));
-        }
-    }
 
     /* Put halffaces in clockwise order via the
      * same cell property which now exists.
@@ -599,6 +543,62 @@ void TopologyKernel::update_edge_adjacencies() {
                     incident_hfs_per_he_[cur_he] = new_halffaces;
                 }
             }
+        }
+    }
+}
+
+//========================================================================================
+
+void TopologyKernel::update_vertex_adjacencies() {
+
+    // Clear adjacencies
+    outgoing_hes_per_vertex_.clear();
+    outgoing_hes_per_vertex_.resize(n_vertices());
+
+    // Store outgoing halfedges per vertex
+    unsigned int n_vertices = edges_.size();
+    for(unsigned int i = 0; i < n_vertices; ++i) {
+
+        VertexHandle from = edges_[i].from_vertex();
+        if((unsigned int)from >= outgoing_hes_per_vertex_.size()) {
+            std::cerr << "update_adjacencies(): Vertex handle is out of bounds!" << std::endl;
+            return;
+        }
+        outgoing_hes_per_vertex_[from].push_back(halfedge_handle(EdgeHandle(i), 0));
+
+        VertexHandle to = edges_[i].to_vertex();
+        if((unsigned int)to >= outgoing_hes_per_vertex_.size()) {
+            std::cerr << "update_adjacencies(): Vertex handle is out of bounds!" << std::endl;
+            return;
+        }
+        // Store opposite halfedge handle
+        outgoing_hes_per_vertex_[to].push_back(halfedge_handle(EdgeHandle(i), 1));
+    }
+
+    has_vertex_adjacencies_ = true;
+}
+
+//========================================================================================
+
+void TopologyKernel::update_edge_adjacencies() {
+
+    // Clear
+    incident_hfs_per_he_.clear();
+    incident_hfs_per_he_.resize(edges_.size() * 2u);
+
+    // Store incident halffaces per halfedge
+    unsigned int n_faces = faces_.size();
+    for(unsigned int i = 0; i < n_faces; ++i) {
+
+        std::vector<HalfEdgeHandle> halfedges = faces_[i].halfedges();
+
+        // Go over all halfedges
+        for(std::vector<HalfEdgeHandle>::const_iterator he_it = halfedges.begin();
+                he_it != halfedges.end(); ++he_it) {
+
+            incident_hfs_per_he_[*he_it].push_back(halfface_handle(FaceHandle(i), 0));
+            incident_hfs_per_he_[opposite_halfedge_handle(*he_it)].push_back(
+                    halfface_handle(FaceHandle(i), 1));
         }
     }
 
