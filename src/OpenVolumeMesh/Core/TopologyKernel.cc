@@ -522,38 +522,6 @@ void TopologyKernel::update_edge_adjacencies() {
         }
     }
 
-    has_edge_adjacencies_ = true;
-}
-
-//========================================================================================
-
-void TopologyKernel::update_face_adjacencies() {
-
-    // Clear
-    incident_cell_per_hf_.clear();
-    incident_cell_per_hf_.resize(faces_.size() * 2u, InvalidCellHandle);
-
-    unsigned int n_cells = cells_.size();
-    for(unsigned int i = 0; i < n_cells; ++i) {
-
-        std::vector<HalfFaceHandle> halffaces = cells_[i].halffaces();
-
-        // Go over all halffaces
-        for(std::vector<HalfFaceHandle>::const_iterator hf_it = halffaces.begin();
-                hf_it != halffaces.end(); ++hf_it) {
-
-            if(incident_cell_per_hf_[*hf_it] == InvalidCellHandle) {
-
-                incident_cell_per_hf_[*hf_it] = CellHandle(i);
-
-            } else {
-                std::cerr << "Detected non-three-manifold configuration!" << std::endl;
-                std::cerr << "Connectivity probably won't work." << std::endl;
-                continue;
-            }
-        }
-    }
-
     /* Put halffaces in clockwise order via the
      * same cell property which now exists.
      * Note, this only works for manifold configurations though.
@@ -630,6 +598,38 @@ void TopologyKernel::update_face_adjacencies() {
                 if(new_halffaces.size() == incident_hfs_per_he_[cur_he].size()) {
                     incident_hfs_per_he_[cur_he] = new_halffaces;
                 }
+            }
+        }
+    }
+
+    has_edge_adjacencies_ = true;
+}
+
+//========================================================================================
+
+void TopologyKernel::update_face_adjacencies() {
+
+    // Clear
+    incident_cell_per_hf_.clear();
+    incident_cell_per_hf_.resize(faces_.size() * 2u, InvalidCellHandle);
+
+    unsigned int n_cells = cells_.size();
+    for(unsigned int i = 0; i < n_cells; ++i) {
+
+        std::vector<HalfFaceHandle> halffaces = cells_[i].halffaces();
+
+        // Go over all halffaces
+        for(std::vector<HalfFaceHandle>::const_iterator hf_it = halffaces.begin();
+                hf_it != halffaces.end(); ++hf_it) {
+
+            if(incident_cell_per_hf_[*hf_it] == InvalidCellHandle) {
+
+                incident_cell_per_hf_[*hf_it] = CellHandle(i);
+
+            } else {
+                std::cerr << "Detected non-three-manifold configuration!" << std::endl;
+                std::cerr << "Connectivity probably won't work." << std::endl;
+                continue;
             }
         }
     }
