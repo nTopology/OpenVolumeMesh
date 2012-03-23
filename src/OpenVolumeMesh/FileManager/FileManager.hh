@@ -81,8 +81,6 @@ public:
    *                                    to directly compute the bottom-up adjacencies
    *                                    for the mesh. (Note: These are needed for
    *                                    some iterators to work, see documentation)
-   * @param _computeFaceNormals Pass true if you want the file manager
-   *                            to directly compute the face normals.
    */
   template <class MeshT>
   bool readFile(const std::string& _filename, MeshT& _mesh,

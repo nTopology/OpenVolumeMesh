@@ -197,13 +197,6 @@ TAB_SIZE               = 8
 
 ALIASES                =
 
-# This tag can be used to specify a number of word-keyword mappings (TCL only).
-# A mapping has the form "name=value". For example adding
-# "class=itcl::class" will allow you to use the command class in the
-# itcl::class meaning.
-
-TCL_SUBST              =
-
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C
 # sources only. Doxygen will then generate output that is more tailored for C.
 # For instance, some of the names that are used will be different. The list
@@ -327,17 +320,6 @@ TYPEDEF_HIDES_STRUCT   = NO
 # corresponding to a cache size of 2^16 = 65536 symbols.
 
 SYMBOL_CACHE_SIZE      = 0
-
-# Similar to the SYMBOL_CACHE_SIZE the size of the symbol lookup cache can be
-# set using LOOKUP_CACHE_SIZE. This cache is used to resolve symbols given
-# their name and scope. Since this can be an expensive process and often the
-# same symbol appear multiple times in the code, doxygen keeps a cache of
-# pre-resolved symbols. If the cache is too small doxygen will become slower.
-# If the cache is too large, memory is wasted. The cache size is given by this
-# formula: 2^(16+LOOKUP_CACHE_SIZE). The valid range is 0..9, the default is 0,
-# corresponding to a cache size of 2^16 = 65536 symbols.
-
-LOOKUP_CACHE_SIZE      = 0
 
 #---------------------------------------------------------------------------
 # Build related configuration options

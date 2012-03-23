@@ -208,10 +208,8 @@ private:
 //-----------------------------------------------------------------------------
 
 
-/** \class OpenVolumeMeshPropertyT<bool>
-
- Property specialization for bool type.
-
+/**
+ * Property specialization for bool type.
  */
 template<>
 class OpenVolumeMeshPropertyT<bool> : public OpenVolumeMeshBaseProperty {
@@ -306,9 +304,8 @@ private:
 //-----------------------------------------------------------------------------
 
 
-/** \class OpenVolumeMeshPropertyT<std::string>
-
- Property specialization for std::string type.
+/**
+ * Property specialization for std::string type.
  */
 template<>
 class OpenVolumeMeshPropertyT<std::string> : public OpenVolumeMeshBaseProperty {
