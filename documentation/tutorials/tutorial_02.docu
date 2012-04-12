@@ -1,6 +1,6 @@
 /**
 
-\page tutorial_02 Tutorial 02: Using Iterators
+\page ovm_tutorial_02 Tutorial 02: Using Iterators
 
 %OpenVolumeMesh is shipped with a set of useful iterators and circulators to
 comfortably address the entities (local neighborhood of entities) in a polyhedral mesh.

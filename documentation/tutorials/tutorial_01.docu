@@ -1,6 +1,6 @@
 /**
 
-\page tutorial_01 Tutorial 01: Creating a Simple Volume Mesh
+\page ovm_tutorial_01 Tutorial 01: Creating a Simple Volume Mesh
 
 Creating a volumetric mesh with %OpenVolumeMesh is pretty simple.
 In order to make available the different built-in vector types

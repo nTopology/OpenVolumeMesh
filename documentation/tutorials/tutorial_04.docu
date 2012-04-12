@@ -1,6 +1,6 @@
 /**
 
-\page tutorial_04 Tutorial 04: Using File I/O
+\page ovm_tutorial_04 Tutorial 04: Using File I/O
 
 The %OpenVolumeMesh library is equipped with a file manager class that
 allows reading polyhedral meshes from file as well as writing mesh objects

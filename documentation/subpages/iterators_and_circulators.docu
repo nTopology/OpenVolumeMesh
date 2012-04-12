@@ -52,7 +52,7 @@ The following sections provide a concise overview of the iterators that come alo
 
 \subsection hexahedral_mesh_iterators Specializations for Hexahedral Meshes
 
-\li OpenVolumeMesh::CellSheetCellIter: Iterate over all adjacent hexahedra in the same sheet of a given hexahedron. Also see \ref tutorial_02, last example.
+\li OpenVolumeMesh::CellSheetCellIter: Iterate over all adjacent hexahedra in the same sheet of a given hexahedron. Also see \ref ovm_tutorial_02, last example.
 \li OpenVolumeMesh::HalfFaceSheetHalfFaceIter: Iterate over all adjacent half-faces of a given half-face in the same sheet of hexahedra.
 \li OpenVolumeMesh::OutsideNeighborHalfFaceIter: Iterate over all adjacent boundary half-faces (outside) of a given boundary half-face.
 

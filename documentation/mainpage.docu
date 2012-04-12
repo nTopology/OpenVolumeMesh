@@ -51,9 +51,9 @@ on how to build %OpenVolumeMesh in Section \ref building_openvolumemesh.
 
 \b Tutorials:
 
-\li \subpage tutorial_01
-\li \subpage tutorial_02
-\li \subpage tutorial_03
-\li \subpage tutorial_04
+\li \subpage ovm_tutorial_01
+\li \subpage ovm_tutorial_02
+\li \subpage ovm_tutorial_03
+\li \subpage ovm_tutorial_04
 
 **/

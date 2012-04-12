@@ -1,6 +1,6 @@
 /**
 
-\page tutorial_03 Tutorial 03: Adding Properties
+\page ovm_tutorial_03 Tutorial 03: Adding Properties
 
 In %OpenVolumeMesh it is possible to attach multiple properties to each of the entities.
 Due to the use of STL template programming, these properties can be of any data type.
