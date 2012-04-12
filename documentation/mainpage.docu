@@ -2,7 +2,7 @@
 \if OPENVOLUMEMESH_INTERNAL_DOC
 \mainpage OpenVolumeMesh Documentation
 \else
-\page OpenVolumeMeshDoc Documentation
+\page OpenVolumeMeshDoc OpenVolumeMesh Documentation
 \endif
 
 \image html volume_mesh.png
