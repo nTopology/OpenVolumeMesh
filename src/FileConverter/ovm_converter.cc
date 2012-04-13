@@ -10,13 +10,17 @@
 
 int main(int _argc, char* _argv[]) {
 
-    if(_argc != 3) {
-        std::cerr << "You need to specify a source and a target file!" << std::endl;
+    if(_argc != 3 ||
+            (_argc > 1 && (std::strcmp(_argv[1], "--help") == 0 || std::strcmp(_argv[1], "-h") == 0))) {
+        std::cerr << "You need to specify a source file to convert!" << std::endl << std::endl;
+        std::clog << "Usage: file_converter <format> <filename>" << std::endl << std::endl;
+        std::clog << "Available file formats:" << std::endl;
+        std::clog << "  -t\tTetmesh" << std::endl;
+        std::clog << std::endl;
         return -1;
     }
 
-    std::ifstream iff(_argv[1], std::ios::in);
-    //iff.unsetf(std::ios::skipws);
+    std::ifstream iff(_argv[2], std::ios::in);
 
     if(!iff.good()) {
         std::cerr << "Could not open file " << _argv[1] << " for reading!" << std::endl;
@@ -31,29 +35,37 @@ int main(int _argc, char* _argv[]) {
 
     std::string fileContent = oss.str();
 
-    // Instantiate grammar object
+    // Instantiate grammar objects
     tetmesh_grammar<std::string::iterator> grammar(generator);
 
-    // Use iterator to parse file data
+    bool r = false;
 
-    //bool r = boost::spirit::qi::parse(fileContent.begin(), fileContent.end(), grammar);
-    bool r = boost::spirit::qi::phrase_parse(fileContent.begin(), fileContent.end(), grammar, qi::space);
+    if(std::strcmp(_argv[1], "-t") == 0) {
+        // Tetmesh format
+        r = boost::spirit::qi::phrase_parse(fileContent.begin(), fileContent.end(), grammar, qi::space);
+    }
 
     if(r) {
-        std::cout << "Parsed all data successfully!" << std::endl;
+        std::cout << "Successfully read file data!" << std::endl;
     } else {
         std::cout << "Parsing failed!" << std::endl;
     }
 
-    std::cerr << "Added " << mesh.n_vertices() << " vertices!" << std::endl;
-    std::cerr << "Added " << mesh.n_edges() << " edges!" << std::endl;
-    std::cerr << "Added " << mesh.n_faces() << " faces!" << std::endl;
-    std::cerr << "Added " << mesh.n_cells() << " cells!" << std::endl;
+    std::cerr << "Converted " << mesh.n_vertices() << " vertices," << std::endl;
+    std::cerr << "\t  " << mesh.n_edges() << " edges," << std::endl;
+    std::cerr << "\t  " << mesh.n_faces() << " faces," << std::endl;
+    std::cerr << "\t  " << mesh.n_cells() << " cells!" << std::endl;
 
     OpenVolumeMesh::IO::FileManager fileManager;
 
+    std::string filename(_argv[2]);
+    std::string::size_type idx = filename.rfind('.');
+
+    std::string out_filename = filename.substr(0, idx);
+    out_filename.append(".ovm");
+
     // Write mesh to file
-    fileManager.writeFile(_argv[2], mesh);
+    fileManager.writeFile(out_filename.c_str(), mesh);
 
     return 0;
 }

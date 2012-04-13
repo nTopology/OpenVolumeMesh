@@ -29,12 +29,15 @@ public:
         content = node_section_header >> *node >> element_section_header >> *element;
 
         node_section_header = spirit::lit("Vertices") >> qi::int_;
+
         node = qi::double_[boost::bind(&MeshGenerator::add_vertex_component, &generator_, ::_1)] >>
                qi::double_[boost::bind(&MeshGenerator::add_vertex_component, &generator_, ::_1)] >>
                qi::double_[boost::bind(&MeshGenerator::add_vertex_component, &generator_, ::_1)] >>
                qi::double_;
 
-        element_section_header = spirit::lit("Tetrahedra") >> qi::int_;
+        element_section_header = spirit::lit("Tetrahedra") >>
+                qi::int_[boost::bind(&MeshGenerator::set_num_cells, &generator_, ::_1)];
+
         element = qi::int_[boost::bind(&MeshGenerator::add_cell_vertex, &generator_, ::_1)] >>
                   qi::int_[boost::bind(&MeshGenerator::add_cell_vertex, &generator_, ::_1)] >>
                   qi::int_[boost::bind(&MeshGenerator::add_cell_vertex, &generator_, ::_1)] >>

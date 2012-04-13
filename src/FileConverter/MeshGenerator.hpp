@@ -13,6 +13,8 @@
 #include <map>
 #include <algorithm>
 
+#include <boost/shared_ptr.hpp>
+#include <boost/progress.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 
@@ -37,8 +39,8 @@ public:
 
     typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
 
-    MeshGenerator(PolyhedralMesh& _mesh) : v_component_(0), mesh_(_mesh) {}
-    MeshGenerator(const MeshGenerator& _cpy) : v_component_(_cpy.v_component_), mesh_(_cpy.mesh_) {}
+    MeshGenerator(PolyhedralMesh& _mesh) : v_component_(0), mesh_(_mesh), progress_() {}
+    MeshGenerator(const MeshGenerator& _cpy) : v_component_(_cpy.v_component_), mesh_(_cpy.mesh_), progress_() {}
 
     void add_vertex_component(double _comp) {
 
@@ -71,6 +73,13 @@ public:
 //            std::cerr << "Adding cell (" << c_vertices_[0] << ", " << c_vertices_[1] <<
 //                    ", " << c_vertices_[2] << ", " << c_vertices_[3] << ")" << std::endl;
             c_vertices_.clear();
+        }
+    }
+
+    void set_num_cells(unsigned int _n) {
+
+        if(progress_.get() == NULL) {
+            progress_.reset(new boost::progress_display(_n));
         }
     }
 
@@ -175,7 +184,15 @@ public:
         assert(cell_halffaces.size() == 4);
 
         // Finally, add cell
+#ifndef NDEBUG
         mesh_.add_cell(cell_halffaces, true);
+#else
+        mesh_.add_cell(cell_halffaces, false);
+#endif
+
+        // Increase progress counter
+        if((progress_.get() != NULL) && (progress_->expected_count() != 0))
+            ++(*progress_);
     }
 
 private:
@@ -190,6 +207,8 @@ private:
     FaceMap faceMap_;
 
     PolyhedralMesh& mesh_;
+
+    boost::shared_ptr<boost::progress_display> progress_;
 };
 
 #endif /* MESHGENERATOR_HH_ */
