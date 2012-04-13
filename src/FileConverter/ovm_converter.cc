@@ -10,10 +10,10 @@
 
 int main(int _argc, char* _argv[]) {
 
-    if(_argc != 3 ||
+    if(_argc < 3 || _argc > 4 ||
             (_argc > 1 && (std::strcmp(_argv[1], "--help") == 0 || std::strcmp(_argv[1], "-h") == 0))) {
         std::cerr << "You need to specify a source file to convert!" << std::endl << std::endl;
-        std::clog << "Usage: file_converter <format> <filename>" << std::endl << std::endl;
+        std::clog << "Usage: file_converter <format> <filename> [output_filename]" << std::endl << std::endl;
         std::clog << "Available file formats:" << std::endl;
         std::clog << "  -t\tTetmesh" << std::endl;
         std::clog << std::endl;
@@ -58,14 +58,20 @@ int main(int _argc, char* _argv[]) {
 
     OpenVolumeMesh::IO::FileManager fileManager;
 
-    std::string filename(_argv[2]);
-    std::string::size_type idx = filename.rfind('.');
+    std::string filename;
 
-    std::string out_filename = filename.substr(0, idx);
-    out_filename.append(".ovm");
+    if(_argc == 3) {
+        filename = _argv[2];
+        std::string::size_type idx = filename.rfind('.');
+
+        filename = filename.substr(0, idx);
+        filename.append(".ovm");
+    } else {
+        filename = _argv[3];
+    }
 
     // Write mesh to file
-    fileManager.writeFile(out_filename.c_str(), mesh);
+    fileManager.writeFile(filename.c_str(), mesh);
 
     return 0;
 }
