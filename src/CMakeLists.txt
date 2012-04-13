@@ -45,6 +45,7 @@ install(DIRECTORY .
         FILES_MATCHING 
 	PATTERN "*.hh"
         PATTERN "Unittests" EXCLUDE
+        PATTERN "FileConverter" EXCLUDE
         PATTERN "CVS" EXCLUDE
         PATTERN ".svn" EXCLUDE
         PATTERN "tmp" EXCLUDE
@@ -57,6 +58,7 @@ install(DIRECTORY .
         FILES_MATCHING 
 	PATTERN "*T.cc"
         PATTERN "Unittests" EXCLUDE
+        PATTERN "FileConverter" EXCLUDE
         PATTERN "CVS" EXCLUDE
         PATTERN ".svn" EXCLUDE
 	PATTERN "tmp" EXCLUDE
@@ -65,10 +67,10 @@ install(DIRECTORY .
 
 endif ()
 
-# Only build unittests if not built as external library
+# Only build unittests and file converter
+# if not built as external library
 if(${PROJECT_NAME} MATCHES "OpenVolumeMesh")
     # Add unittests target
     add_subdirectory(Unittests)
+    add_subdirectory(FileConverter)
 endif()
-
-
