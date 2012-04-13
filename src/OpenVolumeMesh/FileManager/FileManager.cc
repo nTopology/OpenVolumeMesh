@@ -166,6 +166,7 @@ bool FileManager::isHexahedralMesh(const std::string& _filename) const {
 
   // Read in number of cells
   iff >> n;
+  if(n == 0) return false;
   unsigned int v = 0;
   char tmp[256];
   for (unsigned int i = 0; i < n; ++i) {
