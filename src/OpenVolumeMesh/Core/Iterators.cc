@@ -415,6 +415,51 @@ CellCellIter& CellCellIter::operator++() {
 }
 
 ////================================================================================================
+//// HalfFaceVertexIter
+////================================================================================================
+
+
+HalfFaceVertexIter::HalfFaceVertexIter(const HalfFaceHandle& _ref_h,
+        const TopologyKernel* _mesh) :
+BaseIter(_mesh, _ref_h) {
+
+    std::vector<HalfEdgeHandle> hes = _mesh->halfface(_ref_h).halfedges();
+    for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin();
+            he_it != hes.end(); ++he_it) {
+        vertices_.push_back(_mesh->halfedge(*he_it).from_vertex());
+    }
+
+    BaseIter::valid(iter_ != vertices_.end());
+    if(BaseIter::valid()) {
+        BaseIter::cur_handle(*iter_);
+    }
+}
+
+
+HalfFaceVertexIter& HalfFaceVertexIter::operator--() {
+
+    if(iter_ == vertices_.end()) {
+        BaseIter::valid(false);
+    } else {
+        --iter_;
+        BaseIter::cur_handle(*iter_);
+    }
+    return *this;
+}
+
+
+HalfFaceVertexIter& HalfFaceVertexIter::operator++() {
+
+    ++iter_;
+    if(iter_ != vertices_.end()) {
+        BaseIter::cur_handle(*iter_);
+    } else {
+        BaseIter::valid(false);
+    }
+    return *this;
+}
+
+////================================================================================================
 //// BoundaryFaceIter
 ////================================================================================================
 

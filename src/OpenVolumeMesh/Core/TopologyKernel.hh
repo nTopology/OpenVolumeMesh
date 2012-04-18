@@ -86,6 +86,7 @@ public:
     friend class HalfEdgeCellIter;
     friend class CellVertexIter;
     friend class CellCellIter;
+    friend class HalfFaceVertexIter;
     friend class BoundaryFaceIter;
     friend class VertexIter;
     friend class EdgeIter;
@@ -116,6 +117,10 @@ public:
 
     CellCellIter cc_iter(const CellHandle& _h) const {
         return CellCellIter(_h, this);
+    }
+
+    HalfFaceVertexIter hfv_iter(const HalfFaceHandle& _h) const {
+        return HalfFaceVertexIter(_h, this);
     }
 
     BoundaryFaceIter bf_iter() const {

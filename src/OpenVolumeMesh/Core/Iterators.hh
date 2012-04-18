@@ -263,10 +263,6 @@ public:
 			VertexHandle,
 			CellHandle> BaseIter;
 
-
-
-
-
 	VertexCellIter(const VertexHandle& _vIdx, const TopologyKernel* _mesh);
 	VertexCellIter& operator=(const VertexCellIter& _c) {
 		BaseIter::operator=(_c);
@@ -387,10 +383,6 @@ public:
 			CellHandle,
 			VertexHandle> BaseIter;
 
-
-
-
-
 	CellVertexIter(const CellHandle& _cIdx, const TopologyKernel* _mesh);
 	CellVertexIter& operator=(const CellVertexIter& _c) {
 		BaseIter::operator=(_c);
@@ -455,8 +447,6 @@ public:
 			CellHandle,
 			CellHandle> BaseIter;
 
-
-
 	CellCellIter(const CellHandle& _cIdx, const TopologyKernel* _mesh);
 	CellCellIter& operator=(const CellCellIter& _c) {
 		BaseIter::operator=(_c);
@@ -509,6 +499,70 @@ public:
 private:
 	std::set<CellHandle> adjacent_cells_;
 	std::set<CellHandle>::const_iterator c_iter_;
+};
+
+//===========================================================================
+
+class HalfFaceVertexIter : public BaseIterator<
+    HalfFaceHandle,
+    VertexHandle> {
+public:
+    typedef BaseIterator<
+            HalfFaceHandle,
+            VertexHandle> BaseIter;
+
+    HalfFaceVertexIter(const HalfFaceHandle& _hIdx, const TopologyKernel* _mesh);
+    HalfFaceVertexIter& operator=(const HalfFaceVertexIter& _c) {
+        BaseIter::operator=(_c);
+        vertices_ = _c.vertices_;
+        iter_ = vertices_.begin();
+        return *this;
+    }
+
+    // Post increment/decrement operator
+    HalfFaceVertexIter operator++(int) {
+        HalfFaceVertexIter cpy = *this;
+        ++(*this);
+        return cpy;
+    }
+    HalfFaceVertexIter operator--(int) {
+        HalfFaceVertexIter cpy = *this;
+        --(*this);
+        return cpy;
+    }
+    HalfFaceVertexIter operator+(int _n) {
+        HalfFaceVertexIter cpy = *this;
+        for(int i = 0; i < _n; ++i) {
+            ++cpy;
+        }
+        return cpy;
+    }
+    HalfFaceVertexIter operator-(int _n) {
+        HalfFaceVertexIter cpy = *this;
+        for(int i = 0; i < _n; ++i) {
+            --cpy;
+        }
+        return cpy;
+    }
+    HalfFaceVertexIter& operator+=(int _n) {
+        for(int i = 0; i < _n; ++i) {
+            ++(*this);
+        }
+        return *this;
+    }
+    HalfFaceVertexIter& operator-=(int _n) {
+        for(int i = 0; i < _n; ++i) {
+            --(*this);
+        }
+        return *this;
+    }
+
+    HalfFaceVertexIter& operator++();
+    HalfFaceVertexIter& operator--();
+
+private:
+    std::vector<VertexHandle> vertices_;
+    std::vector<VertexHandle>::const_iterator iter_;
 };
 
 //===========================================================================
