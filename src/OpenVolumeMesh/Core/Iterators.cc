@@ -423,11 +423,15 @@ HalfFaceVertexIter::HalfFaceVertexIter(const HalfFaceHandle& _ref_h,
         const TopologyKernel* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
+    if(!_ref_h.is_valid()) return;
+
     std::vector<HalfEdgeHandle> hes = _mesh->halfface(_ref_h).halfedges();
     for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin();
             he_it != hes.end(); ++he_it) {
         vertices_.push_back(_mesh->halfedge(*he_it).from_vertex());
     }
+
+    iter_ = vertices_.begin();
 
     BaseIter::valid(iter_ != vertices_.end());
     if(BaseIter::valid()) {
