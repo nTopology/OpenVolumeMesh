@@ -120,8 +120,8 @@ public:
 
     PointT barycenter(const FaceHandle& _fh) const {
         PointT p;
-        typename PointT::Scalar valence = 0;
-        typename TopologyKernelT::HalfFaceVertexIter hfv_it =
+        typename PointT::value_type valence = 0;
+        HalfFaceVertexIter hfv_it =
                 TopologyKernelT::hfv_iter(TopologyKernelT::halfface_handle(_fh, 0));
         for(; hfv_it.valid(); ++hfv_it, valence += 1) {
             p += vertex(*hfv_it);
@@ -132,9 +132,8 @@ public:
 
     PointT barycenter(const CellHandle& _ch) const {
         PointT p;
-        typename PointT::Scalar valence = 0;
-        typename TopologyKernelT::CellVertexIter cv_it =
-                TopologyKernelT::cv_iter(_ch);
+        typename PointT::value_type valence = 0;
+        CellVertexIter cv_it = TopologyKernelT::cv_iter(_ch);
         for(; cv_it.valid(); ++cv_it, valence += 1) {
             p += vertex(*cv_it);
         }
