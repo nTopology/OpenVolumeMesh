@@ -113,6 +113,35 @@ public:
         TopologyKernelT::clear(_clearProps);
     }
 
+    PointT barycenter(const EdgeHandle& _eh) const {
+        return PointT(0.5 * vertex(TopologyKernelT::edge(_eh).from_vertex()) +
+                      0.5 * vertex(TopologyKernelT::edge(_eh).to_vertex()));
+    }
+
+    PointT barycenter(const FaceHandle& _fh) const {
+        PointT p;
+        typename PointT::Scalar valence = 0;
+        typename TopologyKernelT::HalfFaceVertexIter hfv_it =
+                TopologyKernelT::hfv_iter(TopologyKernelT::halfface_handle(_fh, 0));
+        for(; hfv_it.valid(); ++hfv_it, valence += 1) {
+            p += vertex(*hfv_it);
+        }
+        p /= valence;
+        return p;
+    }
+
+    PointT barycenter(const CellHandle& _ch) const {
+        PointT p;
+        typename PointT::Scalar valence = 0;
+        typename TopologyKernelT::CellVertexIter cv_it =
+                TopologyKernelT::cv_iter(_ch);
+        for(; cv_it.valid(); ++cv_it, valence += 1) {
+            p += vertex(*cv_it);
+        }
+        p /= valence;
+        return p;
+    }
+
 private:
 
     std::vector<VecT> vertices_;
