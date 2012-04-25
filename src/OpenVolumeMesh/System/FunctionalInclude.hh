@@ -59,12 +59,8 @@
      namespace fun = std;
    #elif (_MSC_VER >= 1500)
      // hope for TR1 equivalents
-    #if(_HAS_TR1)
      #include <functional>
-     namespace fun = std::tr1;
-    #else
-     #pragma warning "TR1 not available! Please install Visual Studio Service Pack 1!"
-    #endif
+	 namespace fun = std::tr1;
    #else
      // hope for TR1 equivalents
      #include <tr1/functional>
