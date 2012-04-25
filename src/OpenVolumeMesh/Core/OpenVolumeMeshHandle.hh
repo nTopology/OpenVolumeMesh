@@ -45,7 +45,7 @@
 
 #include <iostream>
 #include <vector>
-#include <tr1/functional>
+#include <OpenVolumeMesh/System/FunctionalInclude.hh>
 #include <algorithm>
 
 namespace OpenVolumeMesh {
@@ -109,7 +109,7 @@ class HEHandleCorrection {
 public:
     HEHandleCorrection(HalfEdgeHandle _thld) : thld_(_thld) {}
     void correctVecValue(std::vector<HalfEdgeHandle>& _vec) {
-        std::for_each(_vec.begin(), _vec.end(), std::tr1::bind(&HEHandleCorrection::correctValue, this, std::tr1::placeholders::_1));
+        std::for_each(_vec.begin(), _vec.end(), fun::bind(&HEHandleCorrection::correctValue, this, fun::placeholders::_1));
     }
     void correctValue(HalfEdgeHandle& _h) {
         if(_h > thld_) _h.idx(_h.idx() - 2);
@@ -121,7 +121,7 @@ class HFHandleCorrection {
 public:
     HFHandleCorrection(HalfFaceHandle _thld) : thld_(_thld) {}
     void correctVecValue(std::vector<HalfFaceHandle>& _vec) {
-        std::for_each(_vec.begin(), _vec.end(), std::tr1::bind(&HFHandleCorrection::correctValue, this, std::tr1::placeholders::_1));
+        std::for_each(_vec.begin(), _vec.end(), fun::bind(&HFHandleCorrection::correctValue, this, fun::placeholders::_1));
     }
     void correctValue(HalfFaceHandle& _h) {
         if(_h > thld_) _h.idx(_h.idx() - 2);
