@@ -65,18 +65,24 @@ following information for the respective entity type in additional caches:
 \li \b Half-Edge: An (ordered) list of all incident half-faces.
 \li \b Half-Face: The handle to an incident cell or none if it is a boundary half-face.
 
-The computation of this adjacency relations is performed in linear time complexity.
-Call function TopologyKernel::update_adjacencies() after the
-topology of the mesh is completely initialized.
+These adjacency relations are computed automatically for each affected entity
+when adding/deleting it. In most cases these adjacencies are needed since many
+iterators/circulators rely on them. Storing this additional information consumes
+extra memory that scales linearly with the mesh's complexity.
+However, in case these adjacency relations are not needed (e.g. in numerical analysis
+applications, etc.), they can be disabled by calling TopologyKernel::enable_bottom_up_adjacencies()
+and passing false as parameter. Also it is possible to enable bottom-up adjacencies
+for single entity types, just call the following functions:
 
-\note Note that each time the topology of the mesh has changed, the bottom-up adjacencies have to be updated.
+\li TopologyKernel::enable_vertex_bottom_up_adjacencies()
+\li TopologyKernel::enable_edge_bottom_up_adjacencies()
+\li TopologyKernel::enable_face_bottom_up_adjacencies()
 
-\note Note also that most of the iterators and circulators rely on these adjacency lists, so, many of them do not work unless TopologyKernel::update_adjacencies() is called.
-
-Bottom-up adjacencies can optionally be computed on a per-entity basis.
 This is useful in cases where only a subset of these adjacency relations is required
 while at the same time keeping the data structure as compact as possible
 allocating only a minimum of storage overhead.
+
+\note Note that most of the iterators and circulators rely on these adjacency lists, so, many of them do not work if bottom-up adjacencies are disabled.
 
 \section modularity Modularity - Take only what you need
 

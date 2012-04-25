@@ -28,9 +28,9 @@ for(OpenVolumeMesh::HalfEdgeIter he_it = myMesh.halfedges_begin();
 \endcode
 
 In the next example, we iterate over all incident outgoing half-edges of a given
-vertex. Note that this iterator needs bottom-up adjacencies to be computed for
-the mesh. Otherwise, the iterator would not be valid. See Section \ref bottom_up
-for information on the bottom-up adjacencies.
+vertex. Note that this iterator needs bottom-up adjacencies which are
+computed automatically per default. Otherwise, the iterator would not be valid.
+See Section \ref bottom_up for information on the bottom-up adjacencies.
 
 \code
 // Instantiate a polyhedral mesh
@@ -38,9 +38,6 @@ OpenVolumeMesh::GeometricPolyhedralMeshV3f myMesh;
 
 // Fill mesh with geometry
 ...
-
-// Compute bottom-up adjacencies
-myMesh.update_adjacencies();
 
 typedef OpenVolumeMesh::VertexHandle VertexHandle;
 
@@ -78,9 +75,6 @@ OpenVolumeMesh::GeometricHexahedralMeshV3d myMesh;
 
 // Fill mesh with geometry
 ...
-
-// Compute bottom-up adjacencies
-myMesh.update_adjacencies();
 
 // Get handle of first cell
 OpenVolumeMesh::CellHandle ch = *(myMesh.cells_begin());
