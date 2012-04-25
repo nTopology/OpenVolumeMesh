@@ -66,7 +66,7 @@ NormalAttrib<GeomKernelT>::~NormalAttrib() {
 template <class GeomKernelT>
 void NormalAttrib<GeomKernelT>::update_vertex_normals() {
 
-    if(!kernel_.has_bottom_up_adjacencies()) {
+    if(!kernel_.has_face_bottom_up_adjacencies()) {
         std::cerr << "Error: update_vertex_normals() needs bottom-up adjacencies!" << std::endl;
         return;
     }
@@ -81,6 +81,11 @@ void NormalAttrib<GeomKernelT>::update_vertex_normals() {
 
 template <class GeomKernelT>
 void NormalAttrib<GeomKernelT>::update_face_normals() {
+
+    if(!kernel_.has_face_bottom_up_adjacencies()) {
+        std::cerr << "Error: update_normals() needs bottom-up adjacencies!" << std::endl;
+        return;
+    }
 
     for(FaceIter f_it = kernel_.f_iter(); f_it.valid(); ++f_it) {
         // Assume the face is planar, so just take the
@@ -134,7 +139,7 @@ void NormalAttrib<GeomKernelT>::compute_face_normal(const FaceHandle& _fh) {
     ++he_it;
     typename GeomKernelT::PointT p3 = kernel_.vertex(kernel_.halfedge(*he_it).to_vertex());
 
-    typename GeomKernelT::PointT n = (p3 - p2) % (p1 - p2);
+    typename GeomKernelT::PointT n = (p1 - p2) % (p3 - p2);
     n.normalize();
 
     f_normals_[_fh.idx()] = n;

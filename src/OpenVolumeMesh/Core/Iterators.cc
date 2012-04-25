@@ -59,7 +59,7 @@ VertexOHalfEdgeIter::VertexOHalfEdgeIter(const VertexHandle& _ref_h,
 BaseIter(_mesh, _ref_h),
 cur_index_(0) {
 
-	if(!_mesh->has_vertex_adjacencies()) {
+	if(!_mesh->has_vertex_bottom_up_adjacencies()) {
         std::cerr << "This iterator needs bottom-up adjacencies!" << std::endl;
         BaseIter::valid(false);
         return;
@@ -121,7 +121,7 @@ HalfEdgeHalfFaceIter::HalfEdgeHalfFaceIter(const HalfEdgeHandle& _ref_h,
 BaseIter(_mesh, _ref_h),
 cur_index_(0) {
 
-	if(!_mesh->has_edge_adjacencies()) {
+	if(!_mesh->has_edge_bottom_up_adjacencies()) {
         std::cerr << "This iterator needs bottom-up adjacencies!" << std::endl;
         BaseIter::valid(false);
         return;
@@ -182,7 +182,7 @@ VertexCellIter::VertexCellIter(const VertexHandle& _ref_h,
         const TopologyKernel* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
-	if(!_mesh->has_bottom_up_adjacencies()) {
+	if(!_mesh->has_full_bottom_up_adjacencies()) {
         std::cerr << "This iterator needs bottom-up adjacencies!" << std::endl;
         BaseIter::valid(false);
         return;
@@ -250,7 +250,7 @@ HalfEdgeCellIter::HalfEdgeCellIter(const HalfEdgeHandle& _ref_h,
 BaseIter(_mesh, _ref_h),
 cur_index_(0) {
 
-	if(!_mesh->has_edge_adjacencies() || !_mesh->has_face_adjacencies()) {
+	if(!_mesh->has_edge_bottom_up_adjacencies() || !_mesh->has_face_bottom_up_adjacencies()) {
         std::cerr << "This iterator needs bottom-up adjacencies!" << std::endl;
         BaseIter::valid(false);
         return;
@@ -367,7 +367,7 @@ CellCellIter::CellCellIter(const CellHandle& _ref_h,
         const TopologyKernel* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
-    if(!_mesh->has_face_adjacencies()) {
+    if(!_mesh->has_face_bottom_up_adjacencies()) {
         std::cerr << "This iterator needs bottom-up adjacencies!" << std::endl;
         BaseIter::valid(false);
         return;
@@ -469,16 +469,20 @@ HalfFaceVertexIter& HalfFaceVertexIter::operator++() {
 
 
 BoundaryFaceIter::BoundaryFaceIter(const TopologyKernel* _mesh) :
-BaseIter(_mesh, TopologyKernel::InvalidFaceHandle) {
+BaseIter(_mesh, TopologyKernel::InvalidFaceHandle),
+bf_it_(_mesh->faces_begin()) {
 
-	if(!_mesh->has_face_adjacencies()) {
+	if(!_mesh->has_face_bottom_up_adjacencies()) {
         std::cerr << "This iterator needs bottom-up adjacencies!" << std::endl;
         BaseIter::valid(false);
         return;
     }
 
-	bf_it_ = BaseIter::mesh()->boundary_faces_.begin();
-	BaseIter::valid(bf_it_ != BaseIter::mesh()->boundary_faces_.end());
+	while(bf_it_ != BaseIter::mesh()->faces_end() &&
+	        !BaseIter::mesh()->is_boundary(*bf_it_)) {
+	    ++bf_it_;
+	}
+	BaseIter::valid(bf_it_ != BaseIter::mesh()->faces_end());
 	if(BaseIter::valid()) {
 		BaseIter::cur_handle(*bf_it_);
 	}
@@ -487,8 +491,12 @@ BaseIter(_mesh, TopologyKernel::InvalidFaceHandle) {
 
 BoundaryFaceIter& BoundaryFaceIter::operator--() {
 
-	--bf_it_;
-	if(bf_it_ >= BaseIter::mesh()->boundary_faces_.begin()) {
+    --bf_it_;
+    while(bf_it_ >= BaseIter::mesh()->faces_begin() &&
+            !BaseIter::mesh()->is_boundary(*bf_it_)) {
+        --bf_it_;
+    }
+	if(bf_it_ >= BaseIter::mesh()->faces_begin()) {
 		BaseIter::cur_handle(*bf_it_);
 	} else {
 		BaseIter::valid(false);
@@ -500,7 +508,11 @@ BoundaryFaceIter& BoundaryFaceIter::operator--() {
 BoundaryFaceIter& BoundaryFaceIter::operator++() {
 
 	++bf_it_;
-	if(bf_it_ != BaseIter::mesh()->boundary_faces_.end()) {
+	while(bf_it_ != BaseIter::mesh()->faces_end() &&
+            !BaseIter::mesh()->is_boundary(*bf_it_)) {
+        ++bf_it_;
+    }
+	if(bf_it_ != BaseIter::mesh()->faces_end()) {
 		BaseIter::cur_handle(*bf_it_);
 	} else {
 		BaseIter::valid(false);

@@ -16,8 +16,6 @@ using namespace OpenVolumeMesh;
  * ====================================================================
  */
 
-/*
- */
 TEST_F(PolyhedralMeshBase, CreateSimpleMesh) {
 
   /*
@@ -497,8 +495,6 @@ TEST_F(PolyhedralMeshBase, VolumeMeshConnectivity) {
 
     EXPECT_EQ(PolyhedralMesh::InvalidCellHandle, i_cell);
 
-    mesh_.update_adjacencies();
-
     EXPECT_EQ(CellHandle(0), mesh_.incident_cell(1));
     EXPECT_EQ(CellHandle(0), mesh_.incident_cell(2));
     EXPECT_EQ(CellHandle(0), mesh_.incident_cell(5));
@@ -572,9 +568,9 @@ TEST_F(PolyhedralMeshBase, VolumeMeshNormals) {
 
     // Should be positive y-axis
     n = normals[FaceHandle(5)];
-    EXPECT_DOUBLE_EQ(n_y[0], n[0]);
-    EXPECT_DOUBLE_EQ(n_y[1], n[1]);
-    EXPECT_DOUBLE_EQ(n_y[2], n[2]);
+    EXPECT_DOUBLE_EQ(-n_y[0], n[0]);
+    EXPECT_DOUBLE_EQ(-n_y[1], n[1]);
+    EXPECT_DOUBLE_EQ(-n_y[2], n[2]);
 }
 
 TEST_F(PolyhedralMeshBase, PolyhedralMeshStatusTest) {
@@ -758,8 +754,6 @@ TEST_F(HexahedralMeshBase, SimpleHexMeshNavigation) {
     EXPECT_EQ(12, mesh_.opposite_halfface_handle_in_cell(
             HalfFaceHandle(3), CellHandle(1)));
 
-    mesh_.update_adjacencies();
-
     EXPECT_EQ(HalfFaceHandle(20), mesh_.adjacent_halfface_on_sheet(
             HalfFaceHandle(9), HalfEdgeHandle(12)));
     EXPECT_EQ(HalfFaceHandle(21), mesh_.adjacent_halfface_on_sheet(
@@ -777,8 +771,6 @@ TEST_F(HexahedralMeshBase, SimpleHexMeshNavigation) {
 TEST_F(HexahedralMeshBase, GarbageCollectionTest1) {
 
     generateHexahedralMesh(mesh_);
-
-    mesh_.update_adjacencies();
 
     EXPECT_EQ(12u, mesh_.n_vertices());
     EXPECT_EQ(20u, mesh_.n_edges());
@@ -808,8 +800,6 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTest2) {
 
     generateHexahedralMesh(mesh_);
 
-    mesh_.update_adjacencies();
-
     StatusAttrib status(mesh_);
 
     status[VertexHandle(0)].set_deleted(true);
@@ -828,8 +818,6 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTest3) {
 
     generateHexahedralMesh(mesh_);
 
-    mesh_.update_adjacencies();
-
     StatusAttrib status(mesh_);
 
     status[EdgeHandle(0)].set_deleted(true);
@@ -845,8 +833,6 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTest3) {
 TEST_F(HexahedralMeshBase, GarbageCollectionTest4) {
 
     generateHexahedralMesh(mesh_);
-
-    mesh_.update_adjacencies();
 
     StatusAttrib status(mesh_);
 
@@ -864,8 +850,6 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestManifoldness1) {
 
     generateHexahedralMesh(mesh_);
 
-    mesh_.update_adjacencies();
-
     StatusAttrib status(mesh_);
 
     status[VertexHandle(0)].set_deleted(true);
@@ -881,8 +865,6 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestManifoldness1) {
 TEST_F(HexahedralMeshBase, GarbageCollectionTestManifoldness2) {
 
     generateHexahedralMesh(mesh_);
-
-    mesh_.update_adjacencies();
 
     StatusAttrib status(mesh_);
 
@@ -900,8 +882,6 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestManifoldness3) {
 
     generateHexahedralMesh(mesh_);
 
-    mesh_.update_adjacencies();
-
     StatusAttrib status(mesh_);
 
     status[FaceHandle(0)].set_deleted(true);
@@ -918,8 +898,6 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestManifoldness4) {
 
     generateHexahedralMesh(mesh_);
 
-    mesh_.update_adjacencies();
-
     StatusAttrib status(mesh_);
 
     status[CellHandle(0)].set_deleted(true);
@@ -935,8 +913,6 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestManifoldness4) {
 TEST_F(HexahedralMeshBase, GarbageCollectionTestManifoldness5) {
 
     generateHexahedralMesh(mesh_);
-
-    mesh_.update_adjacencies();
 
     StatusAttrib status(mesh_);
 
@@ -960,8 +936,6 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestManifoldness5) {
 TEST_F(HexahedralMeshBase, GarbageCollectionTestProps1) {
 
     generateHexahedralMesh(mesh_);
-
-    mesh_.update_adjacencies();
 
     StatusAttrib status(mesh_);
 
@@ -1009,8 +983,6 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestProps1) {
 TEST_F(HexahedralMeshBase, GarbageCollectionTestProps2) {
 
     generateHexahedralMesh(mesh_);
-
-    mesh_.update_adjacencies();
 
     StatusAttrib status(mesh_);
 

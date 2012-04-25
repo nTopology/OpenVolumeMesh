@@ -57,7 +57,7 @@ CellSheetCellIter::CellSheetCellIter(const CellHandle& _ref_h,
         const unsigned char _orthDir, const HexahedralMeshTopologyKernel* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
-    if(!_mesh->has_bottom_up_adjacencies()) {
+    if(!_mesh->has_face_bottom_up_adjacencies()) {
         std::cerr << "This iterator needs bottom-up adjacencies!" << std::endl;
         BaseIter::valid(false);
         return;
@@ -117,7 +117,7 @@ HalfFaceSheetHalfFaceIter::HalfFaceSheetHalfFaceIter(const HalfFaceHandle& _ref_
         const HexahedralMeshTopologyKernel* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
-	if(!_mesh->has_bottom_up_adjacencies()) {
+	if(!_mesh->has_face_bottom_up_adjacencies()) {
         std::cerr << "This iterator needs bottom-up adjacencies!" << std::endl;
         BaseIter::valid(false);
         return;
@@ -210,7 +210,7 @@ OutsideNeighborHalfFaceIter::OutsideNeighborHalfFaceIter(const HalfFaceHandle& _
         const HexahedralMeshTopologyKernel* _mesh) :
 BaseIter(_mesh, _ref_h) {
 
-    if(!_mesh->has_bottom_up_adjacencies()) {
+    if(!_mesh->has_face_bottom_up_adjacencies()) {
         std::cerr << "This iterator needs bottom-up adjacencies!" << std::endl;
         BaseIter::valid(false);
         return;

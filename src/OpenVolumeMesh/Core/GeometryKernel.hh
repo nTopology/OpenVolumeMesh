@@ -72,11 +72,8 @@ public:
         // Store vertex in list
         vertices_.push_back(_p);
 
-        // Resize vertex props
-        KernelT::resize_vprops(vertices_.size());
-
         // Get handle of recently created vertex
-        return VertexHandle(vertices_.size() - 1);
+        return KernelT::add_vertex();
     }
 
     /// Set the coordinates of point _vh

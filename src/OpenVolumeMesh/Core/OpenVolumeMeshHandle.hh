@@ -44,6 +44,9 @@
 #define OPENVOLUMEMESHHANDLE_HH_
 
 #include <iostream>
+#include <vector>
+#include <tr1/functional>
+#include <algorithm>
 
 namespace OpenVolumeMesh {
 
@@ -89,6 +92,52 @@ class FaceHandle     : public OpenVolumeMeshHandle { public: FaceHandle(int _idx
 class CellHandle     : public OpenVolumeMeshHandle { public: CellHandle(int _idx = -1)     : OpenVolumeMeshHandle(_idx) {} };
 class HalfEdgeHandle : public OpenVolumeMeshHandle { public: HalfEdgeHandle(int _idx = -1) : OpenVolumeMeshHandle(_idx) {} };
 class HalfFaceHandle : public OpenVolumeMeshHandle { public: HalfFaceHandle(int _idx = -1) : OpenVolumeMeshHandle(_idx) {} };
+
+// Helper class that is used to decrease all handles
+// exceeding a certain threshold
+
+class VHandleCorrection {
+public:
+    VHandleCorrection(VertexHandle _thld) : thld_(_thld) {}
+    void correctValue(VertexHandle& _h) {
+        if(_h > thld_) _h.idx(_h.idx() - 1);
+    }
+private:
+    VertexHandle thld_;
+};
+class HEHandleCorrection {
+public:
+    HEHandleCorrection(HalfEdgeHandle _thld) : thld_(_thld) {}
+    void correctVecValue(std::vector<HalfEdgeHandle>& _vec) {
+        std::for_each(_vec.begin(), _vec.end(), std::tr1::bind(&HEHandleCorrection::correctValue, this, std::tr1::placeholders::_1));
+    }
+    void correctValue(HalfEdgeHandle& _h) {
+        if(_h > thld_) _h.idx(_h.idx() - 2);
+    }
+private:
+    HalfEdgeHandle thld_;
+};
+class HFHandleCorrection {
+public:
+    HFHandleCorrection(HalfFaceHandle _thld) : thld_(_thld) {}
+    void correctVecValue(std::vector<HalfFaceHandle>& _vec) {
+        std::for_each(_vec.begin(), _vec.end(), std::tr1::bind(&HFHandleCorrection::correctValue, this, std::tr1::placeholders::_1));
+    }
+    void correctValue(HalfFaceHandle& _h) {
+        if(_h > thld_) _h.idx(_h.idx() - 2);
+    }
+private:
+    HalfFaceHandle thld_;
+};
+class CHandleCorrection {
+public:
+    CHandleCorrection(CellHandle _thld) : thld_(_thld) {}
+    void correctValue(CellHandle& _h) {
+        if(_h > thld_) _h.idx(_h.idx() - 1);
+    }
+private:
+    CellHandle thld_;
+};
 
 std::ostream& operator<<(std::ostream& _ostr, const OpenVolumeMeshHandle& _handle);
 

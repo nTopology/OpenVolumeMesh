@@ -80,6 +80,9 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     Point v = Point(0.0, 0.0, 0.0);
     unsigned int v1 = 0; unsigned int v2 = 0;
 
+    _mesh.clear();
+    _mesh.enable_bottom_up_adjacencies(_computeBottomUpAdjacencies);
+
     /*
      * Header
      */
@@ -275,11 +278,6 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     }
 
     iff.close();
-
-    // Compute top-down-adjacencies
-    if(_computeBottomUpAdjacencies) {
-        _mesh.update_adjacencies();
-    }
 
     std::cerr << "######## openvolumemesh info #########" << std::endl;
     std::cerr << "#vertices: " << _mesh.n_vertices() << std::endl;

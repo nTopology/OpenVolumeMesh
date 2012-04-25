@@ -112,14 +112,9 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
         }
     }
 
-    // Step 5
-    if(kernel_.has_bottom_up_adjacencies()) {
-        kernel_.update_adjacencies();
-    }
-
     // Step 6
     if(_preserveManifoldness) {
-        if(kernel_.has_bottom_up_adjacencies()) {
+        if(kernel_.has_full_bottom_up_adjacencies()) {
 
             // Go over all faces and find those
             // that are not incident to any cell
@@ -135,14 +130,10 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
 
                     f_it = kernel_.delete_face(*f_it);
 
-                    kernel_.update_face_adjacencies();
-
                 } else {
                     ++f_it;
                 }
             }
-
-            kernel_.update_edge_adjacencies();
 
             // Go over all edges and find those
             // whose half-edges are not incident to any half-face
@@ -160,16 +151,10 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
 
                     e_it = kernel_.delete_edge(*e_it);
 
-                    kernel_.update_edge_adjacencies();
-
                 } else {
                      ++e_it;
                 }
             }
-
-            // Vertex caches have to be re-computed because the face/half-face
-            // indices have changed since the last deletions
-            kernel_.update_vertex_adjacencies();
 
             // Go over all vertices and find those
             // that are not incident to any edge
@@ -182,10 +167,8 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
 
                     v_it = kernel_.delete_vertex(*v_it);
 
-                    kernel_.update_vertex_adjacencies();
-
                 } else {
-                     ++v_it;
+                    ++v_it;
                 }
             }
 

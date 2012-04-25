@@ -217,12 +217,7 @@ public:
     virtual unsigned int n_cells()      const { return cells_.size(); }
 
     /// Add abstract vertex
-    virtual VertexHandle add_vertex() {
-
-        ++n_vertices_;
-        // Return 0-indexed handle
-        return VertexHandle((int)(n_vertices_ - 1));
-    }
+    virtual VertexHandle add_vertex();
 
     //=======================================================================
 
@@ -283,7 +278,7 @@ public:
 
     /// Get valence of vertex (number of incident edges)
     inline unsigned int valence(const VertexHandle& _vh) const {
-        if(!has_vertex_adjacencies_) {
+        if(!v_bottom_up_) {
             std::cerr << "Could not get vertex valence: No bottom-up adjacencies for vertices available!" << std::endl;
             return 0u;
         }
@@ -293,7 +288,7 @@ public:
 
     /// Get valence of edge (number of incident faces)
     inline unsigned int valence(const EdgeHandle& _eh) const {
-        if(!has_edge_adjacencies_) {
+        if(!e_bottom_up_) {
             std::cerr << "Could not get edge valence: No bottom-up adjacencies for edges available!" << std::endl;
             return 0u;
         }
@@ -315,155 +310,21 @@ public:
         return cell(_ch).halffaces().size();
     }
 
-    /**
-     * \brief Delete vertex from mesh
-     *
-     * After performing this operation, all vertices
-     * following vertex _h in the array will be accessible
-     * through their old handle decreased by one.
-     * This function directly fixes the vertex links
-     * in all edges. This invalidates all bottom-up
-     * adjacencies. See class StatusAttrib that
-     * provides a proper garbage collection.
-     *
-     * @param _h A vertex handle
-     */
-    virtual VertexIter delete_vertex(const VertexHandle& _h) {
-        assert(_h.idx() < (int)n_vertices());
-        --n_vertices_;
+    //=====================================================================
+    // Delete entities
+    //=====================================================================
 
-        for(EdgeIter e_it = edges_begin(); e_it != edges_end();) {
-            if(edge(*e_it).to_vertex() == _h || edge(*e_it).from_vertex() == _h) {
-                e_it = delete_edge(*e_it);
-            } else {
-                if(edge(*e_it).to_vertex().idx() > _h.idx()) {
-                    edge(*e_it).set_to_vertex(VertexHandle(edge(*e_it).to_vertex() - 1));
-                }
-                if(edge(*e_it).from_vertex().idx() > _h.idx()) {
-                    edge(*e_it).set_from_vertex(VertexHandle(edge(*e_it).from_vertex() - 1));
-                }
-                 ++e_it;
-            }
-        }
+public:
 
-        // Remove property element
-        vertex_deleted(_h);
+    virtual VertexIter delete_vertex(const VertexHandle& _h);
 
-        return (vertices_begin() + _h.idx());
-    }
+    virtual EdgeIter delete_edge(const EdgeHandle& _h);
 
-    /**
-     * \brief Delete edge from mesh
-     *
-     * After performing this operation, all edges
-     * following edge _h in the array will be accessible
-     * through their old handle decreased by one.
-     * This function directly fixes the edge links
-     * in all faces. This invalidates all bottom-up
-     * adjacencies. See class StatusAttrib that
-     * provides a proper garbage collection.
-     *
-     * @param _h An edge handle
-     */
-    virtual EdgeIter delete_edge(const EdgeHandle& _h) {
-        assert(_h.idx() < (int)edges_.size());
+    virtual FaceIter delete_face(const FaceHandle& _h);
 
-        edges_.erase(edges_.begin() + _h.idx());
+    virtual CellIter delete_cell(const CellHandle& _h);
 
-        for(FaceIter f_it = faces_begin(); f_it != faces_end();) {
-
-            std::vector<HalfEdgeHandle> hes = face(*f_it).halfedges();
-
-            bool deleted = false;
-            for(std::vector<HalfEdgeHandle>::iterator he_it = hes.begin();
-                    he_it != hes.end(); ++he_it) {
-                if(edge_handle(*he_it) == _h) {
-                    f_it = delete_face(*f_it);
-                    deleted = true;
-                    break;
-                } else if(edge_handle(*he_it).idx() > _h.idx()) {
-                    *he_it = HalfEdgeHandle(he_it->idx() - 2);
-                }
-            }
-            if(!deleted) {
-                face(*f_it).set_halfedges(hes);
-                ++f_it;
-            }
-        }
-
-        // Remove property element
-        edge_deleted(_h);
-
-        return (edges_begin() + _h.idx());
-    }
-
-    /**
-     * \brief Delete face from mesh
-     *
-     * After performing this operation, all faces
-     * following face _h in the array will be accessible
-     * through their old handle decreased by one.
-     * This function directly fixes the face links
-     * in all cells. This invalidates all bottom-up
-     * adjacencies. See class StatusAttrib that
-     * provides a proper garbage collection.
-     *
-     * @param _h A face handle
-     */
-    virtual FaceIter delete_face(const FaceHandle& _h) {
-        assert(_h.idx() < (int)faces_.size());
-
-        faces_.erase(faces_.begin() + _h.idx());
-
-        for(CellIter c_it = cells_begin(); c_it != cells_end();) {
-
-            std::vector<HalfFaceHandle> hfs = cell(*c_it).halffaces();
-
-            bool deleted = false;
-            for(std::vector<HalfFaceHandle>::iterator hf_it = hfs.begin();
-                    hf_it != hfs.end(); ++hf_it) {
-                if(face_handle(*hf_it) == _h) {
-                    c_it = delete_cell(*c_it);
-                    deleted = true;
-                    break;
-                } else if(face_handle(*hf_it).idx() > _h.idx()) {
-                    *hf_it = HalfFaceHandle(hf_it->idx() - 2);
-                }
-            }
-            if(!deleted) {
-                cell(*c_it).set_halffaces(hfs);
-                ++c_it;
-            }
-        }
-
-        // Remove property element
-        face_deleted(_h);
-
-        return (faces_begin() + _h.idx());
-    }
-
-    /**
-     * \brief Delete cell from mesh
-     *
-     * After performing this operation, all cells
-     * following cell _h in the array will be accessible
-     * through their old handle decreased by one.
-     * This invalidates all bottom-up
-     * adjacencies. See class StatusAttrib that
-     * provides a proper garbage collection.
-     *
-     * @param _h A cell handle
-     */
-    virtual CellIter delete_cell(const CellHandle& _h) {
-        assert(_h.idx() < (int)cells_.size());
-
-        cells_.erase(cells_.begin() + _h.idx());
-
-        // Remove property element
-        cell_deleted(_h);
-
-        return (cells_begin() + _h.idx());
-    }
+public:
 
     /// Clear whole mesh
     virtual void clear(bool _clearProps = true) {
@@ -474,7 +335,6 @@ public:
         outgoing_hes_per_vertex_.clear();
         incident_hfs_per_he_.clear();
         incident_cell_per_hf_.clear();
-        boundary_faces_.clear();
 
         if(_clearProps) {
 
@@ -500,31 +360,106 @@ public:
     // Bottom-up Adjacencies
     //=====================================================================
 
-    void update_adjacencies();
+public:
 
-    void update_vertex_adjacencies();
+    void enable_bottom_up_adjacencies(bool _enable) {
 
-    void update_edge_adjacencies();
+        enable_vertex_bottom_up_adjacencies(_enable);
+        enable_edge_bottom_up_adjacencies(_enable);
+        enable_face_bottom_up_adjacencies(_enable);
+    }
 
-    void update_face_adjacencies();
+    void enable_vertex_bottom_up_adjacencies(bool _enable) {
+
+        if(_enable && !v_bottom_up_) {
+            // Vertex bottom-up adjacencies have to be
+            // recomputed for the whole mesh
+            compute_vertex_bottom_up_adjacencies();
+        }
+
+        v_bottom_up_ = _enable;
+    }
+
+    void enable_edge_bottom_up_adjacencies(bool _enable) {
+
+        if(_enable && !e_bottom_up_) {
+            // Edge bottom-up adjacencies have to be
+            // recomputed for the whole mesh
+            compute_edge_bottom_up_adjacencies();
+
+            if(f_bottom_up_) {
+                std::for_each(edges_begin(), edges_end(),
+                              std::tr1::bind(&TopologyKernel::reorder_incident_halffaces, this, std::tr1::placeholders::_1));
+            }
+        }
+
+        e_bottom_up_ = _enable;
+    }
+
+    void enable_face_bottom_up_adjacencies(bool _enable) {
+
+        if(_enable && !f_bottom_up_) {
+            // Face bottom-up adjacencies have to be
+            // recomputed for the whole mesh
+            compute_face_bottom_up_adjacencies();
+
+            if(e_bottom_up_) {
+                std::for_each(edges_begin(), edges_end(),
+                              std::tr1::bind(&TopologyKernel::reorder_incident_halffaces, this, std::tr1::placeholders::_1));
+            }
+        }
+
+        f_bottom_up_ = _enable;
+    }
+
+    bool has_full_bottom_up_adjacencies() const {
+        return (has_vertex_bottom_up_adjacencies() &&
+                has_edge_bottom_up_adjacencies() &&
+                has_face_bottom_up_adjacencies());
+    }
+
+    bool has_vertex_bottom_up_adjacencies() const { return v_bottom_up_; }
+
+    bool has_edge_bottom_up_adjacencies() const { return e_bottom_up_; }
+
+    bool has_face_bottom_up_adjacencies() const { return f_bottom_up_; }
+
+private:
+
+    void compute_vertex_bottom_up_adjacencies();
+
+    void compute_edge_bottom_up_adjacencies();
+
+    void compute_face_bottom_up_adjacencies();
+
+    void reorder_incident_halffaces(const EdgeHandle& _eh);
+
+    // Outgoing halfedges per vertex
+    std::vector<std::vector<HalfEdgeHandle> > outgoing_hes_per_vertex_;
+
+    // Incident halffaces per (directed) halfedge
+    std::vector<std::vector<HalfFaceHandle> > incident_hfs_per_he_;
+
+    // Incident cell (at most one) per halfface
+    std::vector<CellHandle> incident_cell_per_hf_;
+
+    bool v_bottom_up_;
+
+    bool e_bottom_up_;
+
+    bool f_bottom_up_;
 
     //=====================================================================
     // Connectivity
     //=====================================================================
+
+public:
 
     /// Get halfface that is adjacent (w.r.t. a common halfedge) within the same cell
     HalfFaceHandle adjacent_halfface_in_cell(const HalfFaceHandle& _halfFaceHandle, const HalfEdgeHandle& _halfEdgeHandle) const;
 
     /// Get cell that is incident to the given halfface
     CellHandle incident_cell(const HalfFaceHandle& _halfFaceHandle) const;
-
-    unsigned int n_boundary_faces() const {
-        if(!has_face_adjacencies_) {
-            std::cerr << "Warning: This function needs bottom-up adjacencies for faces!" << std::endl;
-            return 0;
-        }
-        return boundary_faces_.size();
-    }
 
     bool is_boundary(const HalfFaceHandle& _halfFaceHandle) const {
         return _halfFaceHandle.idx() >= 0 && (unsigned int)_halfFaceHandle.idx() < incident_cell_per_hf_.size() &&
@@ -537,7 +472,7 @@ public:
     }
 
     bool is_boundary(const EdgeHandle& _edgeHandle) const {
-        if(!has_edge_adjacencies_) {
+        if(!e_bottom_up_) {
             std::cerr << "Error: Function is_boundary() needs bottom-up adjacencies for edges!" << std::endl;
             return false;
         }
@@ -551,7 +486,7 @@ public:
     }
 
     bool is_boundary(const HalfEdgeHandle& _halfedgeHandle) const {
-        if(!has_edge_adjacencies_) {
+        if(!e_bottom_up_) {
             std::cerr << "Error: Function is_boundary() needs bottom-up adjacencies for edges!" << std::endl;
             return false;
         }
@@ -565,7 +500,7 @@ public:
     }
 
     bool is_boundary(const VertexHandle& _vertexHandle) const {
-        if(!has_vertex_adjacencies_) {
+        if(!v_bottom_up_) {
             std::cerr << "Error: Function is_boundary() needs bottom-up adjacencies for vertices!" << std::endl;
             return false;
         }
@@ -664,16 +599,6 @@ public:
         return HalfFaceHandle(_h.idx() - 1);
     }
 
-    inline bool has_vertex_adjacencies() const { return has_vertex_adjacencies_; }
-
-    inline bool has_edge_adjacencies() const { return has_edge_adjacencies_; }
-
-    inline bool has_face_adjacencies() const { return has_face_adjacencies_; }
-
-    inline bool has_bottom_up_adjacencies() const {
-        return (has_vertex_adjacencies_ && has_edge_adjacencies_ && has_face_adjacencies_);
-    }
-
 protected:
 
     // Number of (abstract) vertices
@@ -687,36 +612,6 @@ protected:
 
     // List of cells
     std::vector<Cell> cells_;
-
-private:
-
-    //=======================
-    // Bottom-up-adjacencies
-    //=======================
-
-    // Outgoing halfedges per vertex
-    std::vector<std::vector<HalfEdgeHandle> > outgoing_hes_per_vertex_;
-
-    // Incident halffaces per (directed) halfedge
-    std::vector<std::vector<HalfFaceHandle> > incident_hfs_per_he_;
-
-    // Incident cell (at most one) per halfface
-    std::vector<CellHandle> incident_cell_per_hf_;
-
-    // Store boundary faces
-    std::vector<FaceHandle> boundary_faces_;
-
-    // Indicate whether bottom-up adjacencies
-    // have been computed for vertices
-    bool has_vertex_adjacencies_;
-
-    // Indicate whether bottom-up adjacencies
-    // have been computed for edges
-    bool has_edge_adjacencies_;
-
-    // Indicate whether bottom-up adjacencies
-    // have been computed for faces
-    bool has_face_adjacencies_;
 };
 
 }

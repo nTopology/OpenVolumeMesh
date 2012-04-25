@@ -567,62 +567,6 @@ private:
 
 //===========================================================================
 
-class BoundaryFaceIter : public BaseIterator<FaceHandle,FaceHandle> {
-public:
-	typedef BaseIterator<
-			FaceHandle,
-			FaceHandle> BaseIter;
-
-
-	BoundaryFaceIter(const TopologyKernel* _mesh);
-
-	// Post increment/decrement operator
-	BoundaryFaceIter operator++(int) {
-		BoundaryFaceIter cpy = *this;
-		++(*this);
-		return cpy;
-	}
-	BoundaryFaceIter operator--(int) {
-		BoundaryFaceIter cpy = *this;
-		--(*this);
-		return cpy;
-	}
-	BoundaryFaceIter operator+(int _n) {
-		BoundaryFaceIter cpy = *this;
-		for(int i = 0; i < _n; ++i) {
-			++cpy;
-		}
-		return cpy;
-	}
-	BoundaryFaceIter operator-(int _n) {
-		BoundaryFaceIter cpy = *this;
-		for(int i = 0; i < _n; ++i) {
-			--cpy;
-		}
-		return cpy;
-	}
-	BoundaryFaceIter& operator+=(int _n) {
-		for(int i = 0; i < _n; ++i) {
-			++(*this);
-		}
-		return *this;
-	}
-	BoundaryFaceIter& operator-=(int _n) {
-		for(int i = 0; i < _n; ++i) {
-			--(*this);
-		}
-		return *this;
-	}
-
-	BoundaryFaceIter& operator++();
-	BoundaryFaceIter& operator--();
-
-private:
-	std::vector<FaceHandle>::const_iterator bf_it_;
-};
-
-//===========================================================================
-
 class VertexIter : public BaseIterator<
 	VertexHandle,
 	VertexHandle> {
@@ -967,6 +911,62 @@ public:
 
 private:
 	int cur_index_;
+};
+
+//===========================================================================
+
+class BoundaryFaceIter : public BaseIterator<FaceHandle,FaceHandle> {
+public:
+    typedef BaseIterator<
+            FaceHandle,
+            FaceHandle> BaseIter;
+
+
+    BoundaryFaceIter(const TopologyKernel* _mesh);
+
+    // Post increment/decrement operator
+    BoundaryFaceIter operator++(int) {
+        BoundaryFaceIter cpy = *this;
+        ++(*this);
+        return cpy;
+    }
+    BoundaryFaceIter operator--(int) {
+        BoundaryFaceIter cpy = *this;
+        --(*this);
+        return cpy;
+    }
+    BoundaryFaceIter operator+(int _n) {
+        BoundaryFaceIter cpy = *this;
+        for(int i = 0; i < _n; ++i) {
+            ++cpy;
+        }
+        return cpy;
+    }
+    BoundaryFaceIter operator-(int _n) {
+        BoundaryFaceIter cpy = *this;
+        for(int i = 0; i < _n; ++i) {
+            --cpy;
+        }
+        return cpy;
+    }
+    BoundaryFaceIter& operator+=(int _n) {
+        for(int i = 0; i < _n; ++i) {
+            ++(*this);
+        }
+        return *this;
+    }
+    BoundaryFaceIter& operator-=(int _n) {
+        for(int i = 0; i < _n; ++i) {
+            --(*this);
+        }
+        return *this;
+    }
+
+    BoundaryFaceIter& operator++();
+    BoundaryFaceIter& operator--();
+
+private:
+    FaceIter bf_it_;
 };
 
 //===========================================================================
