@@ -377,6 +377,10 @@ public:
             compute_vertex_bottom_up_adjacencies();
         }
 
+        if(!_enable) {
+            outgoing_hes_per_vertex_.clear();
+        }
+
         v_bottom_up_ = _enable;
     }
 
@@ -393,6 +397,10 @@ public:
             }
         }
 
+        if(!_enable) {
+            incident_hfs_per_he_.clear();
+        }
+
         e_bottom_up_ = _enable;
     }
 
@@ -407,6 +415,10 @@ public:
                 std::for_each(edges_begin(), edges_end(),
                               std::tr1::bind(&TopologyKernel::reorder_incident_halffaces, this, std::tr1::placeholders::_1));
             }
+        }
+
+        if(!_enable) {
+            incident_cell_per_hf_.clear();
         }
 
         f_bottom_up_ = _enable;
