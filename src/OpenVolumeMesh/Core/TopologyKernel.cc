@@ -1020,6 +1020,49 @@ const HalfEdgeHandle TopologyKernel::halfedge(const VertexHandle& _vh1, const Ve
 
 //========================================================================================
 
+const HalfFaceHandle TopologyKernel::halfface(const std::vector<VertexHandle>& _vs) const {
+
+    assert(_vs.size() > 2);
+
+    VertexHandle v0 = _vs[0], v1 = _vs[1], v2 = _vs[2];
+
+    assert(v0.is_valid() && v1.is_valid() && v2.is_valid());
+
+    HalfEdgeHandle he0 = halfedge(v0, v1);
+    if(!he0.is_valid()) return InvalidHalfFaceHandle;
+    HalfEdgeHandle he1 = halfedge(v1, v2);
+    if(!he1.is_valid()) return InvalidHalfFaceHandle;
+
+    std::vector<HalfEdgeHandle> hes;
+    hes.push_back(he0);
+    hes.push_back(he1);
+
+    return halfface(hes);
+}
+
+//========================================================================================
+
+const HalfFaceHandle TopologyKernel::halfface(const std::vector<HalfEdgeHandle>& _hes) const {
+
+    assert(_hes.size() >= 2);
+
+    HalfEdgeHandle he0 = _hes[0], he1 = _hes[1];
+
+    assert(he0.is_valid() && he1.is_valid());
+
+    for(HalfEdgeHalfFaceIter hehf_it = hehf_iter(he0); hehf_it.valid(); ++hehf_it) {
+
+        std::vector<HalfEdgeHandle> hes = halfface(*hehf_it).halfedges();
+        if(std::find(hes.begin(), hes.end(), he1) != hes.end()) {
+            return *hehf_it;
+        }
+    }
+
+    return InvalidHalfFaceHandle;
+}
+
+//========================================================================================
+
 const HalfEdgeHandle TopologyKernel::next_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
 
     assert((unsigned int)_hfh < faces_.size() * 2u);

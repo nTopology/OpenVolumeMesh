@@ -1027,4 +1027,114 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestProps2) {
     EXPECT_EQ(1, fprops_i.count(1));
 }
 
+TEST_F(HexahedralMeshBase, HalfEdgeFetchFunction1) {
+
+    generateHexahedralMesh(mesh_);
+
+    VertexHandle v0(0);
+    VertexHandle v1(1);
+
+    VertexHandle v2(2);
+    VertexHandle v3(3);
+
+    VertexHandle v5(5);
+    VertexHandle v6(6);
+    VertexHandle v7(7);
+
+    HalfEdgeHandle he0 = mesh_.halfedge(v0, v1);
+    HalfEdgeHandle he5 = mesh_.halfedge(v3, v2);
+    HalfEdgeHandle he10 = mesh_.halfedge(v5, v6);
+    HalfEdgeHandle heInv = mesh_.halfedge(v5, v7);
+
+    EXPECT_EQ(HalfEdgeHandle(0), he0);
+    EXPECT_EQ(HalfEdgeHandle(5), he5);
+    EXPECT_EQ(HalfEdgeHandle(10), he10);
+    EXPECT_EQ(HexahedralMesh::InvalidHalfEdgeHandle, heInv);
+}
+
+TEST_F(HexahedralMeshBase, HalfFaceFetchFunction1) {
+
+    generateHexahedralMesh(mesh_);
+
+    HalfEdgeHandle he0(0);
+    HalfEdgeHandle he2(2);
+    HalfEdgeHandle he4(4);
+
+    std::vector<HalfEdgeHandle> hes;
+    hes.push_back(he0); hes.push_back(he2);
+
+    HalfFaceHandle hf0_0 = mesh_.halfface(hes);
+    hes.clear();
+    hes.push_back(he0); hes.push_back(he4);
+    HalfFaceHandle hf0_1 = mesh_.halfface(hes);
+
+    HalfEdgeHandle he16(16);
+    HalfEdgeHandle he18(18);
+
+    hes.clear();
+    hes.push_back(he16); hes.push_back(he18);
+    HalfFaceHandle hf4_0 = mesh_.halfface(hes);
+
+    hes.clear();
+    hes.push_back(he0); hes.push_back(he18);
+    HalfFaceHandle hfInv = mesh_.halfface(hes);
+
+    HalfEdgeHandle he17(17);
+    HalfEdgeHandle he19(19);
+
+    hes.clear();
+    hes.push_back(he17); hes.push_back(he19);
+    HalfFaceHandle hf5_0 = mesh_.halfface(hes);
+
+    EXPECT_EQ(HalfFaceHandle(0), hf0_0);
+    EXPECT_EQ(HalfFaceHandle(0), hf0_1);
+    EXPECT_EQ(HalfFaceHandle(4), hf4_0);
+    EXPECT_EQ(HalfFaceHandle(5), hf5_0);
+    EXPECT_EQ(HexahedralMesh::InvalidHalfFaceHandle, hfInv);
+}
+
+TEST_F(HexahedralMeshBase, HalfFaceFetchFunction2) {
+
+    generateHexahedralMesh(mesh_);
+
+    VertexHandle v0(0);
+    VertexHandle v1(1);
+    VertexHandle v2(2);
+    VertexHandle v3(3);
+    VertexHandle v4(4);
+    VertexHandle v5(5);
+    VertexHandle v6(6);
+    VertexHandle v7(7);
+
+    std::vector<VertexHandle> vs;
+    vs.push_back(v0); vs.push_back(v1); vs.push_back(v2);
+    HalfFaceHandle hf0 = mesh_.halfface(vs); vs.clear();
+
+    vs.push_back(v2); vs.push_back(v1); vs.push_back(v0);
+    HalfFaceHandle hf1 = mesh_.halfface(vs); vs.clear();
+
+    vs.push_back(v2); vs.push_back(v1); vs.push_back(v5);
+    HalfFaceHandle hf4 = mesh_.halfface(vs); vs.clear();
+
+    vs.push_back(v6); vs.push_back(v5); vs.push_back(v4);
+    HalfFaceHandle hf3 = mesh_.halfface(vs); vs.clear();
+
+    vs.push_back(v4); vs.push_back(v5); vs.push_back(v6);
+    HalfFaceHandle hf2 = mesh_.halfface(vs); vs.clear();
+
+    vs.push_back(v0); vs.push_back(v1); vs.push_back(v4);
+    HalfFaceHandle hfInv0 = mesh_.halfface(vs); vs.clear();
+
+    vs.push_back(v0); vs.push_back(v1); vs.push_back(v6);
+    HalfFaceHandle hfInv1 = mesh_.halfface(vs); vs.clear();
+
+    EXPECT_EQ(HalfFaceHandle(0), hf0);
+    EXPECT_EQ(HalfFaceHandle(1), hf1);
+    EXPECT_EQ(HalfFaceHandle(4), hf4);
+    EXPECT_EQ(HalfFaceHandle(3), hf3);
+    EXPECT_EQ(HalfFaceHandle(2), hf2);
+    EXPECT_EQ(HexahedralMesh::InvalidHalfFaceHandle, hfInv0);
+    EXPECT_EQ(HexahedralMesh::InvalidHalfFaceHandle, hfInv1);
+}
+
 #endif // INCLUDE GUARD

@@ -270,6 +270,14 @@ public:
     // Get halfedge from vertex _vh1 to _vh2
     const HalfEdgeHandle halfedge(const VertexHandle& _vh1, const VertexHandle& _vh2) const;
 
+    // Get half-face from list of incident vertices (in connected order)
+    // Note: Only the first three vertices are checked
+    const HalfFaceHandle halfface(const std::vector<VertexHandle>& _vs) const;
+
+    // Get half-face from list of incident half-edges
+    // Note: Only the first two half-edges are checked
+    const HalfFaceHandle halfface(const std::vector<HalfEdgeHandle>& _hes) const;
+
     /// Get next halfedge within a halfface
     const HalfEdgeHandle next_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const;
 
