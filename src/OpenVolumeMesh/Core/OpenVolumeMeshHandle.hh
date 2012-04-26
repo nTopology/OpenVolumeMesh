@@ -72,13 +72,13 @@ public:
 
 	inline bool operator<(int _idx) const { return idx_ < _idx; }
 
-	inline int idx() const { return idx_; }
+	inline const int& idx() const { return idx_; }
 
 	void idx(const int& _idx) { idx_ = _idx; }
 
 	void reset() { idx_ = -1; }
 
-	operator int() const { return idx_; }
+	inline operator int() const { return idx_; }
 
 private:
 	int idx_;

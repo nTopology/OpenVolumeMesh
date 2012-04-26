@@ -60,10 +60,10 @@ public:
     virtual ~OpenVolumeMeshEdge() {
     }
 
-    VertexHandle from_vertex() const {
+    const VertexHandle& from_vertex() const {
         return fromVertex_;
     }
-    VertexHandle to_vertex() const {
+    const VertexHandle& to_vertex() const {
         return toVertex_;
     }
 
