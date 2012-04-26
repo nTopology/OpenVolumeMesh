@@ -81,7 +81,7 @@ public:
 
         assert(_vh.idx() < (int)vertices_.size());
 
-        vertices_[_vh] = _p;
+        vertices_[_vh.idx()] = _p;
     }
 
     /// Get point _vh's coordinates
