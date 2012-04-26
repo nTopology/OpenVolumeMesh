@@ -86,8 +86,6 @@ public:
 
 	void reset() { idx_ = -1; }
 
-	//inline operator int() const { return idx_; }
-
 private:
 	int idx_;
 };
