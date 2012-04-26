@@ -356,6 +356,10 @@ public:
         outgoing_hes_per_vertex_.clear();
         incident_hfs_per_he_.clear();
         incident_cell_per_hf_.clear();
+        n_vertices_ = 0;
+        n_edges_ = 0;
+        n_faces_ = 0;
+        n_cells_ = 0;
 
         if(_clearProps) {
 
