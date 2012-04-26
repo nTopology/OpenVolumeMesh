@@ -348,8 +348,8 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<VertexHandle>& _vertice
         hf5 = halfface_handle(fh, 0);
     }
 
-    assert(hf0.valid()); assert(hf1.valid()); assert(hf2.valid());
-    assert(hf3.valid()); assert(hf4.valid()); assert(hf5.valid());
+    assert(hf0.is_valid()); assert(hf1.is_valid()); assert(hf2.is_valid());
+    assert(hf3.is_valid()); assert(hf4.is_valid()); assert(hf5.is_valid());
 
     std::vector<HalfFaceHandle> hfs;
     hfs.push_back(hf0); hfs.push_back(hf1); hfs.push_back(hf2);
