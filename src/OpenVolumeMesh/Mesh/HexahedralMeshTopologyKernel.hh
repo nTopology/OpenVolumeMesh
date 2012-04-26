@@ -165,7 +165,7 @@ public:
 
     inline HalfFaceHandle opposite_halfface_handle_in_cell(const HalfFaceHandle& _hfh, const CellHandle& _ch) {
 
-        assert((unsigned int)_ch < TopologyKernel::cells_.size());
+        assert((unsigned int)_ch.idx() < TopologyKernel::cells_.size());
 
         if(orientation(_hfh, _ch) == XF) return xback_halfface(_ch);
         if(orientation(_hfh, _ch) == XB) return xfront_halfface(_ch);
@@ -179,49 +179,49 @@ public:
 
     inline HalfFaceHandle xfront_halfface(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < TopologyKernel::cells_.size());
+        assert((unsigned int)_ch.idx() < TopologyKernel::cells_.size());
 
         return TopologyKernel::cell(_ch).halffaces()[XF];
     }
 
     inline HalfFaceHandle xback_halfface(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < TopologyKernel::cells_.size());
+        assert((unsigned int)_ch.idx() < TopologyKernel::cells_.size());
 
         return TopologyKernel::cell(_ch).halffaces()[XB];
     }
 
     inline HalfFaceHandle yfront_halfface(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < TopologyKernel::cells_.size());
+        assert((unsigned int)_ch.idx() < TopologyKernel::cells_.size());
 
         return TopologyKernel::cell(_ch).halffaces()[YF];
     }
 
     inline HalfFaceHandle yback_halfface(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < TopologyKernel::cells_.size());
+        assert((unsigned int)_ch.idx() < TopologyKernel::cells_.size());
 
         return TopologyKernel::cell(_ch).halffaces()[YB];
     }
 
     inline HalfFaceHandle zfront_halfface(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < TopologyKernel::cells_.size());
+        assert((unsigned int)_ch.idx() < TopologyKernel::cells_.size());
 
         return TopologyKernel::cell(_ch).halffaces()[ZF];
     }
 
     inline HalfFaceHandle zback_halfface(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < TopologyKernel::cells_.size());
+        assert((unsigned int)_ch.idx() < TopologyKernel::cells_.size());
 
         return TopologyKernel::cell(_ch).halffaces()[ZB];
     }
 
     unsigned char orientation(const HalfFaceHandle& _hfh, const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < TopologyKernel::cells_.size());
+        assert((unsigned int)_ch.idx() < TopologyKernel::cells_.size());
 
         std::vector<HalfFaceHandle> halffaces = TopologyKernel::cell(_ch).halffaces();
         for(unsigned int i = 0; i < halffaces.size(); ++i) {

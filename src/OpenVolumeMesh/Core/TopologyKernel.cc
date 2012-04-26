@@ -409,7 +409,7 @@ CellHandle TopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halfface
         for(std::vector<HalfFaceHandle>::const_iterator it = _halffaces.begin(),
                 end = _halffaces.end(); it != end; ++it) {
             assert(incident_cell_per_hf_.size() > (unsigned int)it->idx());
-            assert(incident_cell_per_hf_[*it] == InvalidCellHandle);
+            assert(incident_cell_per_hf_[it->idx()] == InvalidCellHandle);
             incident_cell_per_hf_[it->idx()] = ch;
 
             // Collect all edges of cell
@@ -568,7 +568,7 @@ EdgeIter TopologyKernel::delete_edge(const EdgeHandle& _h) {
 
         VertexHandle v0 = edge(_h).from_vertex();
         VertexHandle v1 = edge(_h).to_vertex();
-        assert(outgoing_hes_per_vertex_.size() > (unsigned int)std::max(v0, v1));
+        assert(outgoing_hes_per_vertex_.size() > (unsigned int)std::max(v0.idx(), v1.idx()));
 
         outgoing_hes_per_vertex_[v0.idx()].erase(
                 std::remove(outgoing_hes_per_vertex_[v0.idx()].begin(),
@@ -589,7 +589,7 @@ EdgeIter TopologyKernel::delete_edge(const EdgeHandle& _h) {
 
         // Speed-up, because we already know all incident faces
         // Get incident faces
-        assert(incident_hfs_per_he_.size() > (unsigned int)halfedge_handle(_h, 0));
+        assert(incident_hfs_per_he_.size() > (unsigned int)halfedge_handle(_h, 0).idx());
 
         const std::vector<HalfFaceHandle>& inc_hfs = incident_hfs_per_he_[halfedge_handle(_h, 0).idx()];
         for(std::vector<HalfFaceHandle>::const_iterator hf_it = inc_hfs.begin(),
@@ -715,7 +715,7 @@ FaceIter TopologyKernel::delete_face(const FaceHandle& _h) {
         for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin(),
                 he_end = hes.end(); he_it != he_end; ++he_it) {
 
-            assert(incident_hfs_per_he_.size() > (unsigned int)std::max(*he_it, opposite_halfedge_handle(*he_it)));
+            assert(incident_hfs_per_he_.size() > (unsigned int)std::max(he_it->idx(), opposite_halfedge_handle(*he_it).idx()));
 
             incident_hfs_per_he_[he_it->idx()].erase(
                     std::remove(incident_hfs_per_he_[he_it->idx()].begin(),
@@ -736,7 +736,7 @@ FaceIter TopologyKernel::delete_face(const FaceHandle& _h) {
 
         // Speed-up, since we already know all incident cells
         // Get incident cells for deletion
-        assert(incident_cell_per_hf_.size() > (unsigned int)halfface_handle(_h, 1));
+        assert(incident_cell_per_hf_.size() > (unsigned int)halfface_handle(_h, 1).idx());
         if(incident_cell_per_hf_[halfface_handle(_h, 0).idx()].is_valid()) {
             incident_cells.push(incident_cell_per_hf_[halfface_handle(_h, 0).idx()]);
         }
@@ -791,7 +791,7 @@ FaceIter TopologyKernel::delete_face(const FaceHandle& _h) {
 
     // 3)
     if(f_bottom_up_) {
-        assert(incident_cell_per_hf_.size() > (unsigned int)halfface_handle(_h, 1));
+        assert(incident_cell_per_hf_.size() > (unsigned int)halfface_handle(_h, 1).idx());
         incident_cell_per_hf_.erase(incident_cell_per_hf_.begin() + halfface_handle(_h, 1).idx());
         incident_cell_per_hf_.erase(incident_cell_per_hf_.begin() + halfface_handle(_h, 0).idx());
     }
@@ -877,8 +877,8 @@ CellIter TopologyKernel::delete_cell(const CellHandle& _h) {
 const OpenVolumeMeshEdge& TopologyKernel::edge(const EdgeHandle& _edgeHandle) const {
 
     // Test if edge is valid
-    assert((unsigned int)_edgeHandle < n_edges_);
-    assert(_edgeHandle >= 0);
+    assert((unsigned int)_edgeHandle.idx() < n_edges_);
+    assert(_edgeHandle.idx() >= 0);
 
     return edges_[_edgeHandle.idx()];
 }
@@ -889,8 +889,8 @@ const OpenVolumeMeshEdge& TopologyKernel::edge(const EdgeHandle& _edgeHandle) co
 const OpenVolumeMeshFace& TopologyKernel::face(const FaceHandle& _faceHandle) const {
 
     // Test if face is valid
-    assert((unsigned int)_faceHandle < n_faces_);
-    assert(_faceHandle >= 0);
+    assert((unsigned int)_faceHandle.idx() < n_faces_);
+    assert(_faceHandle.idx() >= 0);
 
     return faces_[_faceHandle.idx()];
 }
@@ -901,8 +901,8 @@ const OpenVolumeMeshFace& TopologyKernel::face(const FaceHandle& _faceHandle) co
 const OpenVolumeMeshCell& TopologyKernel::cell(const CellHandle& _cellHandle) const {
 
     // Test if cell is valid
-    assert((unsigned int)_cellHandle < n_cells_);
-    assert(_cellHandle >= 0);
+    assert((unsigned int)_cellHandle.idx() < n_cells_);
+    assert(_cellHandle.idx() >= 0);
 
     return cells_[_cellHandle.idx()];
 }
@@ -913,8 +913,8 @@ const OpenVolumeMeshCell& TopologyKernel::cell(const CellHandle& _cellHandle) co
 OpenVolumeMeshEdge& TopologyKernel::edge(const EdgeHandle& _edgeHandle) {
 
     // Test if edge is valid
-    assert((unsigned int)_edgeHandle < n_edges_);
-    assert(_edgeHandle >= 0);
+    assert((unsigned int)_edgeHandle.idx() < n_edges_);
+    assert(_edgeHandle.idx() >= 0);
 
     return edges_[_edgeHandle.idx()];
 }
@@ -925,8 +925,8 @@ OpenVolumeMeshEdge& TopologyKernel::edge(const EdgeHandle& _edgeHandle) {
 OpenVolumeMeshFace& TopologyKernel::face(const FaceHandle& _faceHandle) {
 
     // Test if face is valid
-    assert((unsigned int)_faceHandle < n_faces_);
-    assert(_faceHandle >= 0);
+    assert((unsigned int)_faceHandle.idx() < n_faces_);
+    assert(_faceHandle.idx() >= 0);
 
     return faces_[_faceHandle.idx()];
 }
@@ -937,8 +937,8 @@ OpenVolumeMeshFace& TopologyKernel::face(const FaceHandle& _faceHandle) {
 OpenVolumeMeshCell& TopologyKernel::cell(const CellHandle& _cellHandle) {
 
     // Test if cell is valid
-    assert((unsigned int)_cellHandle < n_cells_);
-    assert(_cellHandle >= 0);
+    assert((unsigned int)_cellHandle.idx() < n_cells_);
+    assert(_cellHandle.idx() >= 0);
 
     return cells_[_cellHandle.idx()];
 }
@@ -949,8 +949,8 @@ OpenVolumeMeshCell& TopologyKernel::cell(const CellHandle& _cellHandle) {
 const OpenVolumeMeshEdge TopologyKernel::halfedge(const HalfEdgeHandle& _halfEdgeHandle) const {
 
     // Is handle in range?
-    assert((unsigned int)_halfEdgeHandle < (n_edges_ * 2));
-    assert(_halfEdgeHandle >= 0);
+    assert((unsigned int)_halfEdgeHandle.idx() < (n_edges_ * 2));
+    assert(_halfEdgeHandle.idx() >= 0);
 
     // In case the handle is even, just return the corresponding edge
     /// Otherwise return the opposite halfedge via opposite()
@@ -966,8 +966,8 @@ const OpenVolumeMeshEdge TopologyKernel::halfedge(const HalfEdgeHandle& _halfEdg
 const OpenVolumeMeshFace TopologyKernel::halfface(const HalfFaceHandle& _halfFaceHandle) const {
 
     // Is handle in range?
-    assert((unsigned int)_halfFaceHandle < (n_faces_ * 2));
-    assert(_halfFaceHandle >= 0);
+    assert((unsigned int)_halfFaceHandle.idx() < (n_faces_ * 2));
+    assert(_halfFaceHandle.idx() >= 0);
 
     // In case the handle is not even, just return the corresponding face
     // Otherwise return the opposite halfface via opposite()
@@ -983,8 +983,8 @@ const OpenVolumeMeshFace TopologyKernel::halfface(const HalfFaceHandle& _halfFac
 const OpenVolumeMeshEdge TopologyKernel::opposite_halfedge(const HalfEdgeHandle& _halfEdgeHandle) const {
 
     // Is handle in range?
-    assert(_halfEdgeHandle >= 0);
-    assert((unsigned int)_halfEdgeHandle < (n_edges_ * 2));
+    assert(_halfEdgeHandle.idx() >= 0);
+    assert((unsigned int)_halfEdgeHandle.idx() < (n_edges_ * 2));
 
     // In case the handle is not even, just return the corresponding edge
     // Otherwise return the opposite halfedge via opposite()
@@ -1000,8 +1000,8 @@ const OpenVolumeMeshEdge TopologyKernel::opposite_halfedge(const HalfEdgeHandle&
 const OpenVolumeMeshFace TopologyKernel::opposite_halfface(const HalfFaceHandle& _halfFaceHandle) const {
 
     // Is handle in range?
-    assert(_halfFaceHandle >= 0);
-    assert((unsigned int)_halfFaceHandle < (n_faces_ * 2));
+    assert(_halfFaceHandle.idx() >= 0);
+    assert((unsigned int)_halfFaceHandle.idx() < (n_faces_ * 2));
 
     // In case the handle is not even, just return the corresponding face
     // Otherwise return the opposite via the first face's opposite() function
@@ -1074,8 +1074,8 @@ const HalfFaceHandle TopologyKernel::halfface(const std::vector<HalfEdgeHandle>&
 
 const HalfEdgeHandle TopologyKernel::next_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
 
-    assert((unsigned int)_hfh < n_faces_ * 2u);
-    assert((unsigned int)_heh < n_edges_ * 2u);
+    assert((unsigned int)_hfh.idx() < n_faces_ * 2u);
+    assert((unsigned int)_heh.idx() < n_edges_ * 2u);
 
     std::vector<HalfEdgeHandle> hes = halfface(_hfh).halfedges();
 
@@ -1094,8 +1094,8 @@ const HalfEdgeHandle TopologyKernel::next_halfedge_in_halfface(const HalfEdgeHan
 
 const HalfEdgeHandle TopologyKernel::prev_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
 
-    assert((unsigned int)_hfh < n_faces_ * 2u);
-    assert((unsigned int)_heh < n_edges_ * 2u);
+    assert((unsigned int)_hfh.idx() < n_faces_ * 2u);
+    assert((unsigned int)_heh.idx() < n_edges_ * 2u);
 
     std::vector<HalfEdgeHandle> hes = halfface(_hfh).halfedges();
 

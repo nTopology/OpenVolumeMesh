@@ -303,7 +303,7 @@ public:
             std::cerr << "Could not get vertex valence: No bottom-up adjacencies for vertices available!" << std::endl;
             return 0u;
         }
-        assert((unsigned int)_vh < outgoing_hes_per_vertex_.size());
+        assert((unsigned int)_vh.idx() < outgoing_hes_per_vertex_.size());
         return outgoing_hes_per_vertex_[_vh.idx()].size();
     }
 
@@ -313,21 +313,21 @@ public:
             std::cerr << "Could not get edge valence: No bottom-up adjacencies for edges available!" << std::endl;
             return 0u;
         }
-        assert((unsigned int)halfedge_handle(_eh, 0) < incident_hfs_per_he_.size());
+        assert((unsigned int)halfedge_handle(_eh, 0).idx() < incident_hfs_per_he_.size());
         return incident_hfs_per_he_[halfedge_handle(_eh, 0).idx()].size();
     }
 
     /// Get valence of face (number of incident edges)
     inline unsigned int valence(const FaceHandle& _fh) const {
 
-        assert((unsigned int)_fh < faces_.size());
+        assert((unsigned int)_fh.idx() < faces_.size());
         return face(_fh).halfedges().size();
     }
 
     /// Get valence of cell (number of incident faces)
     inline unsigned int valence(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch < cells_.size());
+        assert((unsigned int)_ch.idx() < cells_.size());
         return cell(_ch).halffaces().size();
     }
 
