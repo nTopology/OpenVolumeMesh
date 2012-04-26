@@ -89,13 +89,8 @@ public:
         return vertices_[_vh];
     }
 
-    /// Override of n_vertices()
-    virtual unsigned int n_vertices() const {
-        return vertices_.size();
-    }
-
     virtual VertexIter delete_vertex(const VertexHandle& _h) {
-        assert(_h.idx() < (int)n_vertices());
+        assert(_h.idx() < (int)TopologyKernel::n_vertices());
 
         VertexIter nV = TopologyKernelT::delete_vertex(_h);
 

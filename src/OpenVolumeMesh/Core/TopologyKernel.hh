@@ -206,15 +206,28 @@ public:
     /// Get number of vertices in mesh
     virtual unsigned int n_vertices()   const { return n_vertices_; }
     /// Get number of edges in mesh
-    virtual unsigned int n_edges()      const { return edges_.size(); }
+    virtual unsigned int n_edges()      const { return n_edges_; }
     /// Get number of halfedges in mesh
-    virtual unsigned int n_halfedges()  const { return (2u * edges_.size()); }
+    virtual unsigned int n_halfedges()  const { return n_edges_ * 2u; }
     /// Get number of faces in mesh
-    virtual unsigned int n_faces()      const { return faces_.size(); }
+    virtual unsigned int n_faces()      const { return n_faces_; }
     /// Get number of halffaces in mesh
-    virtual unsigned int n_halffaces()  const { return (2u * faces_.size()); }
+    virtual unsigned int n_halffaces()  const { return n_faces_ * 2u; }
     /// Get number of cells in mesh
-    virtual unsigned int n_cells()      const { return cells_.size(); }
+    virtual unsigned int n_cells()      const { return n_cells_; }
+
+private:
+
+    // Cache total entity numbers
+    unsigned int n_vertices_;
+
+    unsigned int n_edges_;
+
+    unsigned int n_faces_;
+
+    unsigned int n_cells_;
+
+public:
 
     /// Add abstract vertex
     virtual VertexHandle add_vertex();
@@ -620,9 +633,6 @@ public:
     }
 
 protected:
-
-    // Number of (abstract) vertices
-    unsigned int n_vertices_;
 
     // List of edges
     std::vector<Edge> edges_;
