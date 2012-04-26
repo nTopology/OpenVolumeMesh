@@ -244,6 +244,81 @@ private:
     std::vector<EdgeHandle>::const_iterator edge_it_;
 };
 
+/** \brief Iterate over all vertices of a hexahedron in a specific order
+ *
+ * Vertices are addressed in the following order:
+ *
+ *      5-------6
+ *     /|      /|
+ *    / |     / |
+ *   3-------2  |
+ *   |  4----|--7
+ *   | /     | /
+ *   |/      |/
+ *   0-------1
+ */
+
+class HexVertexIter : public BaseIterator<CellHandle,
+    VertexHandle> {
+private:
+    typedef BaseIterator<CellHandle,
+            VertexHandle> BaseIter;
+public:
+    HexVertexIter(const CellHandle& _ref_h,
+            const HexahedralMeshTopologyKernel* _mesh);
+    HexVertexIter& operator=(const HexVertexIter& _c) {
+        BaseIter::operator=(_c);
+        vertices_ = _c.vertices_;
+        cur_it_ = vertices_.begin();
+        return *this;
+    }
+
+    // Post increment/decrement operator
+    HexVertexIter operator++(int) {
+        HexVertexIter cpy = *this;
+        ++(*this);
+        return cpy;
+    }
+    HexVertexIter operator--(int) {
+        HexVertexIter cpy = *this;
+        --(*this);
+        return cpy;
+    }
+    HexVertexIter operator+(int _n) {
+        HexVertexIter cpy = *this;
+        for(int i = 0; i < _n; ++i) {
+            ++cpy;
+        }
+        return cpy;
+    }
+    HexVertexIter operator-(int _n) {
+        HexVertexIter cpy = *this;
+        for(int i = 0; i < _n; ++i) {
+            --cpy;
+        }
+        return cpy;
+    }
+    HexVertexIter& operator+=(int _n) {
+        for(int i = 0; i < _n; ++i) {
+            ++(*this);
+        }
+        return *this;
+    }
+    HexVertexIter& operator-=(int _n) {
+        for(int i = 0; i < _n; ++i) {
+            --(*this);
+        }
+        return *this;
+    }
+
+    HexVertexIter& operator++();
+    HexVertexIter& operator--();
+
+private:
+    std::vector<VertexHandle> vertices_;
+    std::vector<VertexHandle>::const_iterator cur_it_;
+};
+
 } // Namespace OpenVolumeMesh
 
 #endif /* HEXAHEDRALMESHITERATORS_HH */

@@ -138,10 +138,12 @@ public:
     friend class CellSheetCellIter;
     friend class HalfFaceSheetHalfFaceIter;
     friend class OutsideNeighborHalfFaceIter;
+    friend class HexVertexIter;
 
     typedef class CellSheetCellIter CellSheetCellIter;
     typedef class HalfFaceSheetHalfFaceIter HalfFaceSheetHalfFaceIter;
     typedef class OutsideNeighborHalfFaceIter OutsideNeighborHalfFaceIter;
+    typedef class HexVertexIter HexVertexIter;
 
     CellSheetCellIter csc_iter(const CellHandle& _ref_h, const unsigned char _orthDir) const {
         return CellSheetCellIter(_ref_h, _orthDir, this);
@@ -153,6 +155,10 @@ public:
 
     OutsideNeighborHalfFaceIter onhf_iter(const HalfFaceHandle& _ref_h) const {
         return OutsideNeighborHalfFaceIter(_ref_h, this);
+    }
+
+    HexVertexIter hv_iter(const CellHandle& _ref_h) const {
+        return HexVertexIter(_ref_h, this);
     }
 
     // ======================= Connectivity functions =============================

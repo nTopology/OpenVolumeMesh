@@ -266,4 +266,90 @@ OutsideNeighborHalfFaceIter& OutsideNeighborHalfFaceIter::operator++() {
     return *this;
 }
 
+//================================================================================================
+// HexVertexIter
+//================================================================================================
+
+
+HexVertexIter::HexVertexIter(const CellHandle& _ref_h,
+        const HexahedralMeshTopologyKernel* _mesh) :
+BaseIter(_mesh, _ref_h) {
+
+    assert(_ref_h.is_valid());
+    assert(_mesh->cell(_ref_h).halffaces().size() == 6);
+
+    // Get first half-face
+    HalfFaceHandle curHF = *_mesh->cell(_ref_h).halffaces().begin();
+    assert(curHF.is_valid());
+
+    // Get first half-edge
+    assert(_mesh->halfface(curHF).halfedges().size() == 4);
+    HalfEdgeHandle curHE = *_mesh->halfface(curHF).halfedges().begin();
+    assert(curHE.is_valid());
+
+    vertices_.push_back(_mesh->halfedge(curHE).from_vertex());
+
+    curHE = _mesh->prev_halfedge_in_halfface(curHE, curHF);
+
+    vertices_.push_back(_mesh->halfedge(curHE).from_vertex());
+
+    curHE = _mesh->prev_halfedge_in_halfface(curHE, curHF);
+
+    vertices_.push_back(_mesh->halfedge(curHE).from_vertex());
+
+    curHE = _mesh->prev_halfedge_in_halfface(curHE, curHF);
+
+    vertices_.push_back(_mesh->halfedge(curHE).from_vertex());
+
+    curHE = _mesh->prev_halfedge_in_halfface(curHE, curHF);
+    curHF = _mesh->adjacent_halfface_in_cell(curHF, curHE);
+    curHE = _mesh->opposite_halfedge_handle(curHE);
+    curHE = _mesh->next_halfedge_in_halfface(curHE, curHF);
+    curHE = _mesh->next_halfedge_in_halfface(curHE, curHF);
+    curHF = _mesh->adjacent_halfface_in_cell(curHF, curHE);
+    curHE = _mesh->opposite_halfedge_handle(curHE);
+
+    vertices_.push_back(_mesh->halfedge(curHE).to_vertex());
+
+    curHE = _mesh->prev_halfedge_in_halfface(curHE, curHF);
+
+    vertices_.push_back(_mesh->halfedge(curHE).to_vertex());
+
+    curHE = _mesh->prev_halfedge_in_halfface(curHE, curHF);
+
+    vertices_.push_back(_mesh->halfedge(curHE).to_vertex());
+
+    vertices_.push_back(_mesh->halfedge(curHE).from_vertex());
+
+    cur_it_ = vertices_.begin();
+    BaseIter::valid(cur_it_ != vertices_.end());
+    if(BaseIter::valid()) {
+        BaseIter::cur_handle(*cur_it_);
+    }
+}
+
+
+HexVertexIter& HexVertexIter::operator--() {
+
+    --cur_it_;
+    if(cur_it_ >= vertices_.begin()) {
+        BaseIter::cur_handle(*cur_it_);
+    } else {
+        BaseIter::valid(false);
+    }
+    return *this;
+}
+
+
+HexVertexIter& HexVertexIter::operator++() {
+
+    ++cur_it_;
+    if(cur_it_ != vertices_.end()) {
+        BaseIter::cur_handle(*cur_it_);
+    } else {
+        BaseIter::valid(false);
+    }
+    return *this;
+}
+
 } // Namespace OpenVolumeMesh
