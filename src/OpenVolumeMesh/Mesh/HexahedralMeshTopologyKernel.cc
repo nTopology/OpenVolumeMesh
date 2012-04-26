@@ -239,6 +239,126 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halff
 
 //========================================================================================
 
+CellHandle
+HexahedralMeshTopologyKernel::add_cell(const std::vector<VertexHandle>& _vertices) {
+
+    assert(_vertices.size() == 8);
+
+    if(!TopologyKernel::has_full_bottom_up_adjacencies()) {
+        std::cerr << "Error: This function needs bottom-up adjacencies to be enabled!" << std::endl;
+        return CellHandle(-1);
+    }
+
+    if(_vertices.size() != 8) {
+        std::cerr << "The number of vertices is not eight!" << std::endl;
+        return CellHandle(-1);
+    }
+
+    HalfFaceHandle hf0, hf1, hf2, hf3, hf4, hf5, hf6, hf7;
+
+    std::vector<VertexHandle> vs;
+
+    // Half-face XF
+    vs.push_back(_vertices[2]);
+    vs.push_back(_vertices[1]);
+    vs.push_back(_vertices[0]);
+    hf0 = TopologyKernel::halfface(vs); vs.clear();
+
+    // Half-face XB
+    vs.push_back(_vertices[6]);
+    vs.push_back(_vertices[5]);
+    vs.push_back(_vertices[4]);
+    hf1 = TopologyKernel::halfface(vs); vs.clear();
+
+    // Half-face YF
+    vs.push_back(_vertices[1]);
+    vs.push_back(_vertices[2]);
+    vs.push_back(_vertices[6]);
+    hf2 = TopologyKernel::halfface(vs); vs.clear();
+
+    // Half-face YB
+    vs.push_back(_vertices[5]);
+    vs.push_back(_vertices[3]);
+    vs.push_back(_vertices[0]);
+    hf3 = TopologyKernel::halfface(vs); vs.clear();
+
+    // Half-face ZF
+    vs.push_back(_vertices[7]);
+    vs.push_back(_vertices[4]);
+    vs.push_back(_vertices[0]);
+    hf4 = TopologyKernel::halfface(vs); vs.clear();
+
+    // Half-face ZB
+    vs.push_back(_vertices[3]);
+    vs.push_back(_vertices[5]);
+    vs.push_back(_vertices[6]);
+    hf5 = TopologyKernel::halfface(vs);
+
+    if(!hf0.is_valid()) {
+
+        vs.clear();
+        vs.push_back(_vertices[3]); vs.push_back(_vertices[2]);
+        vs.push_back(_vertices[1]); vs.push_back(_vertices[0]);
+        FaceHandle fh = TopologyKernel::add_face(vs);
+        hf0 = halfface_handle(fh, 0);
+    }
+
+    if(!hf1.is_valid()) {
+
+        vs.clear();
+        vs.push_back(_vertices[7]); vs.push_back(_vertices[6]);
+        vs.push_back(_vertices[5]); vs.push_back(_vertices[4]);
+        FaceHandle fh = TopologyKernel::add_face(vs);
+        hf1 = halfface_handle(fh, 0);
+    }
+
+    if(!hf2.is_valid()) {
+
+        vs.clear();
+        vs.push_back(_vertices[1]); vs.push_back(_vertices[2]);
+        vs.push_back(_vertices[6]); vs.push_back(_vertices[7]);
+        FaceHandle fh = TopologyKernel::add_face(vs);
+        hf2 = halfface_handle(fh, 0);
+    }
+
+    if(!hf3.is_valid()) {
+
+        vs.clear();
+        vs.push_back(_vertices[4]); vs.push_back(_vertices[5]);
+        vs.push_back(_vertices[3]); vs.push_back(_vertices[0]);
+        FaceHandle fh = TopologyKernel::add_face(vs);
+        hf3 = halfface_handle(fh, 0);
+    }
+
+    if(!hf4.is_valid()) {
+
+        vs.clear();
+        vs.push_back(_vertices[1]); vs.push_back(_vertices[7]);
+        vs.push_back(_vertices[4]); vs.push_back(_vertices[0]);
+        FaceHandle fh = TopologyKernel::add_face(vs);
+        hf4 = halfface_handle(fh, 0);
+    }
+
+    if(!hf5.is_valid()) {
+
+        vs.clear();
+        vs.push_back(_vertices[2]); vs.push_back(_vertices[3]);
+        vs.push_back(_vertices[5]); vs.push_back(_vertices[6]);
+        FaceHandle fh = TopologyKernel::add_face(vs);
+        hf5 = halfface_handle(fh, 0);
+    }
+
+    assert(hf0.valid()); assert(hf1.valid()); assert(hf2.valid());
+    assert(hf3.valid()); assert(hf4.valid()); assert(hf5.valid());
+
+    std::vector<HalfFaceHandle> hfs;
+    hfs.push_back(hf0); hfs.push_back(hf1); hfs.push_back(hf2);
+    hfs.push_back(hf3); hfs.push_back(hf4); hfs.push_back(hf5);
+
+    return TopologyKernel::add_cell(hfs,false);
+}
+
+//========================================================================================
 
 const HalfFaceHandle&
 HexahedralMeshTopologyKernel::get_adjacent_halfface(const HalfFaceHandle& _hfh, const HalfEdgeHandle& _heh,

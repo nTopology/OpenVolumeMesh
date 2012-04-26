@@ -1137,4 +1137,79 @@ TEST_F(HexahedralMeshBase, HalfFaceFetchFunction2) {
     EXPECT_EQ(HexahedralMesh::InvalidHalfFaceHandle, hfInv1);
 }
 
+TEST_F(HexahedralMeshBase, AddCellViaVerticesFunction1) {
+
+    generateHexahedralMesh(mesh_);
+
+    StatusAttrib status(mesh_);
+
+    status[FaceHandle(0)].set_deleted(true);
+
+    status.garbage_collection(false);
+
+    EXPECT_EQ(1u, mesh_.n_cells());
+    EXPECT_EQ(10u, mesh_.n_faces());
+    EXPECT_EQ(20u, mesh_.n_edges());
+    EXPECT_EQ(12u, mesh_.n_vertices());
+
+    std::vector<VertexHandle> vs;
+    vs.push_back(VertexHandle(0));
+    vs.push_back(VertexHandle(1));
+    vs.push_back(VertexHandle(2));
+    vs.push_back(VertexHandle(3));
+    vs.push_back(VertexHandle(4));
+    vs.push_back(VertexHandle(7));
+    vs.push_back(VertexHandle(6));
+    vs.push_back(VertexHandle(5));
+
+    CellHandle ch = mesh_.add_cell(vs);
+
+    EXPECT_NE(HexahedralMesh::InvalidCellHandle, ch);
+
+    EXPECT_EQ(2u, mesh_.n_cells());
+    EXPECT_EQ(11u, mesh_.n_faces());
+    EXPECT_EQ(20u, mesh_.n_edges());
+    EXPECT_EQ(12u, mesh_.n_vertices());
+}
+
+TEST_F(HexahedralMeshBase, AddCellViaVerticesFunction2) {
+
+    generateHexahedralMesh(mesh_);
+
+    StatusAttrib status(mesh_);
+
+    status[FaceHandle(0)].set_deleted(true);
+
+    status.garbage_collection(true);
+
+    EXPECT_EQ(1u, mesh_.n_cells());
+    EXPECT_EQ(6u, mesh_.n_faces());
+    EXPECT_EQ(12u, mesh_.n_edges());
+    EXPECT_EQ(8u, mesh_.n_vertices());
+
+    VertexHandle v0 = mesh_.add_vertex(Vec3d(0.0, 0.0, 0.0));
+    VertexHandle v1 = mesh_.add_vertex(Vec3d(1.0, 0.0, 0.0));
+    VertexHandle v2 = mesh_.add_vertex(Vec3d(1.0, 1.0, 0.0));
+    VertexHandle v3 = mesh_.add_vertex(Vec3d(0.0, 1.0, 0.0));
+
+    std::vector<VertexHandle> vs;
+    vs.push_back(v0);
+    vs.push_back(v1);
+    vs.push_back(v2);
+    vs.push_back(v3);
+    vs.push_back(VertexHandle(0));
+    vs.push_back(VertexHandle(3));
+    vs.push_back(VertexHandle(2));
+    vs.push_back(VertexHandle(1));
+
+    CellHandle ch = mesh_.add_cell(vs);
+
+    EXPECT_NE(HexahedralMesh::InvalidCellHandle, ch);
+
+    EXPECT_EQ(2u, mesh_.n_cells());
+    EXPECT_EQ(11u, mesh_.n_faces());
+    EXPECT_EQ(20u, mesh_.n_edges());
+    EXPECT_EQ(12u, mesh_.n_vertices());
+}
+
 #endif // INCLUDE GUARD

@@ -112,6 +112,27 @@ public:
     virtual CellHandle add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck = true,
             bool _reorderFaces = false);
 
+    /** \brief Add cell via incident vertices
+     *
+     * Test whether all required faces are already defined
+     * and, if not, create them.
+     * Give vertices in the following order:
+     *
+     *      5-------6
+     *     /|      /|
+     *    / |     / |
+     *   3-------2  |
+     *   |  4----|--7
+     *   | /     | /
+     *   |/      |/
+     *   0-------1
+     *
+     * @param: _vertices A list of vertices in the correct order
+     *
+     * @return The new hexahedron's cell handle
+     */
+    CellHandle add_cell(const std::vector<VertexHandle>& _vertices);
+
     // ======================= Specialized Iterators =============================
 
     friend class CellSheetCellIter;
