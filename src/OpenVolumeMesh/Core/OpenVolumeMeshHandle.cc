@@ -44,6 +44,25 @@
 
 namespace OpenVolumeMesh {
 
+bool operator==(const int& _lhs, const OpenVolumeMeshHandle& _rhs) {
+    return _lhs == _rhs.idx();
+}
+
+bool operator==(const unsigned int& _lhs, const OpenVolumeMeshHandle& _rhs) {
+
+    return _lhs == (unsigned int)_rhs.idx();
+}
+
+bool operator!=(const int& _lhs, const OpenVolumeMeshHandle& _rhs) {
+
+    return !(_lhs == _rhs);
+}
+
+bool operator!=(const unsigned int& _lhs, const OpenVolumeMeshHandle& _rhs) {
+
+    return !(_lhs == _rhs);
+}
+
 std::ostream& operator<<(std::ostream& _ostr, const OpenVolumeMeshHandle& _handle) {
     _ostr << _handle.idx();
     return _ostr;

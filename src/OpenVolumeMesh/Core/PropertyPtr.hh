@@ -95,6 +95,9 @@ public:
     reference operator[](size_t _idx) { return (*ptr::shared_ptr<PropT>::get())[_idx]; }
     const_reference operator[](size_t _idx) const { return (*ptr::shared_ptr<PropT>::get())[_idx]; }
 
+    reference operator[](const OpenVolumeMeshHandle& _h) { return (*ptr::shared_ptr<PropT>::get())[_h.idx()]; }
+    const_reference operator[](const OpenVolumeMeshHandle& _h) const { return (*ptr::shared_ptr<PropT>::get())[_h.idx()]; }
+
     virtual OpenVolumeMeshHandle handle() const;
 
     virtual bool persistent() const { return ptr::shared_ptr<PropT>::get()->persistent(); }

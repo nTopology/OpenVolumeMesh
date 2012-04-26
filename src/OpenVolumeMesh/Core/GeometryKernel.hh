@@ -86,7 +86,7 @@ public:
 
     /// Get point _vh's coordinates
     const VecT& vertex(const VertexHandle& _vh) const {
-        return vertices_[_vh];
+        return vertices_[_vh.idx()];
     }
 
     virtual VertexIter delete_vertex(const VertexHandle& _h) {

@@ -314,7 +314,7 @@ public:
             return 0u;
         }
         assert((unsigned int)halfedge_handle(_eh, 0) < incident_hfs_per_he_.size());
-        return incident_hfs_per_he_[halfedge_handle(_eh, 0)].size();
+        return incident_hfs_per_he_[halfedge_handle(_eh, 0).idx()].size();
     }
 
     /// Get valence of face (number of incident edges)
@@ -500,7 +500,7 @@ public:
 
     bool is_boundary(const HalfFaceHandle& _halfFaceHandle) const {
         return _halfFaceHandle.idx() >= 0 && (unsigned int)_halfFaceHandle.idx() < incident_cell_per_hf_.size() &&
-                incident_cell_per_hf_[_halfFaceHandle] == InvalidCellHandle;
+                incident_cell_per_hf_[_halfFaceHandle.idx()] == InvalidCellHandle;
     }
 
     bool is_boundary(const FaceHandle& _faceHandle) const {
@@ -598,7 +598,7 @@ public:
     static inline HalfFaceHandle halfface_handle(const FaceHandle& _h, const unsigned char _subIdx) {
         // Is handle in range?
         if(_h.idx() < 0 || _subIdx > 1) return InvalidHalfFaceHandle;
-        return HalfFaceHandle((2 * _h) + (_subIdx ? 1 : 0));
+        return HalfFaceHandle((2 * _h.idx()) + (_subIdx ? 1 : 0));
     }
 
     /// Handle conversion

@@ -655,20 +655,20 @@ TEST_F(PolyhedralMeshBase, PolyhedralMeshProperties) {
     VertexPropertyT<Vec3d> vp = mesh_.request_vertex_property<Vec3d>("VProp");
 
     for(VertexIter v_it = mesh_.v_iter(); v_it.valid(); ++v_it) {
-        vp[*v_it] = Vec3d(1.0, 0.0, 0.0);
+        vp[v_it->idx()] = Vec3d(1.0, 0.0, 0.0);
     }
 
     for(VertexIter v_it = mesh_.v_iter(); v_it.valid(); ++v_it) {
         Vec3d t;
-        t = vp[*v_it];
+        t = vp[v_it->idx()];
         EXPECT_DOUBLE_EQ(1.0, t[0]);
         EXPECT_DOUBLE_EQ(0.0, t[1]);
         EXPECT_DOUBLE_EQ(0.0, t[2]);
     }
 
     VertexHandle vh = mesh_.add_vertex(Vec3d(3.0,3.0,3.0));
-    vp[vh] = Vec3d(0.0);
-    Vec3d p = vp[vh];
+    vp[vh.idx()] = Vec3d(0.0);
+    Vec3d p = vp[vh.idx()];
     EXPECT_DOUBLE_EQ(0.0, p[0]);
     EXPECT_DOUBLE_EQ(0.0, p[1]);
     EXPECT_DOUBLE_EQ(0.0, p[2]);
@@ -677,25 +677,25 @@ TEST_F(PolyhedralMeshBase, PolyhedralMeshProperties) {
 
     unsigned int i = 0;
     for(EdgeIter e_it = mesh_.e_iter(); e_it.valid(); ++e_it) {
-        ep[*e_it] = i++;
+        ep[e_it->idx()] = i++;
     }
 
     i = 0;
     for(EdgeIter e_it = mesh_.e_iter(); e_it.valid(); ++e_it) {
-        EXPECT_EQ(i++, ep[*e_it]);
+        EXPECT_EQ(i++, ep[e_it->idx()]);
     }
 
     HalfFacePropertyT<bool> hfp = mesh_.request_halfface_property<bool>("HFProp");
 
     bool b = false;
     for(HalfFaceIter hf_it = mesh_.hf_iter(); hf_it.valid(); ++hf_it) {
-        hfp[*hf_it] = b;
+        hfp[hf_it->idx()] = b;
         b = !b;
     }
 
     b = false;
     for(HalfFaceIter hf_it = mesh_.hf_iter(); hf_it.valid(); ++hf_it) {
-        EXPECT_EQ(b, hfp[*hf_it]);
+        EXPECT_EQ(b, hfp[hf_it->idx()]);
         b = !b;
     }
 
@@ -703,11 +703,11 @@ TEST_F(PolyhedralMeshBase, PolyhedralMeshProperties) {
     CellPropertyT<std::string> cp = mesh_.request_cell_property<std::string>("CProp");
 
     for(CellIter c_it = mesh_.c_iter(); c_it.valid(); ++c_it) {
-        cp[*c_it] = std::string("MyTestString");
+        cp[c_it->idx()] = std::string("MyTestString");
     }
 
     for(CellIter c_it = mesh_.c_iter(); c_it.valid(); ++c_it) {
-        EXPECT_EQ(std::string("MyTestString"), cp[*c_it]);
+        EXPECT_EQ(std::string("MyTestString"), cp[c_it->idx()]);
     }
 }
 
@@ -941,17 +941,29 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestProps1) {
 
     FacePropertyT<int> fprop = mesh_.request_face_property<int>("FProp");
 
-    fprop[FaceHandle(0)] = 11;
-    fprop[FaceHandle(1)] = 10;
-    fprop[FaceHandle(2)] = 9;
-    fprop[FaceHandle(3)] = 8;
-    fprop[FaceHandle(4)] = 7;
-    fprop[FaceHandle(5)] = 6;
-    fprop[FaceHandle(6)] = 5;
-    fprop[FaceHandle(7)] = 4;
-    fprop[FaceHandle(8)] = 3;
-    fprop[FaceHandle(9)] = 2;
-    fprop[FaceHandle(10)] = 1;
+    FaceHandle fh0(0);
+    FaceHandle fh1(1);
+    FaceHandle fh2(2);
+    FaceHandle fh3(3);
+    FaceHandle fh4(4);
+    FaceHandle fh5(5);
+    FaceHandle fh6(6);
+    FaceHandle fh7(7);
+    FaceHandle fh8(8);
+    FaceHandle fh9(9);
+    FaceHandle fh10(10);
+
+    fprop[fh0] = 11;
+    fprop[fh1] = 10;
+    fprop[fh2] = 9;
+    fprop[fh3] = 8;
+    fprop[fh4] = 7;
+    fprop[fh5] = 6;
+    fprop[fh6] = 5;
+    fprop[fh7] = 4;
+    fprop[fh8] = 3;
+    fprop[fh9] = 2;
+    fprop[fh10] = 1;
 
     status[VertexHandle(0)].set_deleted(true);
 
@@ -964,7 +976,7 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestProps1) {
 
     std::set<int> fprops_i;
     for(FaceIter f_it = mesh_.f_iter(); f_it.valid(); ++f_it) {
-        fprops_i.insert(fprop[*f_it]);
+        fprops_i.insert(fprop[f_it->idx()]);
     }
 
     EXPECT_EQ(0, fprops_i.count(11));
@@ -988,17 +1000,29 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestProps2) {
 
     FacePropertyT<int> fprop = mesh_.request_face_property<int>("FProp");
 
-    fprop[FaceHandle(0)] = 11;
-    fprop[FaceHandle(1)] = 10;
-    fprop[FaceHandle(2)] = 9;
-    fprop[FaceHandle(3)] = 8;
-    fprop[FaceHandle(4)] = 7;
-    fprop[FaceHandle(5)] = 6;
-    fprop[FaceHandle(6)] = 5;
-    fprop[FaceHandle(7)] = 4;
-    fprop[FaceHandle(8)] = 3;
-    fprop[FaceHandle(9)] = 2;
-    fprop[FaceHandle(10)] = 1;
+    FaceHandle fh0(0);
+    FaceHandle fh1(1);
+    FaceHandle fh2(2);
+    FaceHandle fh3(3);
+    FaceHandle fh4(4);
+    FaceHandle fh5(5);
+    FaceHandle fh6(6);
+    FaceHandle fh7(7);
+    FaceHandle fh8(8);
+    FaceHandle fh9(9);
+    FaceHandle fh10(10);
+
+    fprop[fh0] = 11;
+    fprop[fh1] = 10;
+    fprop[fh2] = 9;
+    fprop[fh3] = 8;
+    fprop[fh4] = 7;
+    fprop[fh5] = 6;
+    fprop[fh6] = 5;
+    fprop[fh7] = 4;
+    fprop[fh8] = 3;
+    fprop[fh9] = 2;
+    fprop[fh10] = 1;
 
     status[FaceHandle(0)].set_deleted(true);
 
@@ -1011,7 +1035,7 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestProps2) {
 
     std::set<int> fprops_i;
     for(FaceIter f_it = mesh_.f_iter(); f_it.valid(); ++f_it) {
-        fprops_i.insert(fprop[*f_it]);
+        fprops_i.insert(fprop[f_it->idx()]);
     }
 
     EXPECT_EQ(0, fprops_i.count(11));

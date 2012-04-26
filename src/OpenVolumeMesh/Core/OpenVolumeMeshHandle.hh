@@ -72,13 +72,21 @@ public:
 
 	inline bool operator<(int _idx) const { return idx_ < _idx; }
 
+	inline bool operator>(const OpenVolumeMeshHandle& _idx) const { return (this->idx_ > _idx.idx_); }
+
+    inline bool operator>(int _idx) const { return idx_ > _idx; }
+
+	inline bool operator==(const OpenVolumeMeshHandle& _h) const { return _h.idx_ == this->idx_; }
+
+	inline bool operator!=(const OpenVolumeMeshHandle& _h) const { return _h.idx_ != this->idx_; }
+
 	inline const int& idx() const { return idx_; }
 
 	void idx(const int& _idx) { idx_ = _idx; }
 
 	void reset() { idx_ = -1; }
 
-	inline operator int() const { return idx_; }
+	//inline operator int() const { return idx_; }
 
 private:
 	int idx_;
@@ -138,6 +146,14 @@ public:
 private:
     CellHandle thld_;
 };
+
+bool operator==(const int& _lhs, const OpenVolumeMeshHandle& _rhs);
+
+bool operator==(const unsigned int& _lhs, const OpenVolumeMeshHandle& _rhs);
+
+bool operator!=(const int& _lhs, const OpenVolumeMeshHandle& _rhs);
+
+bool operator!=(const unsigned int& _lhs, const OpenVolumeMeshHandle& _rhs);
 
 std::ostream& operator<<(std::ostream& _ostr, const OpenVolumeMeshHandle& _handle);
 
