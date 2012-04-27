@@ -235,7 +235,7 @@ TEST_F(PolyhedralMeshBase, CreateSimpleMeshWithoutCells) {
     halfedges.push_back(mesh_.halfedge_handle(e1, 0)); halfedges.push_back(mesh_.halfedge_handle(e2, 0));
     halfedges.push_back(mesh_.halfedge_handle(e7, 0)); halfedges.push_back(mesh_.halfedge_handle(e4, 0));
 
-    FaceHandle fI = mesh_.add_face(halfedges);
+    FaceHandle fI = mesh_.add_face(halfedges, true);
 
     EXPECT_EQ(PolyhedralMesh::InvalidFaceHandle, fI);
 
@@ -325,7 +325,7 @@ TEST_F(PolyhedralMeshBase, TopologyCheckFail) {
     halffaces.push_back(mesh_.halfface_handle(f1, 1));
     halffaces.push_back(mesh_.halfface_handle(f2, 0));
     halffaces.push_back(mesh_.halfface_handle(f3, 0));
-    EXPECT_EQ(PolyhedralMesh::InvalidCellHandle, mesh_.add_cell(halffaces));
+    EXPECT_EQ(PolyhedralMesh::InvalidCellHandle, mesh_.add_cell(halffaces, true));
 }
 
 TEST_F(HexahedralMeshBase, TopologyCheckPass) {
@@ -491,7 +491,7 @@ TEST_F(PolyhedralMeshBase, VolumeMeshConnectivity) {
     hfaces.push_back(1); hfaces.push_back(5);
     hfaces.push_back(7); hfaces.push_back(9);
     hfaces.push_back(10); hfaces.push_back(21);
-    CellHandle i_cell = mesh_.add_cell(hfaces);
+    CellHandle i_cell = mesh_.add_cell(hfaces, true);
 
     EXPECT_EQ(PolyhedralMesh::InvalidCellHandle, i_cell);
 
