@@ -103,13 +103,13 @@ public:
     ~HexahedralMeshTopologyKernel();
 
     // Overridden function
-    virtual FaceHandle add_face(const std::vector<HalfEdgeHandle>& _halfedges, bool _topologyCheck = true);
+    virtual FaceHandle add_face(const std::vector<HalfEdgeHandle>& _halfedges, bool _topologyCheck = false);
 
     // Overridden function
     virtual FaceHandle add_face(const std::vector<VertexHandle>& _vertices);
 
     /// Overridden function
-    virtual CellHandle add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck = true,
+    virtual CellHandle add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck = false,
             bool _reorderFaces = false);
 
     /** \brief Add cell via incident vertices
