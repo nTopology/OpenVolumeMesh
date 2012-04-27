@@ -433,8 +433,8 @@ public:
 	CellVertexIter& operator--();
 
 private:
-	std::set<VertexHandle> incident_vertices_;
-	std::set<VertexHandle>::const_iterator v_iter_;
+	std::vector<VertexHandle> incident_vertices_;
+	std::vector<VertexHandle>::const_iterator v_iter_;
 };
 
 //===========================================================================

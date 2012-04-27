@@ -42,6 +42,7 @@
 
 #include <iostream>
 #include <set>
+#include <algorithm>
 
 #include "Iterators.hh"
 #include "TopologyKernel.hh"
@@ -322,9 +323,13 @@ BaseIter(_mesh, _ref_h) {
     for(; hf_iter != BaseIter::mesh()->cell(_ref_h).halffaces().end(); ++hf_iter) {
         std::vector<HalfEdgeHandle> hes = BaseIter::mesh()->halfface(*hf_iter).halfedges();
         for(std::vector<HalfEdgeHandle>::const_iterator he_iter = hes.begin(); he_iter != hes.end(); ++he_iter) {
-            incident_vertices_.insert(BaseIter::mesh()->halfedge(*he_iter).to_vertex());
+            incident_vertices_.push_back(BaseIter::mesh()->halfedge(*he_iter).to_vertex());
         }
     }
+
+    // Remove all duplcate entries
+    std::sort(incident_vertices_.begin(), incident_vertices_.end());
+    incident_vertices_.resize(std::unique(incident_vertices_.begin(), incident_vertices_.end()) - incident_vertices_.begin());
 
     v_iter_ = incident_vertices_.begin();
     BaseIter::valid(v_iter_ != incident_vertices_.end());
