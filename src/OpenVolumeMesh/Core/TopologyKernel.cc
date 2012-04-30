@@ -103,11 +103,23 @@ EdgeHandle TopologyKernel::add_edge(const VertexHandle& _fromVertex,
 
     // Test if edge does not exist, yet
     if(!_allowDuplicates) {
-        for(unsigned int i = 0; i < n_edges_; ++i) {
-            if(edge(EdgeHandle(i)).from_vertex() == _fromVertex && edge(EdgeHandle(i)).to_vertex() == _toVertex) {
-                return EdgeHandle(i);
-            } else if(edge(EdgeHandle(i)).from_vertex() == _toVertex && edge(EdgeHandle(i)).to_vertex() == _fromVertex) {
-                return EdgeHandle(i);
+        if(v_bottom_up_) {
+
+            assert(outgoing_hes_per_vertex_.size() > (unsigned int)_fromVertex.idx());
+            std::vector<HalfEdgeHandle>& ohes = outgoing_hes_per_vertex_[_fromVertex.idx()];
+            for(std::vector<HalfEdgeHandle>::const_iterator he_it = ohes.begin(),
+                    he_end = ohes.end(); he_it != he_end; ++he_it) {
+                if(halfedge(*he_it).to_vertex() == _toVertex) {
+                    return edge_handle(*he_it);
+                }
+            }
+        } else {
+            for(unsigned int i = 0; i < n_edges_; ++i) {
+                if(edge(EdgeHandle(i)).from_vertex() == _fromVertex && edge(EdgeHandle(i)).to_vertex() == _toVertex) {
+                    return EdgeHandle(i);
+                } else if(edge(EdgeHandle(i)).from_vertex() == _toVertex && edge(EdgeHandle(i)).to_vertex() == _fromVertex) {
+                    return EdgeHandle(i);
+                }
             }
         }
     }
