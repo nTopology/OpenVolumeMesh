@@ -109,8 +109,13 @@ public:
     virtual FaceHandle add_face(const std::vector<VertexHandle>& _vertices);
 
     /// Overridden function
-    virtual CellHandle add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck = false,
-            bool _reorderFaces = false);
+    virtual CellHandle add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck = false);
+
+private:
+
+    bool check_halfface_ordering(const std::vector<HalfFaceHandle>& _hfs) const;
+
+public:
 
     /** \brief Add cell via incident vertices
      *

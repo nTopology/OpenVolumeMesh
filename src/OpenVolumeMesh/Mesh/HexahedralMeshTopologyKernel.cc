@@ -87,8 +87,9 @@ HexahedralMeshTopologyKernel::add_face(const std::vector<VertexHandle>& _vertice
 
 
 CellHandle
-HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck, bool _reorderFaces) {
+HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck) {
 
+#ifndef NDEBUG
     if(_halffaces.size() != 6) {
         std::cerr << "Cell valence is not six! Aborting." << std::endl;
         return TopologyKernel::InvalidCellHandle;
@@ -100,50 +101,64 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halff
             return TopologyKernel::InvalidCellHandle;
         }
     }
-
-    // Ordering array (see below for details)
-    const int orderTop[] = {2, 4, 3, 5};
-    const int orderBot[] = {3, 4, 2, 5};
+#endif
 
     // Create new halffaces vector
     std::vector<HalfFaceHandle> ordered_halffaces;
 
     // The user wants the faces to be reordered
-    if(_reorderFaces) {
+    if(_topologyCheck) {
 
-        ordered_halffaces.resize(6, TopologyKernel::InvalidHalfFaceHandle);
+        // Are faces in correct ordering?
+        bool ordered = check_halfface_ordering(_halffaces);
 
-        // Create top side
-        ordered_halffaces[0] = _halffaces[0];
+        if(!ordered) {
 
-        // Go over all incident halfedges
-        std::vector<HalfEdgeHandle> hes = TopologyKernel::halfface(ordered_halffaces[0]).halfedges();
-        unsigned int idx = 0;
-        for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin();
-                he_it != hes.end(); ++he_it) {
+            std::cerr << "The specified half-faces are not in correct order. Trying automatic re-ordering." << std::endl;
 
-            HalfFaceHandle ahfh = get_adjacent_halfface(ordered_halffaces[0], *he_it, _halffaces);
-            if(ahfh == TopologyKernel::InvalidHalfFaceHandle) {
-                std::cerr << "The current halfface is invalid!" << std::endl;
-                continue;
+            // Ordering array (see below for details)
+            const int orderTop[] = {2, 4, 3, 5};
+            const int orderBot[] = {3, 4, 2, 5};
+
+            ordered_halffaces.resize(6, TopologyKernel::InvalidHalfFaceHandle);
+
+            // Create top side
+            ordered_halffaces[0] = _halffaces[0];
+
+            // Go over all incident halfedges
+            std::vector<HalfEdgeHandle> hes = TopologyKernel::halfface(ordered_halffaces[0]).halfedges();
+            unsigned int idx = 0;
+            for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin();
+                    he_it != hes.end(); ++he_it) {
+
+                HalfFaceHandle ahfh = get_adjacent_halfface(ordered_halffaces[0], *he_it, _halffaces);
+                if(ahfh == TopologyKernel::InvalidHalfFaceHandle) {
+                    std::cerr << "The current halfface is invalid!" << std::endl;
+                    continue;
+                }
+                ordered_halffaces[orderTop[idx]] = ahfh;
+                ++idx;
             }
-            ordered_halffaces[orderTop[idx]] = ahfh;
-            ++idx;
-        }
 
-        // Now set bottom-halfface
-        HalfFaceHandle cur_hf = ordered_halffaces[0];
-        HalfEdgeHandle cur_he = *(TopologyKernel::halfface(cur_hf).halfedges().begin());
-        cur_hf = get_adjacent_halfface(cur_hf, cur_he, _halffaces);
-        cur_he = TopologyKernel::opposite_halfedge_handle(cur_he);
-        cur_he = TopologyKernel::next_halfedge_in_halfface(cur_he, cur_hf);
-        cur_he = TopologyKernel::next_halfedge_in_halfface(cur_he, cur_hf);
-        cur_hf = get_adjacent_halfface(cur_hf, cur_he, _halffaces);
+            // Now set bottom-halfface
+            HalfFaceHandle cur_hf = ordered_halffaces[0];
+            HalfEdgeHandle cur_he = *(TopologyKernel::halfface(cur_hf).halfedges().begin());
+            cur_hf = get_adjacent_halfface(cur_hf, cur_he, _halffaces);
+            cur_he = TopologyKernel::opposite_halfedge_handle(cur_he);
+            cur_he = TopologyKernel::next_halfedge_in_halfface(cur_he, cur_hf);
+            cur_he = TopologyKernel::next_halfedge_in_halfface(cur_he, cur_hf);
+            cur_hf = get_adjacent_halfface(cur_hf, cur_he, _halffaces);
 
-        if(cur_hf != TopologyKernel::InvalidHalfFaceHandle) {
-            ordered_halffaces[1] = cur_hf;
+            if(cur_hf != TopologyKernel::InvalidHalfFaceHandle) {
+                ordered_halffaces[1] = cur_hf;
+            } else {
+                std::cerr << "The current halfface is invalid!" << std::endl;
+                return TopologyKernel::InvalidCellHandle;
+            }
+
         } else {
-            std::cerr << "The current halfface is invalid!" << std::endl;
+            // Assume right ordering at the user's risk
+            ordered_halffaces = _halffaces;
         }
 
     } else {
@@ -151,7 +166,13 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halff
         ordered_halffaces = _halffaces;
     }
 
-    // Now check if faces are in right order
+    return TopologyKernel::add_cell(ordered_halffaces, _topologyCheck);
+}
+
+//========================================================================================
+
+bool HexahedralMeshTopologyKernel::check_halfface_ordering(const std::vector<HalfFaceHandle>& _hfs) const {
+
     /*
      * The test works as follows: Test for both the first and second face in the list,
      * whether the following order holds (clockwise):
@@ -175,11 +196,14 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halff
      *          |____|
      */
 
-    HalfFaceHandle hfhTop = ordered_halffaces[0];
-    HalfFaceHandle hfhBot = ordered_halffaces[1];
+    const int orderTop[] = {2, 4, 3, 5};
+    const int orderBot[] = {3, 4, 2, 5};
 
-    std::vector<HalfEdgeHandle> halfedgesTop = TopologyKernel::halfface(ordered_halffaces[0]).halfedges();
-    std::vector<HalfEdgeHandle> halfedgesBot = TopologyKernel::halfface(ordered_halffaces[1]).halfedges();
+    HalfFaceHandle hfhTop = _hfs[0];
+    HalfFaceHandle hfhBot = _hfs[1];
+
+    std::vector<HalfEdgeHandle> halfedgesTop = TopologyKernel::halfface(_hfs[0]).halfedges();
+    std::vector<HalfEdgeHandle> halfedgesBot = TopologyKernel::halfface(_hfs[1]).halfedges();
 
     int offsetTop = -1;
     int offsetBot = -1;
@@ -188,53 +212,53 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halff
     for(std::vector<HalfEdgeHandle>::const_iterator it = halfedgesTop.begin();
             it != halfedgesTop.end(); ++it) {
 
-        HalfFaceHandle ahfh = get_adjacent_halfface(hfhTop, *it, ordered_halffaces);
+        HalfFaceHandle ahfh = get_adjacent_halfface(hfhTop, *it, _hfs);
 
         if(offsetTop == -1) {
-            if(ahfh == ordered_halffaces[2])       offsetTop = 0;
-            else if(ahfh == ordered_halffaces[4])  offsetTop = 1;
-            else if(ahfh == ordered_halffaces[3])  offsetTop = 2;
-            else if(ahfh == ordered_halffaces[5])  offsetTop = 3;
+            if(ahfh == _hfs[2])       offsetTop = 0;
+            else if(ahfh == _hfs[4])  offsetTop = 1;
+            else if(ahfh == _hfs[3])  offsetTop = 2;
+            else if(ahfh == _hfs[5])  offsetTop = 3;
         } else {
             offsetTop = (offsetTop + 1) % 4;
-            if(ahfh != ordered_halffaces[orderTop[offsetTop]]) {
+            if(ahfh != _hfs[orderTop[offsetTop]]) {
                 std::cerr << "Faces not in right order!" << std::endl;
-                return TopologyKernel::InvalidCellHandle;
+                return false;
             }
         }
     }
 
     if(offsetTop == -1) {
         std::cerr << "Faces not in right order!" << std::endl;
-        return TopologyKernel::InvalidCellHandle;
+        return false;
     }
 
     // Traverse halfedges bottom
     for(std::vector<HalfEdgeHandle>::const_iterator it = halfedgesBot.begin();
             it != halfedgesBot.end(); ++it) {
 
-        HalfFaceHandle ahfh = get_adjacent_halfface(hfhBot, *it, ordered_halffaces);
+        HalfFaceHandle ahfh = get_adjacent_halfface(hfhBot, *it, _hfs);
 
         if(offsetBot == -1) {
-            if(ahfh == ordered_halffaces[3])       offsetBot = 0;
-            else if(ahfh == ordered_halffaces[4])  offsetBot = 1;
-            else if(ahfh == ordered_halffaces[2])  offsetBot = 2;
-            else if(ahfh == ordered_halffaces[5])  offsetBot = 3;
+            if(ahfh == _hfs[3])       offsetBot = 0;
+            else if(ahfh == _hfs[4])  offsetBot = 1;
+            else if(ahfh == _hfs[2])  offsetBot = 2;
+            else if(ahfh == _hfs[5])  offsetBot = 3;
         } else {
             offsetBot = (offsetBot + 1) % 4;
-            if(ahfh != ordered_halffaces[orderBot[offsetBot]]) {
+            if(ahfh != _hfs[orderBot[offsetBot]]) {
                 std::cerr << "Faces not in right order!" << std::endl;
-                return TopologyKernel::InvalidCellHandle;
+                return false;
             }
         }
     }
 
     if(offsetBot == -1) {
         std::cerr << "Faces not in right order!" << std::endl;
-        return TopologyKernel::InvalidCellHandle;
+        return false;
     }
 
-    return TopologyKernel::add_cell(ordered_halffaces, _topologyCheck);
+    return true;
 }
 
 //========================================================================================

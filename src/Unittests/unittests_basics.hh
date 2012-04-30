@@ -402,7 +402,7 @@ TEST_F(HexahedralMeshBase, TopologyCheckPass) {
     chfaces.push_back(mesh_.halfface_handle(fh4, 0));
     chfaces.push_back(mesh_.halfface_handle(fh5, 0));
 
-    EXPECT_NE(HexahedralMesh::InvalidCellHandle, mesh_.add_cell(chfaces));
+    EXPECT_NE(HexahedralMesh::InvalidCellHandle, mesh_.add_cell(chfaces, true));
 }
 
 TEST_F(HexahedralMeshBase, TopologyCheckFail) {
@@ -479,7 +479,7 @@ TEST_F(HexahedralMeshBase, TopologyCheckFail) {
     chfaces.push_back(mesh_.halfface_handle(fh4, 0));
     chfaces.push_back(mesh_.halfface_handle(fh5, 0));
 
-    EXPECT_EQ(HexahedralMesh::InvalidCellHandle, mesh_.add_cell(chfaces));
+    EXPECT_EQ(HexahedralMesh::InvalidCellHandle, mesh_.add_cell(chfaces, true));
 }
 
 TEST_F(PolyhedralMeshBase, VolumeMeshConnectivity) {
