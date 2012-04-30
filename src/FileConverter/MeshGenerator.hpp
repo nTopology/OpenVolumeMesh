@@ -40,7 +40,13 @@ public:
     typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
 
     MeshGenerator(PolyhedralMesh& _mesh) : v_component_(0), mesh_(_mesh), progress_() {}
-    MeshGenerator(const MeshGenerator& _cpy) : v_component_(_cpy.v_component_), mesh_(_cpy.mesh_), progress_() {}
+    MeshGenerator(const MeshGenerator& _cpy) :
+        v_component_(_cpy.v_component_),
+        vertex_(0.0, 0.0, 0.0),
+        c_vertices_(),
+        faceMap_(),
+        mesh_(_cpy.mesh_),
+        progress_() {}
 
     void add_vertex_component(double _comp) {
 
