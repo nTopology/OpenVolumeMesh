@@ -111,7 +111,7 @@ public:
     }
 
     PointT barycenter(const FaceHandle& _fh) const {
-        PointT p;
+        PointT p(typename PointT::value_type(0));
         typename PointT::value_type valence = 0;
         HalfFaceVertexIter hfv_it =
                 TopologyKernelT::hfv_iter(TopologyKernelT::halfface_handle(_fh, 0));
@@ -123,7 +123,7 @@ public:
     }
 
     PointT barycenter(const CellHandle& _ch) const {
-        PointT p;
+        PointT p(typename PointT::value_type(0));
         typename PointT::value_type valence = 0;
         CellVertexIter cv_it = TopologyKernelT::cv_iter(_ch);
         for(; cv_it.valid(); ++cv_it, valence += 1) {
