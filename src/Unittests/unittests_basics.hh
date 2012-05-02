@@ -846,6 +846,24 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTest4) {
     EXPECT_EQ(8u, mesh_.n_faces());
 }
 
+TEST_F(HexahedralMeshBase, GarbageCollectionTest5) {
+
+    generateHexahedralMesh(mesh_);
+
+    StatusAttrib status(mesh_);
+
+    status[EdgeHandle(0)].set_deleted(true);
+    status[EdgeHandle(1)].set_deleted(true);
+    status[EdgeHandle(2)].set_deleted(true);
+
+    status.garbage_collection(true);
+
+    EXPECT_EQ(1u, mesh_.n_cells());
+    EXPECT_EQ(8u, mesh_.n_vertices());
+    EXPECT_EQ(12u, mesh_.n_edges());
+    EXPECT_EQ(6u, mesh_.n_faces());
+}
+
 TEST_F(HexahedralMeshBase, GarbageCollectionTestManifoldness1) {
 
     generateHexahedralMesh(mesh_);
