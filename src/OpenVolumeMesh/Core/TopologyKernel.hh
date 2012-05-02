@@ -206,26 +206,20 @@ public:
     /// Get number of vertices in mesh
     virtual unsigned int n_vertices()   const { return n_vertices_; }
     /// Get number of edges in mesh
-    virtual unsigned int n_edges()      const { return n_edges_; }
+    virtual unsigned int n_edges()      const { return edges_.size(); }
     /// Get number of halfedges in mesh
-    virtual unsigned int n_halfedges()  const { return n_edges_ * 2u; }
+    virtual unsigned int n_halfedges()  const { return edges_.size() * 2u; }
     /// Get number of faces in mesh
-    virtual unsigned int n_faces()      const { return n_faces_; }
+    virtual unsigned int n_faces()      const { return faces_.size(); }
     /// Get number of halffaces in mesh
-    virtual unsigned int n_halffaces()  const { return n_faces_ * 2u; }
+    virtual unsigned int n_halffaces()  const { return faces_.size() * 2u; }
     /// Get number of cells in mesh
-    virtual unsigned int n_cells()      const { return n_cells_; }
+    virtual unsigned int n_cells()      const { return cells_.size(); }
 
 private:
 
-    // Cache total entity numbers
+    // Cache total vertex number
     unsigned int n_vertices_;
-
-    unsigned int n_edges_;
-
-    unsigned int n_faces_;
-
-    unsigned int n_cells_;
 
 public:
 
@@ -345,6 +339,16 @@ public:
 
     virtual CellIter delete_cell(const CellHandle& _h);
 
+    /** \brief Delete range of cells
+     *
+     * Deletes all cells in range [_first, _last].
+     *
+     * @param: _first Iterator to first cell that is to be deleted
+     * @param: _last Iterator to last cell that is to be deleted
+     * @return: An iterator to the first cell after the deleted range
+     */
+    CellIter delete_cell_range(const CellIter& _first, const CellIter& _last);
+
 public:
 
     /// Clear whole mesh
@@ -357,9 +361,6 @@ public:
         incident_hfs_per_he_.clear();
         incident_cell_per_hf_.clear();
         n_vertices_ = 0;
-        n_edges_ = 0;
-        n_faces_ = 0;
-        n_cells_ = 0;
 
         if(_clearProps) {
 
