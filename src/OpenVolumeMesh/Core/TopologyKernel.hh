@@ -388,14 +388,14 @@ public:
 
 public:
 
-    void enable_bottom_up_adjacencies(bool _enable) {
+    void enable_bottom_up_adjacencies(bool _enable = true) {
 
         enable_vertex_bottom_up_adjacencies(_enable);
         enable_edge_bottom_up_adjacencies(_enable);
         enable_face_bottom_up_adjacencies(_enable);
     }
 
-    void enable_vertex_bottom_up_adjacencies(bool _enable) {
+    void enable_vertex_bottom_up_adjacencies(bool _enable = true) {
 
         if(_enable && !v_bottom_up_) {
             // Vertex bottom-up adjacencies have to be
@@ -410,7 +410,7 @@ public:
         v_bottom_up_ = _enable;
     }
 
-    void enable_edge_bottom_up_adjacencies(bool _enable) {
+    void enable_edge_bottom_up_adjacencies(bool _enable = true) {
 
         if(_enable && !e_bottom_up_) {
             // Edge bottom-up adjacencies have to be
@@ -430,17 +430,15 @@ public:
         e_bottom_up_ = _enable;
     }
 
-    void enable_face_bottom_up_adjacencies(bool _enable) {
+    void enable_face_bottom_up_adjacencies(bool _enable = true) {
 
+        bool updateOrder = false;
         if(_enable && !f_bottom_up_) {
             // Face bottom-up adjacencies have to be
             // recomputed for the whole mesh
             compute_face_bottom_up_adjacencies();
 
-            if(e_bottom_up_) {
-                std::for_each(edges_begin(), edges_end(),
-                              std::tr1::bind(&TopologyKernel::reorder_incident_halffaces, this, std::tr1::placeholders::_1));
-            }
+            updateOrder = true;
         }
 
         if(!_enable) {
@@ -448,6 +446,13 @@ public:
         }
 
         f_bottom_up_ = _enable;
+
+        if(updateOrder) {
+            if(e_bottom_up_) {
+                std::for_each(edges_begin(), edges_end(),
+                              std::tr1::bind(&TopologyKernel::reorder_incident_halffaces, this, std::tr1::placeholders::_1));
+            }
+        }
     }
 
     bool has_full_bottom_up_adjacencies() const {

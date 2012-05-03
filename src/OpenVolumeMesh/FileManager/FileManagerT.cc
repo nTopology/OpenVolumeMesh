@@ -81,7 +81,10 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     unsigned int v1 = 0; unsigned int v2 = 0;
 
     _mesh.clear();
-    _mesh.enable_bottom_up_adjacencies(_computeBottomUpAdjacencies);
+    // Temporarily disable bottom-up incidences
+    // since it's way faster to first add all the
+    // geometry and compute them in one pass afterwards
+    _mesh.enable_bottom_up_adjacencies(false);
 
     /*
      * Header
@@ -179,7 +182,7 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
             sstr.str(line);
             sstr >> v1;
             sstr >> v2;
-            _mesh.add_edge(VertexHandle(v1), VertexHandle(v2));
+            _mesh.add_edge(VertexHandle(v1), VertexHandle(v2), true);
         }
     }
 
@@ -278,6 +281,11 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     }
 
     iff.close();
+
+    if(_computeBottomUpAdjacencies) {
+        // Compute bottom-up incidences
+        _mesh.enable_bottom_up_adjacencies(true);
+    }
 
     std::cerr << "######## openvolumemesh info #########" << std::endl;
     std::cerr << "#vertices: " << _mesh.n_vertices() << std::endl;
