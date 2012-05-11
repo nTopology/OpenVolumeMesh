@@ -168,7 +168,7 @@ public:
 
     // ======================= Connectivity functions =============================
 
-    inline HalfFaceHandle opposite_halfface_handle_in_cell(const HalfFaceHandle& _hfh, const CellHandle& _ch) {
+    inline HalfFaceHandle opposite_halfface_handle_in_cell(const HalfFaceHandle& _hfh, const CellHandle& _ch) const {
 
         assert((unsigned int)_ch.idx() < TopologyKernel::cells_.size());
 

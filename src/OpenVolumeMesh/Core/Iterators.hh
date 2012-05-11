@@ -95,6 +95,10 @@ public:
 		return cur_handle_;
 	}
 
+	bool operator< (const BaseIterator& _c) const {
+	    return cur_handle_.idx() < _c.cur_handle_.idx();
+	}
+
 	BaseIterator& operator=(const BaseIterator& _c) {
 		this->valid_ = _c.valid();
 		this->cur_handle_ = _c.cur_handle();

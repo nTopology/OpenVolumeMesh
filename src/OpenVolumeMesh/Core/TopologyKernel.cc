@@ -903,8 +903,8 @@ CellIter TopologyKernel::delete_cell_range(const CellIter& _first, const CellIte
     std::vector<Cell>::iterator it = cells_.erase(cells_.begin() + _first->idx(), cells_.begin() + _last->idx());
 
     // Re-compute face bottom-up adjacencies if necessary
-    if(v_bottom_up_) {
-        v_bottom_up_ = false;
+    if(f_bottom_up_) {
+        f_bottom_up_ = false;
         enable_face_bottom_up_adjacencies(true);
     }
 
