@@ -221,7 +221,7 @@ public:
      * This step proceeds as follows: Delete all n-dimensional entities
      * (starting with n = 2), that are not incident to at least one
      * entity of dimension n + 1. Note that the second pass requires bottom-up
-     * adjacencies to be available. Compute them by calling update_adjacencies().
+     * incidences to be available. Compute them by calling update_incidences().
      *
      * @param _preserveManifoldness Pass true if the mesh is required to stay three-manifold
      */

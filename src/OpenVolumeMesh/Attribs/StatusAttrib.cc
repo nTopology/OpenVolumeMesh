@@ -114,7 +114,7 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
 
     // Step 6
     if(_preserveManifoldness) {
-        if(kernel_.has_full_bottom_up_adjacencies()) {
+        if(kernel_.has_full_bottom_up_incidences()) {
 
             // Go over all faces and find those
             // that are not incident to any cell
@@ -174,7 +174,7 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
 
         } else {
             std::cerr << "Preservation of three-manifoldness in garbage_collection() "
-                    << "requires bottom-up adjacencies!" << std::endl;
+                    << "requires bottom-up incidences!" << std::endl;
             return;
         }
     }

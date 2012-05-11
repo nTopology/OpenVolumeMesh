@@ -268,8 +268,8 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<VertexHandle>& _vertice
 
     assert(_vertices.size() == 8);
 
-    if(!TopologyKernel::has_full_bottom_up_adjacencies()) {
-        std::cerr << "Error: This function needs bottom-up adjacencies to be enabled!" << std::endl;
+    if(!TopologyKernel::has_full_bottom_up_incidences()) {
+        std::cerr << "Error: This function needs bottom-up incidences to be enabled!" << std::endl;
         return CellHandle(-1);
     }
 

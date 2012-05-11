@@ -66,8 +66,8 @@ NormalAttrib<GeomKernelT>::~NormalAttrib() {
 template <class GeomKernelT>
 void NormalAttrib<GeomKernelT>::update_vertex_normals() {
 
-    if(!kernel_.has_face_bottom_up_adjacencies()) {
-        std::cerr << "Error: update_vertex_normals() needs bottom-up adjacencies!" << std::endl;
+    if(!kernel_.has_face_bottom_up_incidences()) {
+        std::cerr << "Error: update_vertex_normals() needs bottom-up incidences!" << std::endl;
         return;
     }
 
@@ -82,8 +82,8 @@ void NormalAttrib<GeomKernelT>::update_vertex_normals() {
 template <class GeomKernelT>
 void NormalAttrib<GeomKernelT>::update_face_normals() {
 
-    if(!kernel_.has_face_bottom_up_adjacencies()) {
-        std::cerr << "Error: update_normals() needs bottom-up adjacencies!" << std::endl;
+    if(!kernel_.has_face_bottom_up_incidences()) {
+        std::cerr << "Error: update_normals() needs bottom-up incidences!" << std::endl;
         return;
     }
 

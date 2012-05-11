@@ -282,8 +282,8 @@ public:
 
     HalfFaceHandle adjacent_halfface_on_sheet(const HalfFaceHandle& _hfh, const HalfEdgeHandle& _heh) const {
 
-        if(!TopologyKernel::has_face_bottom_up_adjacencies()) {
-            std::cerr << "No bottom-up adjacencies computed so far, could not get adjacent halfface on sheet!" << std::endl;
+        if(!TopologyKernel::has_face_bottom_up_incidences()) {
+            std::cerr << "No bottom-up incidences computed so far, could not get adjacent halfface on sheet!" << std::endl;
             return TopologyKernel::InvalidHalfFaceHandle;
         }
 
@@ -339,8 +339,8 @@ public:
 
     HalfFaceHandle neighboring_outside_halfface(const HalfFaceHandle& _hfh, const HalfEdgeHandle& _heh) const {
 
-        if(!TopologyKernel::has_face_bottom_up_adjacencies()) {
-            std::cerr << "No bottom-up adjacencies computed so far, could not get neighboring outside halfface!" << std::endl;
+        if(!TopologyKernel::has_face_bottom_up_incidences()) {
+            std::cerr << "No bottom-up incidences computed so far, could not get neighboring outside halfface!" << std::endl;
             return TopologyKernel::InvalidHalfFaceHandle;
         }
 

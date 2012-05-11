@@ -294,7 +294,7 @@ public:
     /// Get valence of vertex (number of incident edges)
     inline unsigned int valence(const VertexHandle& _vh) const {
         if(!v_bottom_up_) {
-            std::cerr << "Could not get vertex valence: No bottom-up adjacencies for vertices available!" << std::endl;
+            std::cerr << "Could not get vertex valence: No bottom-up incidences for vertices available!" << std::endl;
             return 0u;
         }
         assert((unsigned int)_vh.idx() < outgoing_hes_per_vertex_.size());
@@ -304,7 +304,7 @@ public:
     /// Get valence of edge (number of incident faces)
     inline unsigned int valence(const EdgeHandle& _eh) const {
         if(!e_bottom_up_) {
-            std::cerr << "Could not get edge valence: No bottom-up adjacencies for edges available!" << std::endl;
+            std::cerr << "Could not get edge valence: No bottom-up incidences for edges available!" << std::endl;
             return 0u;
         }
         assert((unsigned int)halfedge_handle(_eh, 0).idx() < incident_hfs_per_he_.size());
@@ -383,24 +383,24 @@ public:
     }
 
     //=====================================================================
-    // Bottom-up Adjacencies
+    // Bottom-up Incidences
     //=====================================================================
 
 public:
 
-    void enable_bottom_up_adjacencies(bool _enable = true) {
+    void enable_bottom_up_incidences(bool _enable = true) {
 
-        enable_vertex_bottom_up_adjacencies(_enable);
-        enable_edge_bottom_up_adjacencies(_enable);
-        enable_face_bottom_up_adjacencies(_enable);
+        enable_vertex_bottom_up_incidences(_enable);
+        enable_edge_bottom_up_incidences(_enable);
+        enable_face_bottom_up_incidences(_enable);
     }
 
-    void enable_vertex_bottom_up_adjacencies(bool _enable = true) {
+    void enable_vertex_bottom_up_incidences(bool _enable = true) {
 
         if(_enable && !v_bottom_up_) {
-            // Vertex bottom-up adjacencies have to be
+            // Vertex bottom-up incidences have to be
             // recomputed for the whole mesh
-            compute_vertex_bottom_up_adjacencies();
+            compute_vertex_bottom_up_incidences();
         }
 
         if(!_enable) {
@@ -410,12 +410,12 @@ public:
         v_bottom_up_ = _enable;
     }
 
-    void enable_edge_bottom_up_adjacencies(bool _enable = true) {
+    void enable_edge_bottom_up_incidences(bool _enable = true) {
 
         if(_enable && !e_bottom_up_) {
-            // Edge bottom-up adjacencies have to be
+            // Edge bottom-up incidences have to be
             // recomputed for the whole mesh
-            compute_edge_bottom_up_adjacencies();
+            compute_edge_bottom_up_incidences();
 
             if(f_bottom_up_) {
                 std::for_each(edges_begin(), edges_end(),
@@ -430,13 +430,13 @@ public:
         e_bottom_up_ = _enable;
     }
 
-    void enable_face_bottom_up_adjacencies(bool _enable = true) {
+    void enable_face_bottom_up_incidences(bool _enable = true) {
 
         bool updateOrder = false;
         if(_enable && !f_bottom_up_) {
-            // Face bottom-up adjacencies have to be
+            // Face bottom-up incidences have to be
             // recomputed for the whole mesh
-            compute_face_bottom_up_adjacencies();
+            compute_face_bottom_up_incidences();
 
             updateOrder = true;
         }
@@ -455,25 +455,25 @@ public:
         }
     }
 
-    bool has_full_bottom_up_adjacencies() const {
-        return (has_vertex_bottom_up_adjacencies() &&
-                has_edge_bottom_up_adjacencies() &&
-                has_face_bottom_up_adjacencies());
+    bool has_full_bottom_up_incidences() const {
+        return (has_vertex_bottom_up_incidences() &&
+                has_edge_bottom_up_incidences() &&
+                has_face_bottom_up_incidences());
     }
 
-    bool has_vertex_bottom_up_adjacencies() const { return v_bottom_up_; }
+    bool has_vertex_bottom_up_incidences() const { return v_bottom_up_; }
 
-    bool has_edge_bottom_up_adjacencies() const { return e_bottom_up_; }
+    bool has_edge_bottom_up_incidences() const { return e_bottom_up_; }
 
-    bool has_face_bottom_up_adjacencies() const { return f_bottom_up_; }
+    bool has_face_bottom_up_incidences() const { return f_bottom_up_; }
 
 private:
 
-    void compute_vertex_bottom_up_adjacencies();
+    void compute_vertex_bottom_up_incidences();
 
-    void compute_edge_bottom_up_adjacencies();
+    void compute_edge_bottom_up_incidences();
 
-    void compute_face_bottom_up_adjacencies();
+    void compute_face_bottom_up_incidences();
 
     void reorder_incident_halffaces(const EdgeHandle& _eh);
 
@@ -516,7 +516,7 @@ public:
 
     bool is_boundary(const EdgeHandle& _edgeHandle) const {
         if(!e_bottom_up_) {
-            std::cerr << "Error: Function is_boundary() needs bottom-up adjacencies for edges!" << std::endl;
+            std::cerr << "Error: Function is_boundary() needs bottom-up incidences for edges!" << std::endl;
             return false;
         }
         for(HalfEdgeHalfFaceIter hehf_it = hehf_iter(halfedge_handle(_edgeHandle, 0));
@@ -530,7 +530,7 @@ public:
 
     bool is_boundary(const HalfEdgeHandle& _halfedgeHandle) const {
         if(!e_bottom_up_) {
-            std::cerr << "Error: Function is_boundary() needs bottom-up adjacencies for edges!" << std::endl;
+            std::cerr << "Error: Function is_boundary() needs bottom-up incidences for edges!" << std::endl;
             return false;
         }
         for(HalfEdgeHalfFaceIter hehf_it = hehf_iter(_halfedgeHandle);
@@ -544,7 +544,7 @@ public:
 
     bool is_boundary(const VertexHandle& _vertexHandle) const {
         if(!v_bottom_up_) {
-            std::cerr << "Error: Function is_boundary() needs bottom-up adjacencies for vertices!" << std::endl;
+            std::cerr << "Error: Function is_boundary() needs bottom-up incidences for vertices!" << std::endl;
             return false;
         }
         for(VertexOHalfEdgeIter voh_it = voh_iter(_vertexHandle); voh_it.valid(); ++voh_it) {

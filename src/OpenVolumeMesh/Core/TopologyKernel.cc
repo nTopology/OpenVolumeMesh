@@ -72,7 +72,7 @@ VertexHandle TopologyKernel::add_vertex() {
 
     ++n_vertices_;
 
-    // Create item for vertex bottom-up adjacencies
+    // Create item for vertex bottom-up incidences
     if(v_bottom_up_) {
         outgoing_hes_per_vertex_.resize(n_vertices_);
     }
@@ -132,7 +132,7 @@ EdgeHandle TopologyKernel::add_edge(const VertexHandle& _fromVertex,
 
     EdgeHandle eh((int)edges_.size()-1);
 
-    // Update vertex bottom-up adjacencies
+    // Update vertex bottom-up incidences
     if(v_bottom_up_) {
         assert(outgoing_hes_per_vertex_.size() > (unsigned int)_fromVertex.idx());
         assert(outgoing_hes_per_vertex_.size() > (unsigned int)_toVertex.idx());
@@ -140,7 +140,7 @@ EdgeHandle TopologyKernel::add_edge(const VertexHandle& _fromVertex,
         outgoing_hes_per_vertex_[_toVertex.idx()].push_back(halfedge_handle(eh, 1));
     }
 
-    // Create item for edge bottom-up adjacencies
+    // Create item for edge bottom-up incidences
     if(e_bottom_up_) {
         incident_hfs_per_he_.resize(n_halfedges());
     }
@@ -212,7 +212,7 @@ FaceHandle TopologyKernel::add_face(const std::vector<HalfEdgeHandle>& _halfedge
     // Resize props
     resize_fprops(n_faces());
 
-    // Update edge bottom-up adjacencies
+    // Update edge bottom-up incidences
     if(e_bottom_up_) {
 
         for(std::vector<HalfEdgeHandle>::const_iterator it = _halfedges.begin(),
@@ -224,7 +224,7 @@ FaceHandle TopologyKernel::add_face(const std::vector<HalfEdgeHandle>& _halfedge
         }
     }
 
-    // Create item for face bottom-up adjacencies
+    // Create item for face bottom-up incidences
     if(f_bottom_up_) {
         incident_cell_per_hf_.resize(n_halffaces(), InvalidCellHandle);
     }
@@ -419,7 +419,7 @@ CellHandle TopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halfface
 
     CellHandle ch((int)cells_.size()-1);
 
-    // Update face bottom-up adjacencies
+    // Update face bottom-up incidences
     if(f_bottom_up_) {
 
         std::set<EdgeHandle> cell_edges;
@@ -902,10 +902,10 @@ CellIter TopologyKernel::delete_cell_range(const CellIter& _first, const CellIte
 
     std::vector<Cell>::iterator it = cells_.erase(cells_.begin() + _first->idx(), cells_.begin() + _last->idx());
 
-    // Re-compute face bottom-up adjacencies if necessary
+    // Re-compute face bottom-up incidences if necessary
     if(f_bottom_up_) {
         f_bottom_up_ = false;
-        enable_face_bottom_up_adjacencies(true);
+        enable_face_bottom_up_incidences(true);
     }
 
     return CellIter(this, CellHandle(it - cells_.begin()));
@@ -1160,8 +1160,8 @@ TopologyKernel::adjacent_halfface_in_cell(const HalfFaceHandle& _halfFaceHandle,
         return InvalidHalfFaceHandle;
     }
 #endif
-    if(!has_face_bottom_up_adjacencies()) {
-        std::cerr << "Error: Function adjacent_halfface_in_cell() needs face bottom-up adjacencies!" << std::endl;
+    if(!has_face_bottom_up_incidences()) {
+        std::cerr << "Error: Function adjacent_halfface_in_cell() needs face bottom-up incidences!" << std::endl;
         return InvalidHalfFaceHandle;
     }
     if(incident_cell_per_hf_[_halfFaceHandle.idx()] == InvalidCellHandle) {
@@ -1202,7 +1202,7 @@ TopologyKernel::adjacent_halfface_in_cell(const HalfFaceHandle& _halfFaceHandle,
 
 CellHandle TopologyKernel::incident_cell(const HalfFaceHandle& _halfFaceHandle) const {
 
-    if(!has_face_bottom_up_adjacencies()) {
+    if(!has_face_bottom_up_incidences()) {
         return InvalidCellHandle;
     }
     if((unsigned int)_halfFaceHandle.idx() >= incident_cell_per_hf_.size() || _halfFaceHandle.idx() < 0) {
@@ -1214,9 +1214,9 @@ CellHandle TopologyKernel::incident_cell(const HalfFaceHandle& _halfFaceHandle) 
 
 //========================================================================================
 
-void TopologyKernel::compute_vertex_bottom_up_adjacencies() {
+void TopologyKernel::compute_vertex_bottom_up_incidences() {
 
-    // Clear adjacencies
+    // Clear incidences
     outgoing_hes_per_vertex_.clear();
     outgoing_hes_per_vertex_.resize(n_vertices());
 
@@ -1226,14 +1226,14 @@ void TopologyKernel::compute_vertex_bottom_up_adjacencies() {
 
         VertexHandle from = edges_[i].from_vertex();
         if((unsigned int)from.idx() >= outgoing_hes_per_vertex_.size()) {
-            std::cerr << "update_adjacencies(): Vertex handle is out of bounds!" << std::endl;
+            std::cerr << "update_incidences(): Vertex handle is out of bounds!" << std::endl;
             return;
         }
         outgoing_hes_per_vertex_[from.idx()].push_back(halfedge_handle(EdgeHandle(i), 0));
 
         VertexHandle to = edges_[i].to_vertex();
         if((unsigned int)to.idx() >= outgoing_hes_per_vertex_.size()) {
-            std::cerr << "update_adjacencies(): Vertex handle is out of bounds!" << std::endl;
+            std::cerr << "update_incidences(): Vertex handle is out of bounds!" << std::endl;
             return;
         }
         // Store opposite halfedge handle
@@ -1243,7 +1243,7 @@ void TopologyKernel::compute_vertex_bottom_up_adjacencies() {
 
 //========================================================================================
 
-void TopologyKernel::compute_edge_bottom_up_adjacencies() {
+void TopologyKernel::compute_edge_bottom_up_incidences() {
 
     // Clear
     incident_hfs_per_he_.clear();
@@ -1268,7 +1268,7 @@ void TopologyKernel::compute_edge_bottom_up_adjacencies() {
 
 //========================================================================================
 
-void TopologyKernel::compute_face_bottom_up_adjacencies() {
+void TopologyKernel::compute_face_bottom_up_incidences() {
 
     // Clear
     incident_cell_per_hf_.clear();

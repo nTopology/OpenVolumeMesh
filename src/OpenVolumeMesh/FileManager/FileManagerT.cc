@@ -62,7 +62,7 @@ namespace IO {
 
 template <class MeshT>
 bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
-    bool _topologyCheck, bool _computeBottomUpAdjacencies) const {
+    bool _topologyCheck, bool _computeBottomUpIncidences) const {
 
     std::ifstream iff(_filename.c_str(), std::ios::in);
 
@@ -84,7 +84,7 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     // Temporarily disable bottom-up incidences
     // since it's way faster to first add all the
     // geometry and compute them in one pass afterwards
-    _mesh.enable_bottom_up_adjacencies(false);
+    _mesh.enable_bottom_up_incidences(false);
 
     /*
      * Header
@@ -282,9 +282,9 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
 
     iff.close();
 
-    if(_computeBottomUpAdjacencies) {
+    if(_computeBottomUpIncidences) {
         // Compute bottom-up incidences
-        _mesh.enable_bottom_up_adjacencies(true);
+        _mesh.enable_bottom_up_incidences(true);
     }
 
     std::cerr << "######## openvolumemesh info #########" << std::endl;
