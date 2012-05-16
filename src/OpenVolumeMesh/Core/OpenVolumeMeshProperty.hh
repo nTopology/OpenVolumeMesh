@@ -325,7 +325,7 @@ protected:
 
         assert(_tags.size() == data_.size());
         vector_type new_data;
-        typename vector_type::iterator d_it = data_.begin();
+        vector_type::iterator d_it = data_.begin();
         std::vector<bool>::const_iterator t_it = _tags.begin();
         std::vector<bool>::const_iterator t_end = _tags.end();
         for(; t_it != t_end; ++t_it, ++d_it) {
@@ -454,7 +454,7 @@ protected:
 
         assert(_tags.size() == data_.size());
         vector_type new_data;
-        typename vector_type::iterator d_it = data_.begin();
+        vector_type::iterator d_it = data_.begin();
         std::vector<bool>::const_iterator t_it = _tags.begin();
         std::vector<bool>::const_iterator t_end = _tags.end();
         for(; t_it != t_end; ++t_it, ++d_it) {
