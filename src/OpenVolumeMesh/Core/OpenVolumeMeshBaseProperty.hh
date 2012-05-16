@@ -47,6 +47,7 @@
 #include <limits>
 #include <string>
 #include <iostream>
+#include <vector>
 
 #include "OpenVolumeMeshHandle.hh"
 
@@ -62,6 +63,9 @@ namespace OpenVolumeMesh {
 
 class OpenVolumeMeshBaseProperty {
 public:
+
+    friend class ResourceManager;
+    template <class PropT, class HandleT> friend class PropertyPtr;
 
 	/// Indicates an error when a size is returned by a member.
 	static const size_t UnknownSize;
@@ -101,8 +105,6 @@ public:
 	/// Return a deep copy of self.
 	virtual OpenVolumeMeshBaseProperty* clone() const = 0;
 
-public:
-
 	/// Return the name of the property
 	const std::string& name() const {
 		return name_;
@@ -115,8 +117,6 @@ public:
 
 	// Function to deserialize a property
     virtual void deserialize(std::istream& /*_istr*/) {}
-
-public:
 	// I/O support
 
 	void set_persistent(bool _persistent) { persistent_ = _persistent; }
@@ -144,6 +144,11 @@ public:
 	const OpenVolumeMeshHandle& handle() const { return handle_; }
 
 	void set_handle(const OpenVolumeMeshHandle& _handle) { handle_.idx(_handle.idx()); }
+
+protected:
+
+	/// Delete multiple entries in list
+    virtual void delete_multiple_entries(const std::vector<bool>&) = 0;
 
 private:
 

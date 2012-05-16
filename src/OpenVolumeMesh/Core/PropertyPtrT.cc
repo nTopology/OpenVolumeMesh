@@ -93,4 +93,9 @@ OpenVolumeMeshHandle PropertyPtr<PropT,HandleT>::handle() const {
     return ptr::shared_ptr<PropT>::get()->handle();
 }
 
+template <class PropT, class HandleT>
+void PropertyPtr<PropT,HandleT>::delete_multiple_entries(const std::vector<bool>& _tags) {
+    ptr::shared_ptr<PropT>::get()->delete_multiple_entries(_tags);
+}
+
 } // Namespace OpenVolumeMesh

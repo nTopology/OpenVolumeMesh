@@ -218,6 +218,16 @@ public:
 
     Properties::const_iterator mesh_props_end() const { return mesh_props_.end(); }
 
+protected:
+
+    void delete_multiple_vertex_props(const std::vector<bool>& _tags);
+
+    void delete_multiple_edge_props(const std::vector<bool>& _tags);
+
+    void delete_multiple_face_props(const std::vector<bool>& _tags);
+
+    void delete_multiple_cell_props(const std::vector<bool>& _tags);
+
 private:
 
     template<class StdVecT>

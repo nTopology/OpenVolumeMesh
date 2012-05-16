@@ -76,6 +76,11 @@ public:
     typedef OpenVolumeMeshFace Face;
     typedef OpenVolumeMeshCell Cell;
 
+    // Add StatusAttrib to list of friend classes
+    // since it provides a garbage collection
+    // that needs access to some protected methods
+    friend class StatusAttrib;
+
     //=====================================================================
     // Iterators
     //=====================================================================
@@ -338,6 +343,71 @@ public:
     virtual FaceIter delete_face(const FaceHandle& _h);
 
     virtual CellIter delete_cell(const CellHandle& _h);
+
+protected:
+
+    virtual void delete_multiple_vertices(const std::vector<bool>& _tag);
+
+    virtual void delete_multiple_edges(const std::vector<bool>& _tag);
+
+    virtual void delete_multiple_faces(const std::vector<bool>& _tag);
+
+    virtual void delete_multiple_cells(const std::vector<bool>& _tag);
+
+    class EdgeCorrector {
+    public:
+        EdgeCorrector(const std::vector<int>& _newIndices) :
+            newIndices_(_newIndices) {}
+
+        void operator()(Edge& _edge) {
+            _edge.set_from_vertex(VertexHandle(newIndices_[_edge.from_vertex().idx()]));
+            _edge.set_to_vertex(VertexHandle(newIndices_[_edge.to_vertex().idx()]));
+        }
+    private:
+        const std::vector<int>& newIndices_;
+    };
+
+    class FaceCorrector {
+    public:
+        FaceCorrector(const std::vector<int>& _newIndices) :
+            newIndices_(_newIndices) {}
+
+        void operator()(Face& _face) {
+            std::vector<HalfEdgeHandle> hes = _face.halfedges();
+            for(std::vector<HalfEdgeHandle>::iterator he_it = hes.begin(),
+                    he_end = hes.end(); he_it != he_end; ++he_it) {
+
+                EdgeHandle eh = edge_handle(*he_it);
+                unsigned char opp = (he_it->idx() - halfedge_handle(eh, 0).idx());
+                *he_it = halfedge_handle(newIndices_[eh.idx()], opp);
+            }
+            _face.set_halfedges(hes);
+        }
+    private:
+        const std::vector<int>& newIndices_;
+    };
+
+    class CellCorrector {
+    public:
+        CellCorrector(const std::vector<int>& _newIndices) :
+            newIndices_(_newIndices) {}
+
+        void operator()(Cell& _cell) {
+            std::vector<HalfFaceHandle> hfs = _cell.halffaces();
+            for(std::vector<HalfFaceHandle>::iterator hf_it = hfs.begin(),
+                    hf_end = hfs.end(); hf_it != hf_end; ++hf_it) {
+
+                FaceHandle fh = face_handle(*hf_it);
+                unsigned char opp = (hf_it->idx() - halfface_handle(fh, 0).idx());
+                *hf_it = halfface_handle(newIndices_[fh.idx()], opp);
+            }
+            _cell.set_halffaces(hfs);
+        }
+    private:
+        const std::vector<int>& newIndices_;
+    };
+
+public:
 
     /** \brief Delete range of cells
      *

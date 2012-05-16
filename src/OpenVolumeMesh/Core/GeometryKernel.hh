@@ -99,6 +99,34 @@ public:
         return nV;
     }
 
+protected:
+
+    virtual void delete_multiple_vertices(const std::vector<bool>& _tag) {
+
+        assert(_tag.size() == TopologyKernelT::n_vertices());
+
+        std::vector<VecT> newVertices;
+
+        typename std::vector<VecT>::const_iterator v_it = vertices_.begin();
+
+        for(std::vector<bool>::const_iterator t_it = _tag.begin(),
+                t_end = _tag.end(); t_it != t_end; ++t_it, ++v_it) {
+
+            if(!(*t_it)) {
+                // Not marked as deleted
+
+                newVertices.push_back(*v_it);
+            }
+        }
+
+        // Swap vertices
+        vertices_.swap(newVertices);
+
+        TopologyKernelT::delete_multiple_vertices(_tag);
+    }
+
+public:
+
     virtual void clear(bool _clearProps = true) {
 
         vertices_.clear();

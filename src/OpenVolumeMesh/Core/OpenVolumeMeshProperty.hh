@@ -70,6 +70,8 @@ template<class T>
 class OpenVolumeMeshPropertyT: public OpenVolumeMeshBaseProperty {
 public:
 
+    template <class PropT, class HandleT> friend class PropertyPtr;
+
 	typedef T 										Value;
 	typedef std::vector<T> 				            vector_type;
 	typedef T 										value_type;
@@ -200,6 +202,24 @@ public:
 
     typename vector_type::iterator end() { return data_.end(); }
 
+protected:
+
+    /// Delete multiple entries in list
+    virtual void delete_multiple_entries(const std::vector<bool>& _tags) {
+
+        assert(_tags.size() == data_.size());
+        vector_type new_data;
+        typename vector_type::iterator d_it = data_.begin();
+        std::vector<bool>::const_iterator t_it = _tags.begin();
+        std::vector<bool>::const_iterator t_end = _tags.end();
+        for(; t_it != t_end; ++t_it, ++d_it) {
+            if(!*t_it) {
+                new_data.push_back(*d_it);
+            }
+        }
+        data_.swap(new_data);
+    }
+
 private:
 
 	vector_type data_;
@@ -214,6 +234,8 @@ private:
 template<>
 class OpenVolumeMeshPropertyT<bool> : public OpenVolumeMeshBaseProperty {
 public:
+
+    template <class PropT, class HandleT> friend class PropertyPtr;
 
 	typedef std::vector<bool> 				vector_type;
 	typedef bool 							value_type;
@@ -296,6 +318,24 @@ public:
 
     vector_type::iterator end() { return data_.end(); }
 
+protected:
+
+    /// Delete multiple entries in list
+    virtual void delete_multiple_entries(const std::vector<bool>& _tags) {
+
+        assert(_tags.size() == data_.size());
+        vector_type new_data;
+        typename vector_type::iterator d_it = data_.begin();
+        std::vector<bool>::const_iterator t_it = _tags.begin();
+        std::vector<bool>::const_iterator t_end = _tags.end();
+        for(; t_it != t_end; ++t_it, ++d_it) {
+            if(!*t_it) {
+                new_data.push_back(*d_it);
+            }
+        }
+        data_.swap(new_data);
+    }
+
 private:
 
 	vector_type data_;
@@ -310,6 +350,8 @@ private:
 template<>
 class OpenVolumeMeshPropertyT<std::string> : public OpenVolumeMeshBaseProperty {
 public:
+
+    template <class PropT, class HandleT> friend class PropertyPtr;
 
 	typedef std::string 					Value;
 	typedef std::vector<std::string> 		vector_type;
@@ -404,6 +446,24 @@ public:
     vector_type::const_iterator end() const { return data_.end(); }
 
     vector_type::iterator end() { return data_.end(); }
+
+protected:
+
+    /// Delete multiple entries in list
+    virtual void delete_multiple_entries(const std::vector<bool>& _tags) {
+
+        assert(_tags.size() == data_.size());
+        vector_type new_data;
+        typename vector_type::iterator d_it = data_.begin();
+        std::vector<bool>::const_iterator t_it = _tags.begin();
+        std::vector<bool>::const_iterator t_end = _tags.end();
+        for(; t_it != t_end; ++t_it, ++d_it) {
+            if(!*t_it) {
+                new_data.push_back(*d_it);
+            }
+        }
+        data_.swap(new_data);
+    }
 
 private:
 

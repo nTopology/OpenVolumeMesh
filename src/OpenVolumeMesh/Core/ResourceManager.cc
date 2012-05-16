@@ -141,4 +141,64 @@ void ResourceManager::release_property(MeshPropHandle _handle) {
     remove_property(mesh_props_, _handle.idx());
 }
 
+void ResourceManager::delete_multiple_vertex_props(const std::vector<bool>& _tags) {
+
+    Properties::iterator vp_it = vertex_props_.begin();
+    Properties::iterator vp_end = vertex_props_.end();
+    for(; vp_it != vp_end; ++vp_it) {
+        (*vp_it)->delete_multiple_entries(_tags);
+    }
+}
+
+void ResourceManager::delete_multiple_edge_props(const std::vector<bool>& _tags) {
+
+    Properties::iterator ep_it = edge_props_.begin();
+    Properties::iterator ep_end = edge_props_.end();
+    for(; ep_it != ep_end; ++ep_it) {
+        (*ep_it)->delete_multiple_entries(_tags);
+    }
+    // Create tags vector for halfedges
+    std::vector<bool> hetags;
+    for(std::vector<bool>::const_iterator t_it = _tags.begin(),
+            t_end = _tags.end(); t_it != t_end; ++t_it) {
+        hetags.push_back(*t_it);
+        hetags.push_back(*t_it);
+    }
+    Properties::iterator hep_it = halfedge_props_.begin();
+    Properties::iterator hep_end = halfedge_props_.end();
+    for(; hep_it != hep_end; ++hep_it) {
+        (*hep_it)->delete_multiple_entries(hetags);
+    }
+}
+
+void ResourceManager::delete_multiple_face_props(const std::vector<bool>& _tags) {
+
+    Properties::iterator fp_it = face_props_.begin();
+    Properties::iterator fp_end = face_props_.end();
+    for(; fp_it != fp_end; ++fp_it) {
+        (*fp_it)->delete_multiple_entries(_tags);
+    }
+    // Create tags vector for halffaces
+    std::vector<bool> hftags;
+    for(std::vector<bool>::const_iterator t_it = _tags.begin(),
+            t_end = _tags.end(); t_it != t_end; ++t_it) {
+        hftags.push_back(*t_it);
+        hftags.push_back(*t_it);
+    }
+    Properties::iterator hfp_it = halfface_props_.begin();
+    Properties::iterator hfp_end = halfface_props_.end();
+    for(; hfp_it != hfp_end; ++hfp_it) {
+        (*hfp_it)->delete_multiple_entries(hftags);
+    }
+}
+
+void ResourceManager::delete_multiple_cell_props(const std::vector<bool>& _tags) {
+
+    Properties::iterator cp_it = cell_props_.begin();
+    Properties::iterator cp_end = cell_props_.end();
+    for(; cp_it != cp_end; ++cp_it) {
+        (*cp_it)->delete_multiple_entries(_tags);
+    }
+}
+
 } // Namespace OpenVolumeMesh

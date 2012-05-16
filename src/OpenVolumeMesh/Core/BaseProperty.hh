@@ -79,6 +79,8 @@ public:
 
 protected:
 
+    virtual void delete_multiple_entries(const std::vector<bool>& _tags) = 0;
+
     virtual void resize(unsigned int /*_size*/) = 0;
 
     virtual void set_handle(const OpenVolumeMeshHandle& /*_handle*/) = 0;
