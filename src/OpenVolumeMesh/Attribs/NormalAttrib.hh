@@ -97,6 +97,11 @@ public:
         return v_normals_[_h.idx()];
     }
 
+    typename GeomKernelT::PointT& operator[](const FaceHandle& _h) {
+        assert((unsigned int)_h.idx() < kernel_.n_faces());
+        return f_normals_[_h.idx()];
+    }
+
     typename GeomKernelT::PointT& operator[](const HalfFaceHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_halffaces());
         double mult = 1.0;
