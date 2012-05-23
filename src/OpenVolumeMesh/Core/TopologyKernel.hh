@@ -489,7 +489,7 @@ public:
 
             if(f_bottom_up_) {
                 std::for_each(edges_begin(), edges_end(),
-                              std::tr1::bind(&TopologyKernel::reorder_incident_halffaces, this, std::tr1::placeholders::_1));
+                              fun::bind(&TopologyKernel::reorder_incident_halffaces, this, fun::placeholders::_1));
             }
         }
 
@@ -520,7 +520,7 @@ public:
         if(updateOrder) {
             if(e_bottom_up_) {
                 std::for_each(edges_begin(), edges_end(),
-                              std::tr1::bind(&TopologyKernel::reorder_incident_halffaces, this, std::tr1::placeholders::_1));
+                              fun::bind(&TopologyKernel::reorder_incident_halffaces, this, fun::placeholders::_1));
             }
         }
     }
