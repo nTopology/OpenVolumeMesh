@@ -85,7 +85,7 @@ public:
         return f_normals_[_h.idx()];
     }
 
-    const typename GeomKernelT::PointT& operator[](const HalfFaceHandle& _h) const {
+    const typename GeomKernelT::PointT operator[](const HalfFaceHandle& _h) const {
         assert((unsigned int)_h.idx() < kernel_.n_halffaces());
         double mult = 1.0;
         if(_h.idx() % 2 == 1) mult = -1.0;
@@ -102,7 +102,7 @@ public:
         return f_normals_[_h.idx()];
     }
 
-    typename GeomKernelT::PointT& operator[](const HalfFaceHandle& _h) {
+    typename GeomKernelT::PointT operator[](const HalfFaceHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_halffaces());
         double mult = 1.0;
         if(_h.idx() % 2 == 1) mult = -1.0;
