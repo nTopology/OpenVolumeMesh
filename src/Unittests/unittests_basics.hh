@@ -554,17 +554,37 @@ TEST_F(PolyhedralMeshBase, VolumeMeshNormals) {
     EXPECT_DOUBLE_EQ(n_z[1], n[1]);
     EXPECT_DOUBLE_EQ(n_z[2], n[2]);
 
+    n = normals[HalfFaceHandle(1)];
+    EXPECT_DOUBLE_EQ(-n_z[0], n[0]);
+    EXPECT_DOUBLE_EQ(-n_z[1], n[1]);
+    EXPECT_DOUBLE_EQ(-n_z[2], n[2]);
+
     // Should be negative x-axis
     n = normals[FaceHandle(2)];
     EXPECT_DOUBLE_EQ(-n_x[0], n[0]);
     EXPECT_DOUBLE_EQ(-n_x[1], n[1]);
     EXPECT_DOUBLE_EQ(-n_x[2], n[2]);
 
+    n = normals[HalfFaceHandle(4)];
+    EXPECT_DOUBLE_EQ(-n_x[0], n[0]);
+    EXPECT_DOUBLE_EQ(-n_x[1], n[1]);
+    EXPECT_DOUBLE_EQ(-n_x[2], n[2]);
+
+    n = normals[HalfFaceHandle(5)];
+    EXPECT_DOUBLE_EQ(n_x[0], n[0]);
+    EXPECT_DOUBLE_EQ(n_x[1], n[1]);
+    EXPECT_DOUBLE_EQ(n_x[2], n[2]);
+
     // Should be negative y-axis
     n = normals[FaceHandle(4)];
     EXPECT_DOUBLE_EQ(-n_y[0], n[0]);
     EXPECT_DOUBLE_EQ(-n_y[1], n[1]);
     EXPECT_DOUBLE_EQ(-n_y[2], n[2]);
+
+    n = normals[HalfFaceHandle(9)];
+    EXPECT_DOUBLE_EQ(n_y[0], n[0]);
+    EXPECT_DOUBLE_EQ(n_y[1], n[1]);
+    EXPECT_DOUBLE_EQ(n_y[2], n[2]);
 
     // Should be positive y-axis
     n = normals[FaceHandle(5)];
