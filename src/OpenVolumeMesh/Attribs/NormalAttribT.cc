@@ -127,11 +127,7 @@ void NormalAttrib<GeomKernelT>::compute_face_normal(const FaceHandle& _fh) {
         return;
     }
 
-    // Always try to compute the outside normals
-    HalfFaceHandle hfh = kernel_.is_boundary(kernel_.halfface_handle(_fh, 0)) ?
-            kernel_.halfface_handle(_fh, 0) : kernel_.halfface_handle(_fh, 1);
-
-    std::vector<HalfEdgeHandle> halfedges = kernel_.halfface(hfh).halfedges();
+    const std::vector<HalfEdgeHandle>& halfedges = kernel_.face(_fh).halfedges();
     std::vector<HalfEdgeHandle>::const_iterator he_it = halfedges.begin();
 
     typename GeomKernelT::PointT p1 = kernel_.vertex(kernel_.halfedge(*he_it).from_vertex());
@@ -139,7 +135,7 @@ void NormalAttrib<GeomKernelT>::compute_face_normal(const FaceHandle& _fh) {
     ++he_it;
     typename GeomKernelT::PointT p3 = kernel_.vertex(kernel_.halfedge(*he_it).to_vertex());
 
-    typename GeomKernelT::PointT n = (p1 - p2) % (p3 - p2);
+    typename GeomKernelT::PointT n = (p2 - p1) % (p3 - p2);
     n.normalize();
 
     f_normals_[_fh.idx()] = n;
