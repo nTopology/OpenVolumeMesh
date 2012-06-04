@@ -626,7 +626,7 @@ TEST_F(PolyhedralMeshBase, PolyhedralMeshStatusTest) {
     EXPECT_FALSE(status[VertexHandle(9)].selected());
 }
 
-TEST_F(PolyhedralMeshBase, PolyhedralMeshColoTest) {
+TEST_F(PolyhedralMeshBase, PolyhedralMeshColorTest) {
 
     generatePolyhedralMesh(mesh_);
 
