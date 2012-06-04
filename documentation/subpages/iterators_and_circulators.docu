@@ -7,13 +7,12 @@ of an entity, %OpenVolumeMesh provides a set of iterators and circulators. These
 are entirely STL-compatible and can as such be used in all algorithms of the C++ standard
 template library. We distinguish between two different kinds of iterators:
 
-\li \b Intrinsic \b Iterators: Iterators that do not require bottom-up adjacencies to
+\li \b Intrinsic \b Iterators: Iterators that do not require bottom-up incidences to
     be computed.
-\li \b Bottom-Up \b Adjacency \b Dependent \b Iterators: Iterators that need bottom-up
-    adjacencies to be computed before they can be used.
+\li \b Bottom-Up \b Incidence \b Dependent \b Iterators: Iterators that need bottom-up
+    incidences to be computed before they can be used.
 
-For information on bottom-up adjacencies, refer to Section \ref concepts. Bottom-up
-adjacencies can be computed by calling OpenVolumeMesh::PolyhedralMesh::update_adjacencies().
+For information on bottom-up incidences, refer to Section \ref concepts.
 Note since %OpenVolumeMesh is an index-based data structure, the iterators encapsulate
 \e handles to entities. Dereferencing an iterator thus never returns a reference to the
 entity itself but only a handle to the entity.
@@ -39,7 +38,7 @@ The following sections provide a concise overview of the iterators that come alo
     Iterate over all vertices of a given cell.
 
     
-\section adjacency_depending_iterators Bottom-Up Adjacency Dependent Iterators and Circulators
+\section incidence_depending_iterators Bottom-Up Incidence Dependent Iterators and Circulators
 
 \subsection general_iterators Iterators for General Polyhedral Meshes
 

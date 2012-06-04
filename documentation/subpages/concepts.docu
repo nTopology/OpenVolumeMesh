@@ -8,7 +8,7 @@ The concepts of %OpenVolumeMesh are closely related to those of %OpenMesh (http:
 For further reading on the concepts of %OpenMesh, refer to \cite Botsch02OpenMesh.
 %OpenMesh is used to handle two-manifold geometric meshes. For this purpose, it distinguishes
 between \e vertices, \e edges, and \e faces. The main idea in %OpenMesh is to represent the
-edges as a pair of so-called half-edges that have opposing orientations. Additional local adjacency
+edges as a pair of so-called half-edges that have opposing orientations. Additional local incidence
 information is stored for each half-edge such that the navigation on the mesh can be completely
 accomplished by using only these local links to adjacent structures (similar to e.g. a linked list).
 This, of course, assumes the surface mesh to be two-manifold.
@@ -18,7 +18,7 @@ The main concept of %OpenVolumeMesh is slightly different but shares some of its
 set of polyhedra, %OpenVolumeMesh extends the set of entities by \e cells.
 But unlike in the original idea of half-edge data structure,
 in %OpenVolumeMesh all entities are stored in arrays (STL vectors) rather than
-in adjacency linked lists. This is why %OpenVolumeMesh is index-based which
+in incidence linked lists. This is why %OpenVolumeMesh is index-based which
 has the major advantage that the data structure can handle configurations that are
 not three-manifold (since this is desired in some applications).
 For example, a set of vertices or just a two-manifold surface can be respresented by
@@ -32,57 +32,57 @@ by its incident half-edges. See Figure 1 for an illustration of this concept.
 
 \image html halfedge_halfface.png "Figure 1. Left: Two half-edges as in OpenMesh. Right: A face split into two half-faces."
 
-\section adjacencies Adjacency Relations
+\section incidences Incidence Relations
 
 The entities in %OpenVolumeMesh are arranged hierarchically and we distinguish between
-two adjacency relations:
+two incidence relations:
 
-\li The (intrinsic) top-down adjacencies and
-\li the bottom-up adjacencies.
+\li The (intrinsic) top-down incidences and
+\li the bottom-up incidences.
 
-\subsection top_down The Top-Down Adjacency Relation
+\subsection top_down The Top-Down Incidence Relation
 
 Each entity of dimension n is defined as a tuple of entities of dimension n-1,
 except for the vertices. So, edges are defined as a pair of vertices, (half-)faces are defined as
 a j-tuple of (half-)edges, where j is the valence of the face, and cells are defined
-as a k-tuple of (half-)faces, where k is the valence of the cell. This adjacency
+as a k-tuple of (half-)faces, where k is the valence of the cell. This incidence
 relation is intrinsically given by definition. %OpenVolumeMesh can use these
-adjacencies in order to provide \e top-down circulators, that is circulators
+incidences in order to provide \e top-down circulators, that is circulators
 that address all adjacent lower-dimensional entities of a given reference entity.
 Read more on iterators and circulators in Section \ref iterators_and_circulators. 
 Figure 2 illustrates this hierarchy.
 
 \image html volume_mesh_hierarchy.png "Figure 2. Each entity is defined as a tuple of lower-dimensional entities."
 
-\subsection bottom_up The Bottom-Up Adjacency Relation
+\subsection bottom_up The Bottom-Up Incidence Relation
 
-In many cases, the adjacency list to higher dimensional entities for a given entity is
+In many cases, the incidence list to higher dimensional entities for a given entity is
 required. Therefore, %OpenVolumeMesh offers the opportunity to explicitly compute
-the so-called \e bottom-up adjacencies. For this, %OpenVolumeMesh stores the
+the so-called \e bottom-up incidences. For this, %OpenVolumeMesh stores the
 following information for the respective entity type in additional caches:
 
 \li \b Vertex: A list of all outgoing half-edges.
 \li \b Half-Edge: An (ordered) list of all incident half-faces.
 \li \b Half-Face: The handle to an incident cell or none if it is a boundary half-face.
 
-These adjacency relations are computed automatically for each affected entity
-when adding/deleting it. In most cases these adjacencies are needed since many
+These incidence relations are computed automatically for each affected entity
+when adding/deleting it. In most cases these incidences are needed since many
 iterators/circulators rely on them. Storing this additional information consumes
 extra memory that scales linearly with the mesh's complexity.
-However, in case these adjacency relations are not needed (e.g. in numerical analysis
-applications, etc.), they can be disabled by calling TopologyKernel::enable_bottom_up_adjacencies()
-and passing false as parameter. Also it is possible to enable bottom-up adjacencies
+However, in case these incidence relations are not needed (e.g. in numerical analysis
+applications, etc.), they can be disabled by calling TopologyKernel::enable_bottom_up_incidences()
+and passing false as parameter. Also it is possible to enable bottom-up incidences
 for single entity types, just call the following functions:
 
-\li TopologyKernel::enable_vertex_bottom_up_adjacencies()
-\li TopologyKernel::enable_edge_bottom_up_adjacencies()
-\li TopologyKernel::enable_face_bottom_up_adjacencies()
+\li TopologyKernel::enable_vertex_bottom_up_incidences()
+\li TopologyKernel::enable_edge_bottom_up_incidences()
+\li TopologyKernel::enable_face_bottom_up_incidences()
 
-This is useful in cases where only a subset of these adjacency relations is required
+This is useful in cases where only a subset of these incidence relations is required
 while at the same time keeping the data structure as compact as possible
 allocating only a minimum of storage overhead.
 
-\note Note that most of the iterators and circulators rely on these adjacency lists, so, many of them do not work if bottom-up adjacencies are disabled.
+\note Note that most of the iterators and circulators rely on these incidence lists, so, many of them do not work if bottom-up incidences are disabled.
 
 \section modularity Modularity - Take only what you need
 
@@ -98,7 +98,7 @@ between the geometry and topology of a mesh, such that the choice of whether a m
 a geometric embedding or not is up to the user. This may save a lot of unnecessary memory
 overhead in cases where only topological information of a mesh is needed.
 The topology kernel implements only a minimal set of (intrinsic) operations on
-a mesh such as adding/deleting entities, computing adjacency relations and instantiate
+a mesh such as adding/deleting entities, computing incidence relations and instantiate
 iterator objects. All other additional functions are provided by the so-called attribute classes
 which are presented in the next section.
 

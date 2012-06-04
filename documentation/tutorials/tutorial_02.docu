@@ -28,9 +28,9 @@ for(OpenVolumeMesh::HalfEdgeIter he_it = myMesh.halfedges_begin();
 \endcode
 
 In the next example, we iterate over all incident outgoing half-edges of a given
-vertex. Note that this iterator needs bottom-up adjacencies which are
+vertex. Note that this iterator needs bottom-up incidences which are
 computed automatically per default. Otherwise, the iterator would not be valid.
-See Section \ref bottom_up for information on the bottom-up adjacencies.
+See Section \ref bottom_up for information on the bottom-up incidences.
 
 \code
 // Instantiate a polyhedral mesh

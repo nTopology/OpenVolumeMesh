@@ -63,7 +63,7 @@ void someFunction() {
 
 Function OpenVolumeMesh::IO::FileManager::readFile() expects a total of four parameters,
 two of which are mandatory (file name and mesh reference). The other two parameters
-are optional flags that control whether bottom-up adjacencies should be computed automatically and
+are optional flags that control whether bottom-up incidences should be computed automatically and
 whether a topology check should be performed when adding faces and cells.
 The two flags are turned on per default.
 
