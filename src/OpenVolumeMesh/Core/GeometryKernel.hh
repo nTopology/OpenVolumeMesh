@@ -161,6 +161,19 @@ public:
         return p;
     }
 
+    void cloneVertices(std::vector<VecT>& _copy) const {
+        _copy.reserve(vertices_.size());
+        std::copy(vertices_.begin(), vertices_.end(), std::back_inserter(_copy));
+    }
+
+    void swapVertices(std::vector<VecT>& _copy) {
+        if(_copy.size() != vertices_.size()) {
+            std::cerr << "Vertex vectors differ in size!" << std::endl;
+            return;
+        }
+        std::swap(vertices_, _copy);
+    }
+
 private:
 
     std::vector<VecT> vertices_;
