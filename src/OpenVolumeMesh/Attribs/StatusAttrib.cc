@@ -171,7 +171,6 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
     mark_higher_dim_entities();
 
     std::vector<int> vertexIndexMap(kernel_.n_vertices(), -1);
-    int curIdx = 0;
 
     // Turn off bottom-up incidences
     bool v_bu = kernel_.has_vertex_bottom_up_incidences();

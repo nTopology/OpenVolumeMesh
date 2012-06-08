@@ -118,7 +118,7 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halff
 
             // Ordering array (see below for details)
             const int orderTop[] = {2, 4, 3, 5};
-            const int orderBot[] = {3, 4, 2, 5};
+            //const int orderBot[] = {3, 4, 2, 5};
 
             ordered_halffaces.resize(6, TopologyKernel::InvalidHalfFaceHandle);
 
