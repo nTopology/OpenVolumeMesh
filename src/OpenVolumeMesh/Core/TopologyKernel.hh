@@ -413,9 +413,9 @@ public:
      *
      * Deletes all cells in range [_first, _last].
      *
-     * @param: _first Iterator to first cell that is to be deleted
-     * @param: _last Iterator to last cell that is to be deleted
-     * @return: An iterator to the first cell after the deleted range
+     * @param _first Iterator to first cell that is to be deleted
+     * @param _last Iterator to last cell that is to be deleted
+     * @return An iterator to the first cell after the deleted range
      */
     CellIter delete_cell_range(const CellIter& _first, const CellIter& _last);
 

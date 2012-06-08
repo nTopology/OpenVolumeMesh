@@ -132,7 +132,7 @@ public:
      *   |/      |/
      *   0-------1
      *
-     * @param: _vertices A list of vertices in the correct order
+     * @param _vertices A list of vertices in the correct order
      *
      * @return The new hexahedron's cell handle
      */
