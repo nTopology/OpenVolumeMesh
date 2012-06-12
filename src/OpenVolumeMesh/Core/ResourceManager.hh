@@ -218,7 +218,7 @@ public:
 
     Properties::const_iterator mesh_props_end() const { return mesh_props_.end(); }
 
-    template <class PropIterT>
+    template <class FullPropT, class PropIterT>
     bool property_exists(const PropIterT& _begin, const PropIterT& _end, const std::string& _name) const {
 
         if(_name.length() == 0) {
@@ -228,37 +228,46 @@ public:
 
         PropIterT it = _begin;
         for(; it != _end; ++it) {
-            if((*it)->name() == _name) return true;
+            if((*it)->name() == _name && dynamic_cast<FullPropT*>(*it) != NULL) {
+                return true;
+            }
         }
         return false;
     }
 
+    template <class PropT>
     bool vertex_property_exists(const std::string& _name) const {
-        return property_exists(vertex_props_begin(), vertex_props_end(), _name);
+        return property_exists<VertexPropertyT<PropT> >(vertex_props_begin(), vertex_props_end(), _name);
     }
 
+    template <class PropT>
     bool edge_property_exists(const std::string& _name) const {
-        return property_exists(edge_props_begin(), edge_props_end(), _name);
+        return property_exists<EdgePropertyT<PropT> >(edge_props_begin(), edge_props_end(), _name);
     }
 
+    template <class PropT>
     bool halfedge_property_exists(const std::string& _name) const {
-        return property_exists(halfedge_props_begin(), halfedge_props_end(), _name);
+        return property_exists<HalfEdgePropertyT<PropT> >(halfedge_props_begin(), halfedge_props_end(), _name);
     }
 
+    template <class PropT>
     bool face_property_exists(const std::string& _name) const {
-        return property_exists(face_props_begin(), face_props_end(), _name);
+        return property_exists<FacePropertyT<PropT> >(face_props_begin(), face_props_end(), _name);
     }
 
+    template <class PropT>
     bool halfface_property_exists(const std::string& _name) const {
-        return property_exists(halfface_props_begin(), halfface_props_end(), _name);
+        return property_exists<HalfFacePropertyT<PropT> >(halfface_props_begin(), halfface_props_end(), _name);
     }
 
+    template <class PropT>
     bool cell_property_exists(const std::string& _name) const {
-        return property_exists(cell_props_begin(), cell_props_end(), _name);
+        return property_exists<CellPropertyT<PropT> >(cell_props_begin(), cell_props_end(), _name);
     }
 
+    template <class PropT>
     bool mesh_property_exists(const std::string& _name) const {
-        return property_exists(mesh_props_begin(), mesh_props_end(), _name);
+        return property_exists<MeshPropertyT<PropT> >(mesh_props_begin(), mesh_props_end(), _name);
     }
 
 protected:
