@@ -98,10 +98,10 @@ PropT ResourceManager::request_property(StdVecT& _vec, const std::string& _name,
     if(!_name.empty()) {
         for(typename StdVecT::iterator it = _vec.begin();
                 it != _vec.end(); ++it) {
-            if(!(*it)->persistent()) continue;
             if((*it)->name() == _name) {
                 PropT* prop = dynamic_cast<PropT*>(*it);
-                return *prop;
+                if(prop != NULL) return *prop;
+                else break;
             }
         }
     }

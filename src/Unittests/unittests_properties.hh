@@ -45,13 +45,13 @@ TEST_F(PolyhedralMeshBase, PropertySmartPointerTest1) {
 
         VertexPropertyT<float> v_prop_duplicate = mesh_.request_vertex_property<float>("MyVProp");
 
-        EXPECT_EQ(3u, mesh_.n_vertex_props());
+        EXPECT_EQ(2u, mesh_.n_vertex_props());
 
         EXPECT_FLOAT_EQ(1.4f, v_prop3[0]);
 
         VertexPropertyT<std::string> v_prop_duplicate_2 = mesh_.request_vertex_property<std::string>("MyVProp");
 
-        EXPECT_EQ(4u, mesh_.n_vertex_props());
+        EXPECT_EQ(3u, mesh_.n_vertex_props());
     }
 
     mesh_.set_persistent(v_prop_d);
