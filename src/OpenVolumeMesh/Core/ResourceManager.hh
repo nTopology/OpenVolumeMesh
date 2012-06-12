@@ -218,6 +218,49 @@ public:
 
     Properties::const_iterator mesh_props_end() const { return mesh_props_.end(); }
 
+    template <class PropIterT>
+    bool property_exists(const PropIterT& _begin, const PropIterT& _end, const std::string& _name) const {
+
+        if(_name.length() == 0) {
+            std::cerr << "Checking for the existance of anonymous properties is ambiguous!" << std::endl;
+            return false;
+        }
+
+        PropIterT it = _begin;
+        for(; it != _end; ++it) {
+            if((*it)->name() == _name) return true;
+        }
+        return false;
+    }
+
+    bool vertex_property_exists(const std::string& _name) const {
+        return property_exists(vertex_props_begin(), vertex_props_end(), _name);
+    }
+
+    bool edge_property_exists(const std::string& _name) const {
+        return property_exists(edge_props_begin(), edge_props_end(), _name);
+    }
+
+    bool halfedge_property_exists(const std::string& _name) const {
+        return property_exists(halfedge_props_begin(), halfedge_props_end(), _name);
+    }
+
+    bool face_property_exists(const std::string& _name) const {
+        return property_exists(face_props_begin(), face_props_end(), _name);
+    }
+
+    bool halfface_property_exists(const std::string& _name) const {
+        return property_exists(halfface_props_begin(), halfface_props_end(), _name);
+    }
+
+    bool cell_property_exists(const std::string& _name) const {
+        return property_exists(cell_props_begin(), cell_props_end(), _name);
+    }
+
+    bool mesh_property_exists(const std::string& _name) const {
+        return property_exists(mesh_props_begin(), mesh_props_end(), _name);
+    }
+
 protected:
 
     void delete_multiple_vertex_props(const std::vector<bool>& _tags);
