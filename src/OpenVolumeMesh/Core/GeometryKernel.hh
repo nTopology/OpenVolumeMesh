@@ -162,6 +162,7 @@ public:
     }
 
     void clone_vertices(std::vector<VecT>& _copy) const {
+        _copy.clear();
         _copy.reserve(vertices_.size());
         std::copy(vertices_.begin(), vertices_.end(), std::back_inserter(_copy));
     }
