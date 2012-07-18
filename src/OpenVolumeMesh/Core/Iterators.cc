@@ -468,6 +468,68 @@ HalfFaceVertexIter& HalfFaceVertexIter::operator++() {
     return *this;
 }
 
+//================================================================================================
+// BoundaryHalfFaceHalfFaceIter
+//================================================================================================
+
+BoundaryHalfFaceHalfFaceIter::BoundaryHalfFaceHalfFaceIter(const HalfFaceHandle& _ref_h,
+        const TopologyKernel* _mesh) :
+BaseIter(_mesh, _ref_h) {
+
+    if(!_mesh->has_face_bottom_up_incidences()) {
+        std::cerr << "This iterator needs bottom-up incidences!" << std::endl;
+        BaseIter::valid(false);
+        return;
+    }
+
+    // Go over all incident halfedges
+    std::vector<HalfEdgeHandle> halfedges = _mesh->halfface(_ref_h).halfedges();
+    for(std::vector<HalfEdgeHandle>::const_iterator he_it = halfedges.begin();
+            he_it != halfedges.end(); ++he_it) {
+
+        // Get outside halffaces
+        OpenVolumeMesh::HalfEdgeHalfFaceIter hehf_it = _mesh->hehf_iter(_mesh->opposite_halfedge_handle(*he_it));
+        for(; hehf_it.valid(); ++hehf_it) {
+
+            if(_mesh->is_boundary(*hehf_it)) {
+                neighbor_halffaces_.push_back(*hehf_it);
+                common_edges_.push_back(_mesh->edge_handle(*he_it));
+            }
+        }
+    }
+
+    cur_it_ = neighbor_halffaces_.begin();
+    edge_it_ = common_edges_.begin();
+    BaseIter::valid(cur_it_ != neighbor_halffaces_.end());
+    if(BaseIter::valid()) {
+        BaseIter::cur_handle(*cur_it_);
+    }
+}
+
+BoundaryHalfFaceHalfFaceIter& BoundaryHalfFaceHalfFaceIter::operator--() {
+
+    --cur_it_;
+    --edge_it_;
+    if(cur_it_ >= neighbor_halffaces_.begin()) {
+        BaseIter::cur_handle(*cur_it_);
+    } else {
+        BaseIter::valid(false);
+    }
+    return *this;
+}
+
+BoundaryHalfFaceHalfFaceIter& BoundaryHalfFaceHalfFaceIter::operator++() {
+
+    ++cur_it_;
+    ++edge_it_;
+    if(cur_it_ != neighbor_halffaces_.end()) {
+        BaseIter::cur_handle(*cur_it_);
+    } else {
+        BaseIter::valid(false);
+    }
+    return *this;
+}
+
 ////================================================================================================
 //// BoundaryFaceIter
 ////================================================================================================

@@ -571,6 +571,73 @@ private:
 
 //===========================================================================
 
+class BoundaryHalfFaceHalfFaceIter : public BaseIterator<HalfFaceHandle,
+    HalfFaceHandle> {
+private:
+    typedef BaseIterator<HalfFaceHandle,
+            HalfFaceHandle> BaseIter;
+public:
+    BoundaryHalfFaceHalfFaceIter(const HalfFaceHandle& _ref_h,
+            const TopologyKernel* _mesh);
+    BoundaryHalfFaceHalfFaceIter& operator=(const BoundaryHalfFaceHalfFaceIter& _c) {
+        BaseIter::operator=(_c);
+        neighbor_halffaces_ = _c.neighbor_halffaces_;
+        cur_it_ = neighbor_halffaces_.begin();
+        return *this;
+    }
+
+    // Post increment/decrement operator
+    BoundaryHalfFaceHalfFaceIter operator++(int) {
+        BoundaryHalfFaceHalfFaceIter cpy = *this;
+        ++(*this);
+        return cpy;
+    }
+    BoundaryHalfFaceHalfFaceIter operator--(int) {
+        BoundaryHalfFaceHalfFaceIter cpy = *this;
+        --(*this);
+        return cpy;
+    }
+    BoundaryHalfFaceHalfFaceIter operator+(int _n) {
+        BoundaryHalfFaceHalfFaceIter cpy = *this;
+        for(int i = 0; i < _n; ++i) {
+            ++cpy;
+        }
+        return cpy;
+    }
+    BoundaryHalfFaceHalfFaceIter operator-(int _n) {
+        BoundaryHalfFaceHalfFaceIter cpy = *this;
+        for(int i = 0; i < _n; ++i) {
+            --cpy;
+        }
+        return cpy;
+    }
+    BoundaryHalfFaceHalfFaceIter& operator+=(int _n) {
+        for(int i = 0; i < _n; ++i) {
+            ++(*this);
+        }
+        return *this;
+    }
+    BoundaryHalfFaceHalfFaceIter& operator-=(int _n) {
+        for(int i = 0; i < _n; ++i) {
+            --(*this);
+        }
+        return *this;
+    }
+
+    const EdgeHandle& common_edge() const { return *edge_it_; }
+
+    BoundaryHalfFaceHalfFaceIter& operator++();
+    BoundaryHalfFaceHalfFaceIter& operator--();
+
+private:
+    std::vector<HalfFaceHandle> neighbor_halffaces_;
+    std::vector<EdgeHandle> common_edges_;
+    std::vector<HalfFaceHandle>::const_iterator cur_it_;
+    std::vector<EdgeHandle>::const_iterator edge_it_;
+};
+
+//===========================================================================
+
 class VertexIter : public BaseIterator<
 	VertexHandle,
 	VertexHandle> {

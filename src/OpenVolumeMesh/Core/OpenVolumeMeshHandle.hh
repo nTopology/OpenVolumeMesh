@@ -84,6 +84,8 @@ public:
 
 	void idx(const int& _idx) { idx_ = _idx; }
 
+	inline operator int() const { return idx_; }
+
 	void reset() { idx_ = -1; }
 
 private:
