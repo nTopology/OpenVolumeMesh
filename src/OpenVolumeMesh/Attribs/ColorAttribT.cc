@@ -47,13 +47,13 @@
 namespace OpenVolumeMesh {
 
 template <class ColT>
-ColorAttrib<ColT>::ColorAttrib(TopologyKernel& _kernel) :
-        vcolor_prop_(_kernel.request_vertex_property<ColT>("vertex_color")),
-        ecolor_prop_(_kernel.request_edge_property<ColT>("edge_color")),
-        hecolor_prop_(_kernel.request_halfedge_property<ColT>("halfedge_color")),
-        fcolor_prop_(_kernel.request_face_property<ColT>("face_color")),
-        hfcolor_prop_(_kernel.request_halfface_property<ColT>("halfface_color")),
-        ccolor_prop_(_kernel.request_cell_property<ColT>("cell_color")),
+ColorAttrib<ColT>::ColorAttrib(TopologyKernel& _kernel, const ColT _def) :
+        vcolor_prop_(_kernel.request_vertex_property<ColT>("vertex_color", _def)),
+        ecolor_prop_(_kernel.request_edge_property<ColT>("edge_color", _def)),
+        hecolor_prop_(_kernel.request_halfedge_property<ColT>("halfedge_color", _def)),
+        fcolor_prop_(_kernel.request_face_property<ColT>("face_color", _def)),
+        hfcolor_prop_(_kernel.request_halfface_property<ColT>("halfface_color", _def)),
+        ccolor_prop_(_kernel.request_cell_property<ColT>("cell_color", _def)),
         kernel_(_kernel) {
 
 }

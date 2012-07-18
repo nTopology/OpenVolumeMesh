@@ -49,8 +49,8 @@ namespace OpenVolumeMesh {
 
 /// Property classes for the different entity types
 template<class T>
-VertexPropertyT<T>::VertexPropertyT(const std::string& _name, ResourceManager& _resMan, VertexPropHandle _handle) :
-        PropertyPtr<OpenVolumeMeshPropertyT<T>, VertexPropHandle>(new OpenVolumeMeshPropertyT<T>(_name), _resMan, _handle) {
+VertexPropertyT<T>::VertexPropertyT(const std::string& _name, ResourceManager& _resMan, VertexPropHandle _handle, const T _def) :
+        PropertyPtr<OpenVolumeMeshPropertyT<T>, VertexPropHandle>(new OpenVolumeMeshPropertyT<T>(_name, _def), _resMan, _handle) {
 
 }
 
@@ -67,8 +67,8 @@ void VertexPropertyT<T>::deserialize(std::istream& _istr) {
 }
 
 template<class T>
-EdgePropertyT<T>::EdgePropertyT(const std::string& _name, ResourceManager& _resMan, EdgePropHandle _handle) :
-        PropertyPtr<OpenVolumeMeshPropertyT<T>, EdgePropHandle>(new OpenVolumeMeshPropertyT<T>(_name), _resMan, _handle) {
+EdgePropertyT<T>::EdgePropertyT(const std::string& _name, ResourceManager& _resMan, EdgePropHandle _handle, const T _def) :
+        PropertyPtr<OpenVolumeMeshPropertyT<T>, EdgePropHandle>(new OpenVolumeMeshPropertyT<T>(_name, _def), _resMan, _handle) {
 
 }
 
@@ -85,8 +85,8 @@ void EdgePropertyT<T>::deserialize(std::istream& _istr) {
 }
 
 template<class T>
-HalfEdgePropertyT<T>::HalfEdgePropertyT(const std::string& _name, ResourceManager& _resMan, HalfEdgePropHandle _handle) :
-        PropertyPtr<OpenVolumeMeshPropertyT<T>, HalfEdgePropHandle>(new OpenVolumeMeshPropertyT<T>(_name), _resMan, _handle) {
+HalfEdgePropertyT<T>::HalfEdgePropertyT(const std::string& _name, ResourceManager& _resMan, HalfEdgePropHandle _handle, const T _def) :
+        PropertyPtr<OpenVolumeMeshPropertyT<T>, HalfEdgePropHandle>(new OpenVolumeMeshPropertyT<T>(_name, _def), _resMan, _handle) {
 
 }
 
@@ -103,8 +103,8 @@ void HalfEdgePropertyT<T>::deserialize(std::istream& _istr) {
 }
 
 template<class T>
-FacePropertyT<T>::FacePropertyT(const std::string& _name, ResourceManager& _resMan, FacePropHandle _handle) :
-        PropertyPtr<OpenVolumeMeshPropertyT<T>, FacePropHandle>(new OpenVolumeMeshPropertyT<T>(_name), _resMan, _handle) {
+FacePropertyT<T>::FacePropertyT(const std::string& _name, ResourceManager& _resMan, FacePropHandle _handle, const T _def) :
+        PropertyPtr<OpenVolumeMeshPropertyT<T>, FacePropHandle>(new OpenVolumeMeshPropertyT<T>(_name, _def), _resMan, _handle) {
 
 }
 
@@ -121,8 +121,8 @@ void FacePropertyT<T>::deserialize(std::istream& _istr) {
 }
 
 template<class T>
-HalfFacePropertyT<T>::HalfFacePropertyT(const std::string& _name, ResourceManager& _resMan, HalfFacePropHandle _handle) :
-        PropertyPtr<OpenVolumeMeshPropertyT<T>, HalfFacePropHandle>(new OpenVolumeMeshPropertyT<T>(_name), _resMan, _handle) {
+HalfFacePropertyT<T>::HalfFacePropertyT(const std::string& _name, ResourceManager& _resMan, HalfFacePropHandle _handle, const T _def) :
+        PropertyPtr<OpenVolumeMeshPropertyT<T>, HalfFacePropHandle>(new OpenVolumeMeshPropertyT<T>(_name, _def), _resMan, _handle) {
 
 }
 
@@ -139,8 +139,8 @@ void HalfFacePropertyT<T>::deserialize(std::istream& _istr) {
 }
 
 template<class T>
-CellPropertyT<T>::CellPropertyT(const std::string& _name, ResourceManager& _resMan, CellPropHandle _handle) :
-        PropertyPtr<OpenVolumeMeshPropertyT<T>, CellPropHandle>(new OpenVolumeMeshPropertyT<T>(_name), _resMan, _handle) {
+CellPropertyT<T>::CellPropertyT(const std::string& _name, ResourceManager& _resMan, CellPropHandle _handle, const T _def) :
+        PropertyPtr<OpenVolumeMeshPropertyT<T>, CellPropHandle>(new OpenVolumeMeshPropertyT<T>(_name, _def), _resMan, _handle) {
 
 }
 
@@ -157,8 +157,8 @@ void CellPropertyT<T>::deserialize(std::istream& _istr) {
 }
 
 template<class T>
-MeshPropertyT<T>::MeshPropertyT(const std::string& _name, ResourceManager& _resMan, MeshPropHandle _handle) :
-        PropertyPtr<OpenVolumeMeshPropertyT<T>, MeshPropHandle>(new OpenVolumeMeshPropertyT<T>(_name), _resMan, _handle) {
+MeshPropertyT<T>::MeshPropertyT(const std::string& _name, ResourceManager& _resMan, MeshPropHandle _handle, const T _def) :
+        PropertyPtr<OpenVolumeMeshPropertyT<T>, MeshPropHandle>(new OpenVolumeMeshPropertyT<T>(_name, _def), _resMan, _handle) {
 
 }
 

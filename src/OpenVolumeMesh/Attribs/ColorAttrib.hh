@@ -58,7 +58,7 @@ template <class ColT>
 class ColorAttrib {
 public:
 
-    ColorAttrib(TopologyKernel& _kernel);
+    ColorAttrib(TopologyKernel& _kernel, const ColT _def = ColT());
 
     virtual ~ColorAttrib();
 

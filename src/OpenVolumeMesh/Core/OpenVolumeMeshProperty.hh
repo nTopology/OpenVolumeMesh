@@ -81,13 +81,16 @@ public:
 public:
 
 	/// Default constructor
-	OpenVolumeMeshPropertyT(const std::string& _name = "<unknown>") :
-		OpenVolumeMeshBaseProperty(_name) {
+	OpenVolumeMeshPropertyT(const std::string& _name = "<unknown>", const T _def = T()) :
+		OpenVolumeMeshBaseProperty(_name),
+		def_(_def) {
 	}
 
 	/// Copy constructor
 	OpenVolumeMeshPropertyT(const OpenVolumeMeshPropertyT& _rhs) :
-		OpenVolumeMeshBaseProperty(_rhs), data_(_rhs.data_) {
+		OpenVolumeMeshBaseProperty(_rhs),
+		data_(_rhs.data_),
+		def_(_rhs.def_) {
 	}
 
 public:
@@ -96,14 +99,14 @@ public:
 		data_.reserve(_n);
 	}
 	virtual void resize(size_t _n) {
-		data_.resize(_n, Value());
+		data_.resize(_n, def_);
 	}
 	virtual void clear() {
 		data_.clear();
 		vector_type().swap(data_);
 	}
 	virtual void push_back() {
-		data_.push_back(T());
+		data_.push_back(def_);
 	}
 	virtual void swap(size_t _i0, size_t _i1) {
 		std::swap(data_[_i0], data_[_i1]);
@@ -190,7 +193,7 @@ public:
 
 	/// Make a copy of self.
 	OpenVolumeMeshPropertyT<T>* clone() const {
-		OpenVolumeMeshPropertyT<T>* p = new OpenVolumeMeshPropertyT<T> (*this);
+		OpenVolumeMeshPropertyT<T>* p = new OpenVolumeMeshPropertyT<T>(*this);
 		return p;
 	}
 
@@ -223,6 +226,8 @@ protected:
 private:
 
 	vector_type data_;
+
+	const T def_;
 };
 
 //-----------------------------------------------------------------------------
@@ -244,8 +249,9 @@ public:
 
 public:
 
-	OpenVolumeMeshPropertyT(const std::string& _name = "<unknown>") :
-		OpenVolumeMeshBaseProperty(_name) {
+	OpenVolumeMeshPropertyT(const std::string& _name = "<unknown>", const bool _def = bool()) :
+		OpenVolumeMeshBaseProperty(_name),
+		def_(_def) {
 	}
 
 public:
@@ -255,14 +261,14 @@ public:
 		data_.reserve(_n);
 	}
 	virtual void resize(size_t _n) {
-		data_.resize(_n);
+		data_.resize(_n, def_);
 	}
 	virtual void clear() {
 		data_.clear();
 		vector_type().swap(data_);
 	}
 	virtual void push_back() {
-		data_.push_back(bool());
+		data_.push_back(def_);
 	}
 	virtual void swap(size_t _i0, size_t _i1) {
 		bool t(data_[_i0]);
@@ -339,6 +345,8 @@ protected:
 private:
 
 	vector_type data_;
+
+	const bool def_;
 };
 
 //-----------------------------------------------------------------------------
@@ -361,8 +369,9 @@ public:
 
 public:
 
-	OpenVolumeMeshPropertyT(const std::string& _name = "<unknown>") :
-		OpenVolumeMeshBaseProperty(_name) {
+	OpenVolumeMeshPropertyT(const std::string& _name = "<unknown>", const std::string _def = std::string()) :
+		OpenVolumeMeshBaseProperty(_name),
+		def_(_def) {
 	}
 
 public:
@@ -372,14 +381,14 @@ public:
 		data_.reserve(_n);
 	}
 	virtual void resize(size_t _n) {
-		data_.resize(_n);
+		data_.resize(_n, def_);
 	}
 	virtual void clear() {
 		data_.clear();
 		vector_type().swap(data_);
 	}
 	virtual void push_back() {
-		data_.push_back(std::string());
+		data_.push_back(def_);
 	}
 	virtual void swap(size_t _i0, size_t _i1) {
 		std::swap(data_[_i0], data_[_i1]);
@@ -469,6 +478,7 @@ private:
 
 	vector_type data_;
 
+	const std::string def_;
 };
 
 } // Namespace OpenVolumeMesh
