@@ -549,7 +549,7 @@ TEST_F(PolyhedralMeshBase, VolumeMeshNormals) {
     normals.update_face_normals();
 
     // Should be positive z-axis
-    Vec3d n = normals[FaceHandle(0)];
+    Vec3d& n = normals[FaceHandle(0)];
     EXPECT_DOUBLE_EQ(n_z[0], n[0]);
     EXPECT_DOUBLE_EQ(n_z[1], n[1]);
     EXPECT_DOUBLE_EQ(n_z[2], n[2]);
