@@ -799,6 +799,34 @@ TEST_F(HexahedralMeshBase, SimpleHexMeshNavigation) {
     EXPECT_EQ(HalfFaceHandle(16), *hfshf_it);
 }
 
+TEST_F(HexahedralMeshBase, BottomUpIncidenceUpdate1) {
+
+    generateHexahedralMesh(mesh_);
+
+    EXPECT_EQ(12u, mesh_.n_vertices());
+    EXPECT_EQ(20u, mesh_.n_edges());
+    EXPECT_EQ(11u, mesh_.n_faces());
+    EXPECT_EQ(2u, mesh_.n_cells());
+
+    mesh_.delete_vertex(VertexHandle(0));
+
+    EXPECT_EQ(11u, mesh_.n_vertices());
+    EXPECT_EQ(17u, mesh_.n_edges());
+    EXPECT_EQ(8u, mesh_.n_faces());
+    EXPECT_EQ(1u, mesh_.n_cells());
+
+    HexVertexIter hv_it = mesh_.hv_iter(CellHandle(0));
+
+    EXPECT_EQ(3, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(4, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(5, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(6, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(7, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(10, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(9, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(8, hv_it->idx());
+}
+
 TEST_F(HexahedralMeshBase, GarbageCollectionTest1) {
 
     generateHexahedralMesh(mesh_);
@@ -810,6 +838,17 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTest1) {
 
     StatusAttrib status(mesh_);
 
+    HexVertexIter hv_it = mesh_.hv_iter(CellHandle(1));
+
+    EXPECT_EQ(4, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(5, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(6, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(7, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(8, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(11, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(10, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(9, hv_it->idx());
+
     status[VertexHandle(0)].set_deleted(true);
 
     status.garbage_collection(false);
@@ -819,12 +858,34 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTest1) {
     EXPECT_EQ(17u, mesh_.n_edges());
     EXPECT_EQ(8u, mesh_.n_faces());
 
+    hv_it = mesh_.hv_iter(CellHandle(0));
+
+    EXPECT_EQ(3, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(4, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(5, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(6, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(7, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(10, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(9, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(8, hv_it->idx());
+
     status.garbage_collection(true);
 
     EXPECT_EQ(1u, mesh_.n_cells());
     EXPECT_EQ(8u, mesh_.n_vertices());
     EXPECT_EQ(12u, mesh_.n_edges());
     EXPECT_EQ(6u, mesh_.n_faces());
+
+    hv_it = mesh_.hv_iter(CellHandle(0));
+
+    EXPECT_EQ(0, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(1, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(2, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(3, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(4, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(7, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(6, hv_it->idx()); ++hv_it;
+    EXPECT_EQ(5, hv_it->idx());
 }
 
 TEST_F(HexahedralMeshBase, GarbageCollectionTest2) {
