@@ -499,23 +499,43 @@ VertexIter TopologyKernel::delete_vertex(const VertexHandle& _h) {
                 he_end = inc_hes.end(); he_it != he_end; ++he_it) {
             incident_edges.push(edge_handle(*he_it));
         }
-        // Decrease all vertex handles that are greater than _h in all edge definitions
-        for(std::vector<std::vector<HalfEdgeHandle> >::iterator he_it = (outgoing_hes_per_vertex_.begin() + _h.idx() + 1),
-                he_end = outgoing_hes_per_vertex_.end(); he_it != he_end; ++he_it) {
-            for(std::vector<HalfEdgeHandle>::const_iterator it = he_it->begin(),
-                    end = he_it->end(); it != end; ++it) {
 
-                if(it->idx() % 2 == 0) {
-                    VertexHandle vh = edge(edge_handle(*it)).from_vertex();
-                    if(vh.is_valid())
-                        edge(edge_handle(*it)).set_from_vertex(VertexHandle(vh.idx() - 1));
-                } else {
-                    VertexHandle vh = edge(edge_handle(*it)).to_vertex();
-                    if(vh.is_valid())
-                        edge(edge_handle(*it)).set_to_vertex(VertexHandle(vh.idx() - 1));
+        // Decrease all vertex handles that are greater than _h in all edge definitions
+        for(int i = _h.idx() + 1, end = n_vertices(); i < end; ++i) {
+            const std::vector<HalfEdgeHandle>& hes = outgoing_hes_per_vertex_[i];
+            for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin(),
+                    he_end = hes.end(); he_it != he_end; ++he_it) {
+                Edge& e = edge(edge_handle(*he_it));
+                if(e.from_vertex().idx() == i) {
+                    e.set_from_vertex(VertexHandle(i-1));
+                }
+                if(e.to_vertex().idx() == i) {
+                    e.set_to_vertex(VertexHandle(i-1));
                 }
             }
         }
+
+        // The following is obsolete code and may be deleted in future revisions
+
+//        // Decrease all vertex handles that are greater than _h in all edge definitions
+//        for(std::vector<std::vector<HalfEdgeHandle> >::iterator he_it = (outgoing_hes_per_vertex_.begin() + _h.idx() + 1),
+//                he_end = outgoing_hes_per_vertex_.end(); he_it != he_end; ++he_it) {
+//            for(std::vector<HalfEdgeHandle>::const_iterator it = he_it->begin(),
+//                    end = he_it->end(); it != end; ++it) {
+//
+//                if(it->idx() % 2 == 0) {
+//                    VertexHandle vh = edge(edge_handle(*it)).from_vertex();
+//                    if(vh.is_valid())
+//                        edge(edge_handle(*it)).set_from_vertex(VertexHandle(vh.idx() - 1));
+//                } else {
+//                    VertexHandle vh = edge(edge_handle(*it)).to_vertex();
+//                    if(vh.is_valid())
+//                        edge(edge_handle(*it)).set_to_vertex(VertexHandle(vh.idx() - 1));
+//                }
+//            }
+//        }
+
+
     } else {
 
         // Iterate over all edges
