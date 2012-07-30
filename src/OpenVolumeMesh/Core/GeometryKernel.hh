@@ -133,6 +133,18 @@ public:
         TopologyKernelT::clear(_clearProps);
     }
 
+    typename PointT::value_type length(const EdgeHandle& _eh) const {
+
+        const Edge& e = TopologyKernelT::edge(_eh);
+        return (vertex(e.to_vertex()) - vertex(e.from_vertex())).length();
+    }
+
+    PointT vector(const EdgeHandle& _eh) const {
+
+        const Edge& e = TopologyKernelT::edge(_eh);
+        return (vertex(e.to_vertex()) - vertex(e.from_vertex()));
+    }
+
     PointT barycenter(const EdgeHandle& _eh) const {
         return PointT(0.5 * vertex(TopologyKernelT::edge(_eh).from_vertex()) +
                       0.5 * vertex(TopologyKernelT::edge(_eh).to_vertex()));
