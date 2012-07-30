@@ -1438,6 +1438,7 @@ void TopologyKernel::compute_face_bottom_up_incidences() {
                 incident_cell_per_hf_[hf_it->idx()] = CellHandle(i);
 
             } else {
+
                 std::cerr << "Detected non-three-manifold configuration!" << std::endl;
                 std::cerr << "Connectivity probably won't work." << std::endl;
                 continue;

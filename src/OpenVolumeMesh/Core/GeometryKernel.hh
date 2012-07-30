@@ -135,13 +135,13 @@ public:
 
     typename PointT::value_type length(const EdgeHandle& _eh) const {
 
-        const Edge& e = TopologyKernelT::edge(_eh);
+        const typename TopologyKernelT::Edge& e = TopologyKernelT::edge(_eh);
         return (vertex(e.to_vertex()) - vertex(e.from_vertex())).length();
     }
 
     PointT vector(const EdgeHandle& _eh) const {
 
-        const Edge& e = TopologyKernelT::edge(_eh);
+        const typename TopologyKernelT::Edge& e = TopologyKernelT::edge(_eh);
         return (vertex(e.to_vertex()) - vertex(e.from_vertex()));
     }
 
