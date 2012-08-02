@@ -50,6 +50,7 @@
 namespace OpenVolumeMesh {
 
 class OpenVolumeMeshEdge {
+friend class TopologyKernel;
 public:
     OpenVolumeMeshEdge(const VertexHandle& _fromVertex,
                        const VertexHandle& _toVertex) :
@@ -67,12 +68,15 @@ public:
         return toVertex_;
     }
 
+protected:
+
     void set_from_vertex(const VertexHandle& _vertex) {
         fromVertex_ = _vertex;
     }
     void set_to_vertex(const VertexHandle& _vertex) {
         toVertex_ = _vertex;
     }
+
 private:
     VertexHandle fromVertex_;
     VertexHandle toVertex_;
@@ -84,6 +88,7 @@ std::ostream& operator<<(std::ostream& _os, const OpenVolumeMeshEdge& _edge);
 //***************************************************************************
 
 class OpenVolumeMeshFace {
+friend class TopologyKernel;
 public:
     OpenVolumeMeshFace(const std::vector<HalfEdgeHandle>& _halfedges) :
         halfedges_(_halfedges) {
@@ -95,6 +100,8 @@ public:
     const std::vector<HalfEdgeHandle>& halfedges() const {
         return halfedges_;
     }
+
+protected:
 
     void set_halfedges(const std::vector<HalfEdgeHandle>& _halfedges) {
         halfedges_ = _halfedges;
@@ -110,6 +117,7 @@ std::ostream& operator<<(std::ostream& _os, const OpenVolumeMeshFace& _face);
 //***************************************************************************
 
 class OpenVolumeMeshCell {
+friend class TopologyKernel;
 public:
     OpenVolumeMeshCell(const std::vector<HalfFaceHandle>& _halffaces) :
         halffaces_(_halffaces) {
@@ -121,6 +129,8 @@ public:
     const std::vector<HalfFaceHandle>& halffaces() const {
         return halffaces_;
     }
+
+protected:
 
     void set_halffaces(const std::vector<HalfFaceHandle>& _halffaces) {
         halffaces_ = _halffaces;

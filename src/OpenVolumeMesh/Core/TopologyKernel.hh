@@ -250,6 +250,15 @@ public:
     /// Add cell via incident halffaces
     virtual CellHandle add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck = false);
 
+    /// Set the vertices of an edge
+    void set_edge(const EdgeHandle& _eh, const VertexHandle& _fromVertex, const VertexHandle& _toVertex);
+
+    /// Set the half-edges of a face
+    void set_face(const FaceHandle& _fh, const std::vector<HalfEdgeHandle>& _hes);
+
+    /// Set the half-faces of a cell
+    void set_cell(const CellHandle& _ch, const std::vector<HalfFaceHandle>& _hfs);
+
     /*
      * Non-virtual functions
      */

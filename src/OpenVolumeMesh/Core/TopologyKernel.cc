@@ -463,6 +463,95 @@ CellHandle TopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halfface
 
 //========================================================================================
 
+/// Set the vertices of an edge
+void TopologyKernel::set_edge(const EdgeHandle& _eh, const VertexHandle& _fromVertex, const VertexHandle& _toVertex) {
+
+    Edge& e = edge(_eh);
+
+    // Update bottom-up entries
+    if(has_vertex_bottom_up_incidences()) {
+
+        const VertexHandle& fv = e.from_vertex();
+        const VertexHandle& tv = e.to_vertex();
+
+        const HalfEdgeHandle heh0 = halfedge_handle(_eh, 0);
+        const HalfEdgeHandle heh1 = halfedge_handle(_eh, 1);
+
+        std::remove(outgoing_hes_per_vertex_[fv.idx()].begin(), outgoing_hes_per_vertex_[fv.idx()].end(), heh0);
+        std::remove(outgoing_hes_per_vertex_[tv.idx()].begin(), outgoing_hes_per_vertex_[tv.idx()].end(), heh1);
+
+        outgoing_hes_per_vertex_[_fromVertex.idx()].push_back(heh0);
+        outgoing_hes_per_vertex_[_toVertex.idx()].push_back(heh1);
+    }
+
+    e.set_from_vertex(_fromVertex);
+    e.set_to_vertex(_toVertex);
+}
+
+//========================================================================================
+
+/// Set the half-edges of a face
+void TopologyKernel::set_face(const FaceHandle& _fh, const std::vector<HalfEdgeHandle>& _hes) {
+
+    Face& f = face(_fh);
+
+    if(has_edge_bottom_up_incidences()) {
+
+        const HalfFaceHandle hf0 = halfface_handle(_fh, 0);
+        const HalfFaceHandle hf1 = halfface_handle(_fh, 1);
+
+        const std::vector<HalfEdgeHandle>& hes = f.halfedges();
+
+        for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin(),
+                he_end = hes.end(); he_it != he_end; ++he_it) {
+
+            std::remove(incident_hfs_per_he_[he_it->idx()].begin(),
+                        incident_hfs_per_he_[he_it->idx()].end(), hf0);
+            std::remove(incident_hfs_per_he_[opposite_halfedge_handle(*he_it).idx()].begin(),
+                        incident_hfs_per_he_[opposite_halfedge_handle(*he_it).idx()].end(), hf1);
+        }
+
+        for(std::vector<HalfEdgeHandle>::const_iterator he_it = _hes.begin(),
+                he_end = _hes.end(); he_it != he_end; ++he_it) {
+
+            incident_hfs_per_he_[he_it->idx()].push_back(hf0);
+            incident_hfs_per_he_[opposite_halfedge_handle(*he_it).idx()].push_back(hf1);
+        }
+
+        // TODO: Reorder incident half-faces
+    }
+
+    f.set_halfedges(_hes);
+}
+
+//========================================================================================
+
+/// Set the half-faces of a cell
+void TopologyKernel::set_cell(const CellHandle& _ch, const std::vector<HalfFaceHandle>& _hfs) {
+
+    Cell& c = cell(_ch);
+
+    if(has_face_bottom_up_incidences()) {
+
+        const std::vector<HalfFaceHandle>& hfs = c.halffaces();
+        for(std::vector<HalfFaceHandle>::const_iterator hf_it = hfs.begin(),
+                hf_end = hfs.end(); hf_it != hf_end; ++hf_it) {
+
+            incident_cell_per_hf_[*hf_it] = InvalidCellHandle;
+        }
+
+        for(std::vector<HalfFaceHandle>::const_iterator hf_it = _hfs.begin(),
+                hf_end = _hfs.end(); hf_it != hf_end; ++hf_it) {
+
+            incident_cell_per_hf_[*hf_it] = _ch;
+        }
+    }
+
+    c.set_halffaces(_hfs);
+}
+
+//========================================================================================
+
 /**
  * \brief Delete vertex from mesh
  *
