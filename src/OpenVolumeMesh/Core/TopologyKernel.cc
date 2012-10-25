@@ -589,8 +589,8 @@ VertexIter TopologyKernel::delete_vertex(const VertexHandle& _h) {
             incident_edges.push(edge_handle(*he_it));
         }
 
-        // Decrease all vertex handles that are greater than _h in all edge definitions
-        for(int i = _h.idx() + 1, end = n_vertices(); i < end; ++i) {
+        // Decrease all vertex handles >= _h in all edge definitions
+        for(int i = _h.idx(), end = n_vertices(); i < end; ++i) {
             const std::vector<HalfEdgeHandle>& hes = outgoing_hes_per_vertex_[i];
             for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin(),
                     he_end = hes.end(); he_it != he_end; ++he_it) {
@@ -603,27 +603,6 @@ VertexIter TopologyKernel::delete_vertex(const VertexHandle& _h) {
                 }
             }
         }
-
-        // The following is obsolete code and may be deleted in future revisions
-
-//        // Decrease all vertex handles that are greater than _h in all edge definitions
-//        for(std::vector<std::vector<HalfEdgeHandle> >::iterator he_it = (outgoing_hes_per_vertex_.begin() + _h.idx() + 1),
-//                he_end = outgoing_hes_per_vertex_.end(); he_it != he_end; ++he_it) {
-//            for(std::vector<HalfEdgeHandle>::const_iterator it = he_it->begin(),
-//                    end = he_it->end(); it != end; ++it) {
-//
-//                if(it->idx() % 2 == 0) {
-//                    VertexHandle vh = edge(edge_handle(*it)).from_vertex();
-//                    if(vh.is_valid())
-//                        edge(edge_handle(*it)).set_from_vertex(VertexHandle(vh.idx() - 1));
-//                } else {
-//                    VertexHandle vh = edge(edge_handle(*it)).to_vertex();
-//                    if(vh.is_valid())
-//                        edge(edge_handle(*it)).set_to_vertex(VertexHandle(vh.idx() - 1));
-//                }
-//            }
-//        }
-
 
     } else {
 
@@ -731,11 +710,12 @@ EdgeIter TopologyKernel::delete_edge(const EdgeHandle& _h) {
             incident_faces.push(face_handle(*hf_it));
         }
 
-        // Decrease all half-edge handles > he in face definitions
+        // Decrease all half-edge handles > he and
+        // delete all half-edge handles == he in face definitions
         // Get all faces that need updates
         std::set<FaceHandle> update_faces;
         for(std::vector<std::vector<HalfFaceHandle> >::const_iterator iit =
-                (incident_hfs_per_he_.begin() + halfedge_handle(_h, 1).idx() + 1),
+                (incident_hfs_per_he_.begin() + halfedge_handle(_h, 0).idx()),
                 iit_end = incident_hfs_per_he_.end(); iit != iit_end; ++iit) {
             for(std::vector<HalfFaceHandle>::const_iterator it = iit->begin(),
                     end = iit->end(); it != end; ++it) {
@@ -878,8 +858,9 @@ FaceIter TopologyKernel::delete_face(const FaceHandle& _h) {
         }
 
         // Decrease all half-face handles > _h in all cells
+        // and delete all half-face handles == _h
         std::set<CellHandle> update_cells;
-        for(std::vector<CellHandle>::const_iterator c_it = (incident_cell_per_hf_.begin() + halfface_handle(_h, 1).idx() + 1),
+        for(std::vector<CellHandle>::const_iterator c_it = (incident_cell_per_hf_.begin() + halfface_handle(_h, 0).idx()),
                 c_end = incident_cell_per_hf_.end(); c_it != c_end; ++c_it) {
             if(!c_it->is_valid()) continue;
             update_cells.insert(*c_it);

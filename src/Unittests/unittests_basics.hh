@@ -762,6 +762,178 @@ TEST_F(PolyhedralMeshBase, STLCompliance) {
     std::for_each(mesh_.cells_begin(), mesh_.cells_end(), p);
 }
 
+TEST_F(PolyhedralMeshBase, DeleteLastVertexTestBU) {
+
+    generatePolyhedralMesh(mesh_);
+
+    for(OpenVolumeMesh::HalfEdgeIter he_it = mesh_.halfedges_begin();
+            he_it != mesh_.halfedges_end(); ++he_it) {
+
+        const VertexHandle& fromVertex = mesh_.halfedge(*he_it).from_vertex();
+        const VertexHandle& toVertex = mesh_.halfedge(*he_it).to_vertex();
+
+        EXPECT_LE(fromVertex.idx(), 11);
+        EXPECT_LE(toVertex.idx(), 11);
+    }
+
+    mesh_.delete_vertex(VertexHandle(11));
+
+    for(OpenVolumeMesh::HalfEdgeIter he_it = mesh_.halfedges_begin();
+            he_it != mesh_.halfedges_end(); ++he_it) {
+
+        const VertexHandle& fromVertex = mesh_.halfedge(*he_it).from_vertex();
+        const VertexHandle& toVertex = mesh_.halfedge(*he_it).to_vertex();
+
+        EXPECT_LE(fromVertex.idx(), 10);
+        EXPECT_LE(toVertex.idx(), 10);
+    }
+}
+
+TEST_F(PolyhedralMeshBase, DeleteLastEdgeTestBU) {
+
+    generatePolyhedralMesh(mesh_);
+
+    for(OpenVolumeMesh::HalfFaceIter f_it = mesh_.halffaces_begin();
+            f_it != mesh_.halffaces_end(); ++f_it) {
+
+        std::vector<HalfEdgeHandle> hes = mesh_.halfface(*f_it).halfedges();
+        for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin();
+                he_it != hes.end(); ++he_it) {
+            EXPECT_LE(he_it->idx(), 39);
+        }
+    }
+
+    mesh_.delete_edge(EdgeHandle(19));
+
+    for(OpenVolumeMesh::HalfFaceIter f_it = mesh_.halffaces_begin();
+            f_it != mesh_.halffaces_end(); ++f_it) {
+
+        std::vector<HalfEdgeHandle> hes = mesh_.halfface(*f_it).halfedges();
+        for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin();
+                he_it != hes.end(); ++he_it) {
+            EXPECT_LE(he_it->idx(), 37);
+        }
+    }
+}
+
+TEST_F(PolyhedralMeshBase, DeleteLastFaceTestBU) {
+
+    generatePolyhedralMesh(mesh_);
+
+    for(OpenVolumeMesh::CellIter c_it = mesh_.cells_begin();
+            c_it != mesh_.cells_end(); ++c_it) {
+
+        std::vector<HalfFaceHandle> hfs = mesh_.cell(*c_it).halffaces();
+        for(std::vector<HalfFaceHandle>::const_iterator hf_it = hfs.begin();
+                hf_it != hfs.end(); ++hf_it) {
+            EXPECT_LE(hf_it->idx(), 21);
+            EXPECT_LE(mesh_.opposite_halfface_handle(*hf_it).idx(), 21);
+        }
+    }
+
+    mesh_.delete_face(FaceHandle(10));
+
+    for(OpenVolumeMesh::CellIter c_it = mesh_.cells_begin();
+            c_it != mesh_.cells_end(); ++c_it) {
+
+        std::vector<HalfFaceHandle> hfs = mesh_.cell(*c_it).halffaces();
+        for(std::vector<HalfFaceHandle>::const_iterator hf_it = hfs.begin();
+                hf_it != hfs.end(); ++hf_it) {
+            EXPECT_LE(hf_it->idx(), 19);
+            EXPECT_LE(mesh_.opposite_halfface_handle(*hf_it).idx(), 19);
+        }
+    }
+}
+
+TEST_F(PolyhedralMeshBase, DeleteLastVertexTestNoBU) {
+
+    generatePolyhedralMesh(mesh_);
+
+    mesh_.enable_bottom_up_incidences(false);
+
+    for(OpenVolumeMesh::HalfEdgeIter he_it = mesh_.halfedges_begin();
+            he_it != mesh_.halfedges_end(); ++he_it) {
+
+        const VertexHandle& fromVertex = mesh_.halfedge(*he_it).from_vertex();
+        const VertexHandle& toVertex = mesh_.halfedge(*he_it).to_vertex();
+
+        EXPECT_LE(fromVertex.idx(), 11);
+        EXPECT_LE(toVertex.idx(), 11);
+    }
+
+    mesh_.delete_vertex(VertexHandle(11));
+
+    for(OpenVolumeMesh::HalfEdgeIter he_it = mesh_.halfedges_begin();
+            he_it != mesh_.halfedges_end(); ++he_it) {
+
+        const VertexHandle& fromVertex = mesh_.halfedge(*he_it).from_vertex();
+        const VertexHandle& toVertex = mesh_.halfedge(*he_it).to_vertex();
+
+        EXPECT_LE(fromVertex.idx(), 10);
+        EXPECT_LE(toVertex.idx(), 10);
+    }
+}
+
+TEST_F(PolyhedralMeshBase, DeleteLastEdgeTestNoBU) {
+
+    generatePolyhedralMesh(mesh_);
+
+    mesh_.enable_bottom_up_incidences(false);
+
+    for(OpenVolumeMesh::HalfFaceIter f_it = mesh_.halffaces_begin();
+            f_it != mesh_.halffaces_end(); ++f_it) {
+
+        std::vector<HalfEdgeHandle> hes = mesh_.halfface(*f_it).halfedges();
+        for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin();
+                he_it != hes.end(); ++he_it) {
+            EXPECT_LE(he_it->idx(), 39);
+        }
+    }
+
+    mesh_.delete_edge(EdgeHandle(19));
+
+    for(OpenVolumeMesh::HalfFaceIter f_it = mesh_.halffaces_begin();
+            f_it != mesh_.halffaces_end(); ++f_it) {
+
+        std::vector<HalfEdgeHandle> hes = mesh_.halfface(*f_it).halfedges();
+        for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin();
+                he_it != hes.end(); ++he_it) {
+            EXPECT_LE(he_it->idx(), 37);
+        }
+    }
+}
+
+TEST_F(PolyhedralMeshBase, DeleteLastFaceTestNoBU) {
+
+    generatePolyhedralMesh(mesh_);
+
+    mesh_.enable_bottom_up_incidences(false);
+
+    for(OpenVolumeMesh::CellIter c_it = mesh_.cells_begin();
+            c_it != mesh_.cells_end(); ++c_it) {
+
+        std::vector<HalfFaceHandle> hfs = mesh_.cell(*c_it).halffaces();
+        for(std::vector<HalfFaceHandle>::const_iterator hf_it = hfs.begin();
+                hf_it != hfs.end(); ++hf_it) {
+            EXPECT_LE(hf_it->idx(), 21);
+            EXPECT_LE(mesh_.opposite_halfface_handle(*hf_it).idx(), 21);
+        }
+    }
+
+    mesh_.delete_face(FaceHandle(10));
+
+    for(OpenVolumeMesh::CellIter c_it = mesh_.cells_begin();
+            c_it != mesh_.cells_end(); ++c_it) {
+
+        std::vector<HalfFaceHandle> hfs = mesh_.cell(*c_it).halffaces();
+        for(std::vector<HalfFaceHandle>::const_iterator hf_it = hfs.begin();
+                hf_it != hfs.end(); ++hf_it) {
+            EXPECT_LE(hf_it->idx(), 19);
+            EXPECT_LE(mesh_.opposite_halfface_handle(*hf_it).idx(), 19);
+        }
+    }
+}
+
 /*
  * Hexahedral mesh tests
  */
