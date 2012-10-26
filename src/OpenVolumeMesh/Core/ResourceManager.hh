@@ -218,6 +218,8 @@ public:
 
     Properties::const_iterator mesh_props_end() const { return mesh_props_.end(); }
 
+private:
+
     template <class FullPropT, class PropIterT>
     bool property_exists(const PropIterT& _begin, const PropIterT& _end, const std::string& _name) const {
 
@@ -234,6 +236,8 @@ public:
         }
         return false;
     }
+
+public:
 
     template <class PropT>
     bool vertex_property_exists(const std::string& _name) const {
