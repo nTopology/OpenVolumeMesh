@@ -428,9 +428,8 @@ CellHandle TopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halfface
             assert(incident_cell_per_hf_.size() > (unsigned int)it->idx());
 
             if(_topologyCheck) {
-                assert(incident_cell_per_hf_[it->idx()] == InvalidCellHandle);
                 if(incident_cell_per_hf_[it->idx()] != InvalidCellHandle) {
-                    std::cerr << "Warning: One of the specified half-face is already incident to another cell!" << std::endl;
+                    std::cerr << "Warning: One of the specified half-faces is already incident to another cell!" << std::endl;
                 }
             }
 
