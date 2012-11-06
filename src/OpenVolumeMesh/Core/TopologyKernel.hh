@@ -358,6 +358,25 @@ public:
 
     virtual CellIter delete_cell(const CellHandle& _h);
 
+private:
+
+    template <class ContainerT>
+    void get_incident_edges(const ContainerT& _vs, std::set<EdgeHandle>& _es) const;
+
+    template <class ContainerT>
+    void get_incident_faces(const ContainerT& _es, std::set<FaceHandle>& _fs) const;
+
+    template <class ContainerT>
+    void get_incident_cells(const ContainerT& _fs, std::set<CellHandle>& _cs) const;
+
+    VertexIter delete_vertex_core(const VertexHandle& _h);
+
+    EdgeIter delete_edge_core(const EdgeHandle& _h);
+
+    FaceIter delete_face_core(const FaceHandle& _h);
+
+    CellIter delete_cell_core(const CellHandle& _h);
+
 protected:
 
     virtual void delete_multiple_vertices(const std::vector<bool>& _tag);
