@@ -5,7 +5,8 @@
 \section halfedges From Half-Edges to Half-Faces
 
 The concepts of %OpenVolumeMesh are closely related to those of %OpenMesh (http://www.openmesh.org).
-For further reading on the concepts of %OpenMesh, refer to \cite Botsch02OpenMesh.
+For further reading on the concepts of %OpenMesh, refer to "OpenMesh - A generic and efficient polygon mesh data structure" by
+Mario Botsch et al.
 %OpenMesh is used to handle two-manifold geometric meshes. For this purpose, it distinguishes
 between \e vertices, \e edges, and \e faces. The main idea in %OpenMesh is to represent the
 edges as a pair of so-called half-edges that have opposing orientations. Additional local incidence
