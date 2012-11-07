@@ -482,6 +482,13 @@ TEST_F(HexahedralMeshBase, TopologyCheckFail) {
     EXPECT_EQ(HexahedralMesh::InvalidCellHandle, mesh_.add_cell(chfaces, true));
 }
 
+TEST_F(PolyhedralMeshBase, VolumeMeshGenus) {
+
+    generatePolyhedralMesh(mesh_);
+
+    EXPECT_EQ(0, mesh_.genus());
+}
+
 TEST_F(PolyhedralMeshBase, VolumeMeshConnectivity) {
 
     generatePolyhedralMesh(mesh_);

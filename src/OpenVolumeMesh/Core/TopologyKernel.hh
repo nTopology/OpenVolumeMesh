@@ -226,6 +226,13 @@ public:
     /// Get number of cells in mesh
     virtual unsigned int n_cells()      const { return cells_.size(); }
 
+    unsigned int genus() const {
+        return  (1 - (n_vertices() -
+                      n_edges() +
+                      n_faces() -
+                      n_cells())/2.0);
+    }
+
 private:
 
     // Cache total vertex number
