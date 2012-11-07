@@ -1402,7 +1402,7 @@ OpenVolumeMeshCell& TopologyKernel::cell(const CellHandle& _cellHandle) {
 //========================================================================================
 
 /// Get edge that corresponds to halfedge with handle _halfEdgeHandle
-const OpenVolumeMeshEdge TopologyKernel::halfedge(const HalfEdgeHandle& _halfEdgeHandle) const {
+OpenVolumeMeshEdge TopologyKernel::halfedge(const HalfEdgeHandle& _halfEdgeHandle) const {
 
     // Is handle in range?
     assert((unsigned int)_halfEdgeHandle.idx() < (edges_.size() * 2));
@@ -1419,7 +1419,7 @@ const OpenVolumeMeshEdge TopologyKernel::halfedge(const HalfEdgeHandle& _halfEdg
 //========================================================================================
 
 /// Get face that corresponds to halfface with handle _halfFaceHandle
-const OpenVolumeMeshFace TopologyKernel::halfface(const HalfFaceHandle& _halfFaceHandle) const {
+OpenVolumeMeshFace TopologyKernel::halfface(const HalfFaceHandle& _halfFaceHandle) const {
 
     // Is handle in range?
     assert((unsigned int)_halfFaceHandle.idx() < (faces_.size() * 2));
@@ -1436,7 +1436,7 @@ const OpenVolumeMeshFace TopologyKernel::halfface(const HalfFaceHandle& _halfFac
 //========================================================================================
 
 /// Get opposite halfedge that corresponds to halfedge with handle _halfEdgeHandle
-const OpenVolumeMeshEdge TopologyKernel::opposite_halfedge(const HalfEdgeHandle& _halfEdgeHandle) const {
+OpenVolumeMeshEdge TopologyKernel::opposite_halfedge(const HalfEdgeHandle& _halfEdgeHandle) const {
 
     // Is handle in range?
     assert(_halfEdgeHandle.idx() >= 0);
@@ -1453,7 +1453,7 @@ const OpenVolumeMeshEdge TopologyKernel::opposite_halfedge(const HalfEdgeHandle&
 //========================================================================================
 
 /// Get opposite halfface that corresponds to halfface with handle _halfFaceHandle
-const OpenVolumeMeshFace TopologyKernel::opposite_halfface(const HalfFaceHandle& _halfFaceHandle) const {
+OpenVolumeMeshFace TopologyKernel::opposite_halfface(const HalfFaceHandle& _halfFaceHandle) const {
 
     // Is handle in range?
     assert(_halfFaceHandle.idx() >= 0);
@@ -1469,7 +1469,7 @@ const OpenVolumeMeshFace TopologyKernel::opposite_halfface(const HalfFaceHandle&
 
 //========================================================================================
 
-const HalfEdgeHandle TopologyKernel::halfedge(const VertexHandle& _vh1, const VertexHandle& _vh2) const {
+HalfEdgeHandle TopologyKernel::halfedge(const VertexHandle& _vh1, const VertexHandle& _vh2) const {
 
     assert(_vh1.idx() < (int)n_vertices());
     assert(_vh2.idx() < (int)n_vertices());
@@ -1485,7 +1485,7 @@ const HalfEdgeHandle TopologyKernel::halfedge(const VertexHandle& _vh1, const Ve
 
 //========================================================================================
 
-const HalfFaceHandle TopologyKernel::halfface(const std::vector<VertexHandle>& _vs) const {
+HalfFaceHandle TopologyKernel::halfface(const std::vector<VertexHandle>& _vs) const {
 
     assert(_vs.size() > 2);
 
@@ -1507,7 +1507,7 @@ const HalfFaceHandle TopologyKernel::halfface(const std::vector<VertexHandle>& _
 
 //========================================================================================
 
-const HalfFaceHandle TopologyKernel::halfface(const std::vector<HalfEdgeHandle>& _hes) const {
+HalfFaceHandle TopologyKernel::halfface(const std::vector<HalfEdgeHandle>& _hes) const {
 
     assert(_hes.size() >= 2);
 
@@ -1528,7 +1528,7 @@ const HalfFaceHandle TopologyKernel::halfface(const std::vector<HalfEdgeHandle>&
 
 //========================================================================================
 
-const HalfEdgeHandle TopologyKernel::next_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
+HalfEdgeHandle TopologyKernel::next_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
 
     assert((unsigned int)_hfh.idx() < faces_.size() * 2u);
     assert((unsigned int)_heh.idx() < edges_.size() * 2u);
@@ -1548,7 +1548,7 @@ const HalfEdgeHandle TopologyKernel::next_halfedge_in_halfface(const HalfEdgeHan
 
 //========================================================================================
 
-const HalfEdgeHandle TopologyKernel::prev_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
+HalfEdgeHandle TopologyKernel::prev_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
 
     assert((unsigned int)_hfh.idx() < faces_.size() * 2u);
     assert((unsigned int)_heh.idx() < edges_.size() * 2u);

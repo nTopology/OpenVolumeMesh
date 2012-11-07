@@ -282,33 +282,33 @@ public:
     Cell& cell(const CellHandle& _cellHandle);
 
     /// Get edge that corresponds to halfedge with handle _halfEdgeHandle
-    const Edge halfedge(const HalfEdgeHandle& _halfEdgeHandle) const;
+    Edge halfedge(const HalfEdgeHandle& _halfEdgeHandle) const;
 
     /// Get face that corresponds to halfface with handle _halfFaceHandle
-    const Face halfface(const HalfFaceHandle& _halfFaceHandle) const;
+    Face halfface(const HalfFaceHandle& _halfFaceHandle) const;
 
     /// Get opposite halfedge that corresponds to halfedge with handle _halfEdgeHandle
-    const Edge opposite_halfedge(const HalfEdgeHandle& _halfEdgeHandle) const;
+    Edge opposite_halfedge(const HalfEdgeHandle& _halfEdgeHandle) const;
 
     /// Get opposite halfface that corresponds to halfface with handle _halfFaceHandle
-    const Face opposite_halfface(const HalfFaceHandle& _halfFaceHandle) const;
+    Face opposite_halfface(const HalfFaceHandle& _halfFaceHandle) const;
 
     // Get halfedge from vertex _vh1 to _vh2
-    const HalfEdgeHandle halfedge(const VertexHandle& _vh1, const VertexHandle& _vh2) const;
+    HalfEdgeHandle halfedge(const VertexHandle& _vh1, const VertexHandle& _vh2) const;
 
     // Get half-face from list of incident vertices (in connected order)
     // Note: Only the first three vertices are checked
-    const HalfFaceHandle halfface(const std::vector<VertexHandle>& _vs) const;
+    HalfFaceHandle halfface(const std::vector<VertexHandle>& _vs) const;
 
     // Get half-face from list of incident half-edges
     // Note: Only the first two half-edges are checked
-    const HalfFaceHandle halfface(const std::vector<HalfEdgeHandle>& _hes) const;
+    HalfFaceHandle halfface(const std::vector<HalfEdgeHandle>& _hes) const;
 
     /// Get next halfedge within a halfface
-    const HalfEdgeHandle next_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const;
+    HalfEdgeHandle next_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const;
 
     /// Get previous halfedge within a halfface
-    const HalfEdgeHandle prev_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const;
+    HalfEdgeHandle prev_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const;
 
     /// Get valence of vertex (number of incident edges)
     inline unsigned int valence(const VertexHandle& _vh) const {
@@ -677,11 +677,11 @@ public:
      * Non-virtual functions
      */
 
-    const Edge opposite_halfedge(const Edge& _edge) const {
+    Edge opposite_halfedge(const Edge& _edge) const {
         return Edge(_edge.to_vertex(), _edge.from_vertex());
     }
 
-    const Face opposite_halfface(const Face& _face) const {
+    Face opposite_halfface(const Face& _face) const {
 
         std::vector<HalfEdgeHandle> opp_halfedges;
         for(std::vector<HalfEdgeHandle>::const_iterator it = _face.halfedges().begin(); it
