@@ -554,7 +554,7 @@ void TopologyKernel::set_cell(const CellHandle& _ch, const std::vector<HalfFaceH
 /**
  * \brief Delete vertex from mesh
  *
- * Get al incident higher-dimensional entities and delete the complete
+ * Get all incident higher-dimensional entities and delete the complete
  * subtree of the mesh incident to vertex _h.
  * In this function all incident entities are gathered
  * and deleted using the delete_*_core functions
@@ -604,7 +604,7 @@ VertexIter TopologyKernel::delete_vertex(const VertexHandle& _h) {
 /**
  * \brief Delete edge from mesh
  *
- * Get al incident higher-dimensional entities and delete the complete
+ * Get all incident higher-dimensional entities and delete the complete
  * subtree of the mesh incident to edge _h.
  * In this function all incident entities are gathered
  * and deleted using the delete_*_core functions
@@ -645,7 +645,7 @@ EdgeIter TopologyKernel::delete_edge(const EdgeHandle& _h) {
 /**
  * \brief Delete face from mesh
  *
- * Get al incident higher-dimensional entities and delete the complete
+ * Get all incident higher-dimensional entities and delete the complete
  * subtree of the mesh incident to face _h.
  * In this function all incident entities are gathered
  * and deleted using the delete_*_core functions
