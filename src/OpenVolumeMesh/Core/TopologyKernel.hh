@@ -226,11 +226,18 @@ public:
     /// Get number of cells in mesh
     virtual unsigned int n_cells()      const { return cells_.size(); }
 
-    unsigned int genus() const {
-        return  (1 - (n_vertices() -
+    int genus() const {
+
+        int g = (1 - (n_vertices() -
                       n_edges() +
                       n_faces() -
-                      n_cells())/2.0);
+                      n_cells()));
+
+        if(g % 2 == 0) return (g / 2);
+
+        // An error occured
+        // The mesh might not be manifold
+        return  -1;
     }
 
 private:
