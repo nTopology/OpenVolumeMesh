@@ -270,7 +270,6 @@ public:
 	VertexCellIter(const VertexHandle& _vIdx, const TopologyKernel* _mesh);
 	VertexCellIter& operator=(const VertexCellIter& _c) {
 		BaseIter::operator=(_c);
-		cells_ = cells_;
 		cell_iter_ = cells_.begin();
 		return *this;
 	}

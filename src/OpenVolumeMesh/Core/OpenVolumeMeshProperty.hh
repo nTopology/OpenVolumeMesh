@@ -369,7 +369,7 @@ public:
 
 public:
 
-	OpenVolumeMeshPropertyT(const std::string& _name = "<unknown>", const std::string _def = std::string()) :
+	OpenVolumeMeshPropertyT(const std::string& _name = "<unknown>", const std::string& _def = "") :
 		OpenVolumeMeshBaseProperty(_name),
 		def_(_def) {
 	}
