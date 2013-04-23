@@ -54,7 +54,10 @@ template <class GeomKernelT>
 NormalAttrib<GeomKernelT>::NormalAttrib(GeomKernelT& _kernel) :
 kernel_(_kernel),
 v_normals_(_kernel.template request_vertex_property<typename GeomKernelT::PointT>("vertex_normals")),
-f_normals_(_kernel.template request_face_property<typename GeomKernelT::PointT>("face_normals")) {
+f_normals_(_kernel.template request_face_property<typename GeomKernelT::PointT>("face_normals")),
+vertex_normals_available_(false),
+face_normals_available_(false)
+{
 
 }
 
@@ -77,6 +80,8 @@ void NormalAttrib<GeomKernelT>::update_vertex_normals() {
     for(VertexIter v_it = kernel_.v_iter(); v_it.valid(); ++v_it) {
         compute_vertex_normal(*v_it);
     }
+
+    vertex_normals_available_ = true;
 }
 
 template <class GeomKernelT>
@@ -92,26 +97,27 @@ void NormalAttrib<GeomKernelT>::update_face_normals() {
         // first two edges
         compute_face_normal(*f_it);
     }
+    face_normals_available_ = true;
 }
 
 template <class GeomKernelT>
 void NormalAttrib<GeomKernelT>::compute_vertex_normal(const VertexHandle& _vh) {
 
-    std::set<FaceHandle> faces;
+    std::set<HalfFaceHandle> halffaces;
     for(VertexOHalfEdgeIter voh_it = kernel_.voh_iter(_vh);
             voh_it.valid(); ++voh_it) {
 
         for(HalfEdgeHalfFaceIter hehf_it = kernel_.hehf_iter(*voh_it);
                 hehf_it.valid(); ++hehf_it) {
             if(kernel_.is_boundary(*hehf_it)) {
-                faces.insert(kernel_.face_handle(*hehf_it));
+                halffaces.insert(*hehf_it);
             }
         }
     }
-    typename GeomKernelT::PointT normal;
-    for(std::set<FaceHandle>::const_iterator f_it = faces.begin();
-            f_it != faces.end(); ++f_it) {
-        normal += f_normals_[f_it->idx()];
+    typename GeomKernelT::PointT normal = typename GeomKernelT::PointT(0.0);
+    for(std::set<HalfFaceHandle>::const_iterator hf_it = halffaces.begin();
+            hf_it != halffaces.end(); ++hf_it) {
+        normal += (*this)[*hf_it];
     }
 
     normal.normalize();

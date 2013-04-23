@@ -72,6 +72,7 @@ public:
 
     ColT& operator[](const VertexHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_vertices());
+        vertex_colors_available_ = true;
         return vcolor_prop_[_h.idx()];
     }
 
@@ -85,6 +86,7 @@ public:
 
     ColT& operator[](const EdgeHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_edges());
+        edge_colors_available_ = true;
         return ecolor_prop_[_h.idx()];
     }
 
@@ -98,6 +100,7 @@ public:
 
     ColT& operator[](const HalfEdgeHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_halfedges());
+        halfedge_colors_available_ = true;
         return hecolor_prop_[_h.idx()];
     }
 
@@ -111,6 +114,7 @@ public:
 
     ColT& operator[](const FaceHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_faces());
+        face_colors_available_ = true;
         return fcolor_prop_[_h.idx()];
     }
 
@@ -124,6 +128,7 @@ public:
 
     ColT& operator[](const HalfFaceHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_halffaces());
+        halfface_colors_available_ = true;
         return hfcolor_prop_[_h.idx()];
     }
 
@@ -137,8 +142,25 @@ public:
 
     ColT& operator[](const CellHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_cells());
+        cell_colors_available_ = true;
         return ccolor_prop_[_h.idx()];
     }
+
+
+    bool vertex_colors_available()   { return vertex_colors_available_;   }
+    bool halfedge_colors_available() { return halfedge_colors_available_; }
+    bool edge_colors_available()     { return edge_colors_available_;     }
+    bool halfface_colors_available() { return halfface_colors_available_; }
+    bool face_colors_available()     { return face_colors_available_;     }
+    bool cell_colors_available()     { return cell_colors_available_;     }
+
+    void clear_vertex_colors();
+    void clear_halfedge_colors();
+    void clear_edge_colors();
+    void clear_halfface_colors();
+    void clear_face_colors();
+    void clear_cell_colors();
+
 
 private:
 
@@ -150,6 +172,16 @@ private:
     CellPropertyT<ColT> ccolor_prop_;
 
     TopologyKernel& kernel_;
+
+    bool vertex_colors_available_;
+    bool halfedge_colors_available_;
+    bool edge_colors_available_;
+    bool halfface_colors_available_;
+    bool face_colors_available_;
+    bool cell_colors_available_;
+
+    ColT default_color_;
+
 };
 
 } // Namespace OpenVolumeMesh
