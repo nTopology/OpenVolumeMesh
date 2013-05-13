@@ -264,7 +264,7 @@ bool HexahedralMeshTopologyKernel::check_halfface_ordering(const std::vector<Hal
 //========================================================================================
 
 CellHandle
-HexahedralMeshTopologyKernel::add_cell(const std::vector<VertexHandle>& _vertices) {
+HexahedralMeshTopologyKernel::add_cell(const std::vector<VertexHandle>& _vertices, bool _topologyCheck) {
 
     assert(_vertices.size() == 8);
 
@@ -375,9 +375,40 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<VertexHandle>& _vertice
     assert(hf0.is_valid()); assert(hf1.is_valid()); assert(hf2.is_valid());
     assert(hf3.is_valid()); assert(hf4.is_valid()); assert(hf5.is_valid());
 
+
     std::vector<HalfFaceHandle> hfs;
     hfs.push_back(hf0); hfs.push_back(hf1); hfs.push_back(hf2);
     hfs.push_back(hf3); hfs.push_back(hf4); hfs.push_back(hf5);
+
+    if (_topologyCheck) {
+       /*
+        * Test if all halffaces are connected and form a two-manifold
+        * => Cell is closed
+        *
+        * This test is simple: The number of involved half-edges has to be
+        * exactly twice the number of involved edges.
+        */
+
+        std::set<HalfEdgeHandle> incidentHalfedges;
+        std::set<EdgeHandle>     incidentEdges;
+
+        for(std::vector<HalfFaceHandle>::const_iterator it = hfs.begin(),
+            end = hfs.end(); it != end; ++it) {
+
+          OpenVolumeMeshFace hface = halfface(*it);
+          for(std::vector<HalfEdgeHandle>::const_iterator he_it = hface.halfedges().begin(),
+              he_end = hface.halfedges().end(); he_it != he_end; ++he_it) {
+            incidentHalfedges.insert(*he_it);
+            incidentEdges.insert(edge_handle(*he_it));
+          }
+        }
+
+        if(incidentHalfedges.size() != (incidentEdges.size() * 2u)) {
+          std::cerr << "The specified halffaces are not connected!" << std::endl;
+          return InvalidCellHandle;
+        }
+        // The halffaces are now guaranteed to form a two-manifold
+    }
 
     return TopologyKernel::add_cell(hfs,false);
 }

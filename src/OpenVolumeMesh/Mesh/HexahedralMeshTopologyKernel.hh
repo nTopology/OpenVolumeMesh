@@ -133,10 +133,11 @@ public:
      *   0-------1
      *
      * @param _vertices A list of vertices in the correct order
+     * @param _topologyCheck Flag if a topology check should be performed before adding the cell
      *
      * @return The new hexahedron's cell handle
      */
-    CellHandle add_cell(const std::vector<VertexHandle>& _vertices);
+    CellHandle add_cell(const std::vector<VertexHandle>& _vertices, bool _topologyCheck = false);
 
     // ======================= Specialized Iterators =============================
 
