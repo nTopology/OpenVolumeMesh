@@ -45,6 +45,8 @@
 #include "../Core/TopologyKernel.hh"
 #include "../Core/PropertyDefines.hh"
 
+#include <map>
+
 namespace OpenVolumeMesh {
 
 StatusAttrib::StatusAttrib(TopologyKernel& _kernel) :
@@ -150,6 +152,25 @@ void StatusAttrib::mark_higher_dim_entities() {
 //========================================================================================
 
 void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
+    std::vector<VertexHandle*> vh_empty;
+    std::vector<HalfEdgeHandle*> hh_empty;
+    std::vector<HalfFaceHandle*> hfh_empty;
+    std::vector<CellHandle*> ch_empty;
+
+    garbage_collection(vh_empty, hh_empty, hfh_empty, ch_empty, _preserveManifoldness);
+}
+
+//========================================================================================
+
+template<typename std_API_Container_VHandlePointer,
+         typename std_API_Container_HHandlePointer,
+         typename std_API_Container_HFHandlePointer,
+         typename std_API_Container_CHandlePointer>
+void StatusAttrib::garbage_collection(std_API_Container_VHandlePointer &vh_to_update,
+                                      std_API_Container_HHandlePointer &hh_to_update,
+                                      std_API_Container_HFHandlePointer &hfh_to_update,
+                                      std_API_Container_CHandlePointer &ch_to_update,
+                                      bool _preserveManifoldness) {
 
     /*
      * This is not a real garbage collection in its conventional
@@ -165,6 +186,55 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
      * 4. Delete all entities marked deleted in step 4 in order
      *    to prevent manifoldness.
      */
+
+    // setup tracking so we can update the given handles
+    bool track_vh = !vh_to_update.empty();
+    bool track_hh = !hh_to_update.empty();
+    bool track_hfh = !hfh_to_update.empty();
+    bool track_ch = !ch_to_update.empty();
+    int offset_vh = 0;
+    int offset_hh = 0;
+    int offset_hfh = 0;
+    int offset_ch = 0;
+
+    std::map<int,int> vh_map;
+    std::map<int,int> hh_map;
+    std::map<int,int> hfh_map;
+    std::map<int,int> ch_map;
+
+    // initialise the maps
+    if (track_vh) {
+        typename std_API_Container_VHandlePointer::iterator it = vh_to_update.begin();
+        typename std_API_Container_VHandlePointer::iterator end = vh_to_update.end();
+
+        for (it; it != end; ++it) {
+            vh_map[(*it)->idx()] = (*it)->idx();
+        }
+    }
+    if (track_hh) {
+        typename std_API_Container_HHandlePointer::iterator it = hh_to_update.begin();
+        typename std_API_Container_HHandlePointer::iterator end = hh_to_update.end();
+
+        for (it; it != end; ++it) {
+            hh_map[(*it)->idx()] = (*it)->idx();
+        }
+    }
+    if (track_hfh) {
+        typename std_API_Container_HFHandlePointer::iterator it = hfh_to_update.begin();
+        typename std_API_Container_HFHandlePointer::iterator end = hfh_to_update.end();
+
+        for (it; it != end; ++it) {
+            hfh_map[(*it)->idx()] = (*it)->idx();
+        }
+    }
+    if (track_ch) {
+        typename std_API_Container_CHandlePointer::iterator it = ch_to_update.begin();
+        typename std_API_Container_CHandlePointer::iterator end = ch_to_update.end();
+
+        for (it; it != end; ++it) {
+            ch_map[(*it)->idx()] = (*it)->idx();
+        }
+    }
 
     // Mark all higher-dimensional entities incident to
     // entities marked as deleted from bottom to top
@@ -184,6 +254,17 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
 
     for(CellIter c_it = kernel_.cells_begin(); c_it != kernel_.cells_end(); ++c_it, ++tag_it) {
         *tag_it = c_status_[c_it->idx()].deleted();
+
+        if (track_ch) {
+            if (c_status_[c_it->idx()].deleted()) {
+                ++offset_ch;
+                if (ch_map.find(c_it->idx()) != ch_map.end())
+                    ch_map[c_it->idx()] = -1;
+            } else {
+                if (ch_map.find(c_it->idx()) != ch_map.end())
+                    ch_map[c_it->idx()] = c_it->idx() - offset_ch;
+            }
+        }
     }
     kernel_.delete_multiple_cells(tags);
 
@@ -192,6 +273,26 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
 
     for(FaceIter f_it = kernel_.faces_begin(); f_it != kernel_.faces_end(); ++f_it, ++tag_it) {
         *tag_it = f_status_[f_it->idx()].deleted();
+
+        if (track_hfh) {
+            int halfface_idx = f_it->idx() * 2;
+            if (f_status_[f_it->idx()].deleted()) {
+                offset_hfh += 2;
+                if (hfh_map.find(halfface_idx) != hfh_map.end()) {
+                    hfh_map[halfface_idx] = -1;
+                }
+                if (hfh_map.find(halfface_idx + 1) != hfh_map.end()) {
+                    hfh_map[halfface_idx + 1] = -1;
+                }
+            } else {
+                if (hfh_map.find(halfface_idx) != hfh_map.end()) {
+                    hfh_map[halfface_idx] = halfface_idx - offset_hfh;
+                }
+                if (hfh_map.find(halfface_idx + 1) != hfh_map.end()) {
+                    hfh_map[halfface_idx + 1] = halfface_idx + 1 - offset_hfh;
+                }
+            }
+        }
     }
     kernel_.delete_multiple_faces(tags);
 
@@ -200,6 +301,26 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
 
     for(EdgeIter e_it = kernel_.edges_begin(); e_it != kernel_.edges_end(); ++e_it, ++tag_it) {
         *tag_it = e_status_[e_it->idx()].deleted();
+
+        if (track_hh) {
+            int halfedge_idx = e_it->idx() * 2;
+            if (e_status_[e_it->idx()].deleted()) {
+                offset_hh += 2;
+                if (hh_map.find(halfedge_idx) != hh_map.end()) {
+                    hh_map[halfedge_idx] = -1;
+                }
+                if (hh_map.find(halfedge_idx + 1) != hh_map.end()) {
+                    hh_map[halfedge_idx + 1] = -1;
+                }
+            } else {
+                if (hh_map.find(halfedge_idx) != hh_map.end()) {
+                    hh_map[halfedge_idx] = halfedge_idx - offset_hh;
+                }
+                if (hh_map.find(halfedge_idx + 1) != hh_map.end()) {
+                    hh_map[halfedge_idx + 1] = halfedge_idx + 1 - offset_hh;
+                }
+            }
+        }
     }
     kernel_.delete_multiple_edges(tags);
 
@@ -208,8 +329,55 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
 
     for(VertexIter v_it = kernel_.vertices_begin(); v_it != kernel_.vertices_end(); ++v_it, ++tag_it) {
         *tag_it = v_status_[v_it->idx()].deleted();
+
+        if (track_vh) {
+            if (v_status_[v_it->idx()].deleted()) {
+                if (vh_map.find(v_it->idx()) != vh_map.end()) {
+                    ++offset_vh;
+                    vh_map[v_it->idx()] = -1;
+                }
+            } else {
+                if (vh_map.find(v_it->idx()) != vh_map.end()) {
+                    vh_map[v_it->idx()] = v_it->idx() - offset_vh;
+                }
+            }
+        }
     }
     kernel_.delete_multiple_vertices(tags);
+
+    // update given handles
+    if (track_vh) {
+        typename std_API_Container_VHandlePointer::iterator it = vh_to_update.begin();
+        typename std_API_Container_VHandlePointer::iterator end = vh_to_update.end();
+
+        for (it; it != end; ++it) {
+            *(*it) = VertexHandle( vh_map[(*it)->idx()] );
+        }
+    }
+    if (track_hh) {
+        typename std_API_Container_HHandlePointer::iterator it = hh_to_update.begin();
+        typename std_API_Container_HHandlePointer::iterator end = hh_to_update.end();
+
+        for (it; it != end; ++it) {
+            *(*it) = HalfEdgeHandle( hh_map[(*it)->idx()] );
+        }
+    }
+    if (track_hfh) {
+        typename std_API_Container_HFHandlePointer::iterator it = hfh_to_update.begin();
+        typename std_API_Container_HFHandlePointer::iterator end = hfh_to_update.end();
+
+        for (it; it != end; ++it) {
+            *(*it) = HalfFaceHandle( hfh_map[(*it)->idx()] );
+        }
+    }
+    if (track_ch) {
+        typename std_API_Container_CHandlePointer::iterator it = ch_to_update.begin();
+        typename std_API_Container_CHandlePointer::iterator end = ch_to_update.end();
+
+        for (it; it != end; ++it) {
+            *(*it) = CellHandle( ch_map[(*it)->idx()] );
+        }
+    }
 
     // Todo: Resize props
 
@@ -291,7 +459,7 @@ void StatusAttrib::garbage_collection(bool _preserveManifoldness) {
             }
 
             // Recursive call
-            garbage_collection(false);
+            garbage_collection(vh_to_update, hh_to_update, hfh_to_update, ch_to_update, false);
 
         } else {
             std::cerr << "Preservation of three-manifoldness in garbage_collection() "

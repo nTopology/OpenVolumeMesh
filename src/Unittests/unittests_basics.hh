@@ -1467,6 +1467,156 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestManifoldness5) {
     EXPECT_EQ(0u, mesh_.n_vertices());
 }
 
+TEST_F(HexahedralMeshBase, GarbageCollectionTestTrackVertexHandles) {
+
+    generateHexahedralMesh(mesh_);
+
+    EXPECT_EQ(12u, mesh_.n_vertices());
+    EXPECT_EQ(20u, mesh_.n_edges());
+    EXPECT_EQ(11u, mesh_.n_faces());
+    EXPECT_EQ(2u, mesh_.n_cells());
+
+    StatusAttrib status(mesh_);
+
+    status[VertexHandle(0)].set_deleted(true);
+
+    std::vector<VertexHandle> vhs;
+    std::vector<VertexHandle*> track_vhs;
+    std::vector<HalfEdgeHandle*> hh_empty;
+    std::vector<HalfFaceHandle*> hfh_empty;
+    std::vector<CellHandle*> ch_empty;
+
+    OpenVolumeMesh::VertexIter v_it = mesh_.vertices_begin();
+    for (v_it; v_it != mesh_.vertices_end(); ++v_it)
+        vhs.push_back(*v_it);
+
+    for (std::vector<VertexHandle>::iterator it = vhs.begin(); it != vhs.end(); ++it)
+        track_vhs.push_back(&(*it));
+
+    status.garbage_collection(track_vhs, hh_empty, hfh_empty, ch_empty, false);
+
+    EXPECT_EQ(vhs[0], -1);
+    EXPECT_EQ(vhs[11], 10u);
+
+    EXPECT_EQ(1u, mesh_.n_cells());
+    EXPECT_EQ(11u, mesh_.n_vertices());
+    EXPECT_EQ(17u, mesh_.n_edges());
+    EXPECT_EQ(8u, mesh_.n_faces());
+}
+
+TEST_F(HexahedralMeshBase, GarbageCollectionTestTrackHalfedgeHandles) {
+
+    generateHexahedralMesh(mesh_);
+
+    StatusAttrib status(mesh_);
+
+    status[EdgeHandle(5)].set_deleted(true);
+
+    std::vector<HalfEdgeHandle> hhs;
+    std::vector<VertexHandle*> vh_empty;
+    std::vector<HalfEdgeHandle*> track_hh;
+    std::vector<HalfFaceHandle*> hfh_empty;
+    std::vector<CellHandle*> ch_empty;
+
+    OpenVolumeMesh::HalfEdgeIter hh_it = mesh_.halfedges_begin();
+    for (hh_it; hh_it != mesh_.halfedges_end(); ++hh_it)
+        hhs.push_back(*hh_it);
+
+    for (std::vector<HalfEdgeHandle>::iterator it = hhs.begin(); it != hhs.end(); ++it)
+        track_hh.push_back(&(*it));
+
+    status.garbage_collection(vh_empty, track_hh, hfh_empty, ch_empty, false);
+
+    EXPECT_EQ(hhs[9], 9u);
+    EXPECT_EQ(hhs[10], -1);
+    EXPECT_EQ(hhs[11], -1);
+    EXPECT_EQ(hhs[12], 10u);
+    EXPECT_EQ(hhs[39], 37u);
+
+    EXPECT_EQ(0u, mesh_.n_cells());
+    EXPECT_EQ(8u, mesh_.n_faces());
+    EXPECT_EQ(19u, mesh_.n_edges());
+    EXPECT_EQ(12u, mesh_.n_vertices());
+
+    status.garbage_collection(vh_empty, track_hh, hfh_empty, ch_empty, true);
+
+    for (std::vector<HalfEdgeHandle>::iterator it = hhs.begin(); it != hhs.end(); ++it)
+        EXPECT_EQ(it->idx(), -1);
+
+    EXPECT_EQ(0u, mesh_.n_cells());
+    EXPECT_EQ(0u, mesh_.n_faces());
+    EXPECT_EQ(0u, mesh_.n_edges());
+    EXPECT_EQ(0u, mesh_.n_vertices());
+}
+
+TEST_F(HexahedralMeshBase, GarbageCollectionTestTrackHalffaceHandles) {
+
+    generateHexahedralMesh(mesh_);
+
+    StatusAttrib status(mesh_);
+
+    status[FaceHandle(0)].set_deleted(true);
+
+    std::vector<HalfFaceHandle> hfhs;
+    std::vector<VertexHandle*> vh_empty;
+    std::vector<HalfEdgeHandle*> hh_empty;
+    std::vector<HalfFaceHandle*> track_hfh;
+    std::vector<CellHandle*> ch_empty;
+
+    OpenVolumeMesh::HalfFaceIter hfh_it = mesh_.halffaces_begin();
+    for (hfh_it; hfh_it != mesh_.halffaces_end(); ++hfh_it)
+        hfhs.push_back(*hfh_it);
+
+    for (std::vector<HalfFaceHandle>::iterator it = hfhs.begin(); it != hfhs.end(); ++it)
+        track_hfh.push_back(&(*it));
+
+    status.garbage_collection(vh_empty, hh_empty, track_hfh, ch_empty, true);
+
+    EXPECT_EQ(hfhs[0], -1);
+    EXPECT_EQ(hfhs[1], -1);
+    EXPECT_EQ(hfhs[2], 0u);
+    EXPECT_EQ(hfhs[3], 1u);
+    EXPECT_EQ(hfhs[21], 11u);
+
+
+    EXPECT_EQ(1u, mesh_.n_cells());
+    EXPECT_EQ(6u, mesh_.n_faces());
+    EXPECT_EQ(12u, mesh_.n_edges());
+    EXPECT_EQ(8u, mesh_.n_vertices());
+}
+
+TEST_F(HexahedralMeshBase, GarbageCollectionTestTrackCellHandles) {
+
+    generateHexahedralMesh(mesh_);
+
+    StatusAttrib status(mesh_);
+
+    status[CellHandle(0)].set_deleted(true);
+
+    std::vector<CellHandle> chs;
+    std::vector<VertexHandle*> vh_empty;
+    std::vector<HalfEdgeHandle*> hh_empty;
+    std::vector<HalfFaceHandle*> hfh_empty;
+    std::vector<CellHandle*> track_ch;
+
+    OpenVolumeMesh::CellIter c_it = mesh_.cells_begin();
+    for (c_it; c_it != mesh_.cells_end(); ++c_it)
+        chs.push_back(*c_it);
+
+    for (std::vector<CellHandle>::iterator it = chs.begin(); it != chs.end(); ++it)
+        track_ch.push_back(&(*it));
+
+    status.garbage_collection(vh_empty, hh_empty, hfh_empty, track_ch, true);
+
+    EXPECT_EQ(chs[0], -1);
+    EXPECT_EQ(chs[1], 0u);
+
+    EXPECT_EQ(1u, mesh_.n_cells());
+    EXPECT_EQ(6u, mesh_.n_faces());
+    EXPECT_EQ(12u, mesh_.n_edges());
+    EXPECT_EQ(8u, mesh_.n_vertices());
+}
+
 TEST_F(HexahedralMeshBase, GarbageCollectionTestProps1) {
 
     generateHexahedralMesh(mesh_);

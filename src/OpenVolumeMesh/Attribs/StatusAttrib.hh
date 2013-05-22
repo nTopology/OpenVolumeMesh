@@ -227,6 +227,41 @@ public:
      */
     void garbage_collection(bool _preserveManifoldness = false);
 
+    /**
+     * \brief garbage collection with handle tracking
+     *
+     * This function deletes all entities that have been marked as deleted.
+     * It proceeds bottom-up, starting with the vertices. All higher
+     * dimensional entities that are incident to a deleted entity are
+     * automatically marked deleted, too. Once this first pass is through,
+     * one can additionally delete all resulting non-manifold configurations
+     * in a second pass (triggered by the parameter of this function).
+     * This step proceeds as follows: Delete all n-dimensional entities
+     * (starting with n = 2), that are not incident to at least one
+     * entity of dimension n + 1. Note that the second pass requires bottom-up
+     * incidences to be available. Compute them by calling update_incidences().
+     *
+     * \note Garbage collection invalidates all handles. If you need to keep track of
+     *       a set of handles, you can pass them to this function. The handles that the
+     *       given pointers point to are updated in place.
+     *
+     * @param vh_to_update Pointers to vertex handles that should get updated
+     * @param hh_to_update Pointers to halfedge handles that should get updated
+     * @param hfh_to_update Pointers to halfface handles that should get updated
+     * @param ch_to_update Pointers to cell handles that should get updated
+     * @param _preserveManifoldness Pass true if the mesh is required to stay three-manifold
+     */
+    template<typename std_API_Container_VHandlePointer,
+             typename std_API_Container_HHandlePointer,
+             typename std_API_Container_HFHandlePointer,
+             typename std_API_Container_CHandlePointer>
+    void garbage_collection(
+        std_API_Container_VHandlePointer& vh_to_update,
+        std_API_Container_HHandlePointer& hh_to_update,
+        std_API_Container_HFHandlePointer& hfh_to_update,
+        std_API_Container_CHandlePointer& ch_to_update,
+        bool _preserveManifoldness = false);
+
 private:
 
     void mark_higher_dim_entities();
