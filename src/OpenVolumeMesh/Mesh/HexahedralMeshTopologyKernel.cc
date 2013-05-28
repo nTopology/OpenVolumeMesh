@@ -278,7 +278,7 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<VertexHandle>& _vertice
         return CellHandle(-1);
     }
 
-    HalfFaceHandle hf0, hf1, hf2, hf3, hf4, hf5, hf6, hf7;
+    HalfFaceHandle hf0, hf1, hf2, hf3, hf4, hf5;
 
     std::vector<VertexHandle> vs;
 
