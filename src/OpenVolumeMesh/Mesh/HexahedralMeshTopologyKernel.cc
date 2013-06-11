@@ -381,7 +381,7 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<VertexHandle>& _vertice
     hfs.push_back(hf3); hfs.push_back(hf4); hfs.push_back(hf5);
 
     if (_topologyCheck) {
-       /*
+        /*
         * Test if all halffaces are connected and form a two-manifold
         * => Cell is closed
         *
@@ -393,24 +393,37 @@ HexahedralMeshTopologyKernel::add_cell(const std::vector<VertexHandle>& _vertice
         std::set<EdgeHandle>     incidentEdges;
 
         for(std::vector<HalfFaceHandle>::const_iterator it = hfs.begin(),
-            end = hfs.end(); it != end; ++it) {
+                end = hfs.end(); it != end; ++it) {
 
-          OpenVolumeMeshFace hface = halfface(*it);
-          for(std::vector<HalfEdgeHandle>::const_iterator he_it = hface.halfedges().begin(),
-              he_end = hface.halfedges().end(); he_it != he_end; ++he_it) {
-            incidentHalfedges.insert(*he_it);
-            incidentEdges.insert(edge_handle(*he_it));
-          }
+            OpenVolumeMeshFace hface = halfface(*it);
+            for(std::vector<HalfEdgeHandle>::const_iterator he_it = hface.halfedges().begin(),
+                    he_end = hface.halfedges().end(); he_it != he_end; ++he_it) {
+                incidentHalfedges.insert(*he_it);
+                incidentEdges.insert(edge_handle(*he_it));
+            }
         }
 
         if(incidentHalfedges.size() != (incidentEdges.size() * 2u)) {
-          std::cerr << "The specified halffaces are not connected!" << std::endl;
-          return InvalidCellHandle;
+            std::cerr << "The specified halffaces are not connected!" << std::endl;
+            return InvalidCellHandle;
         }
         // The halffaces are now guaranteed to form a two-manifold
+
+        if(has_face_bottom_up_incidences()) {
+
+            for(std::vector<HalfFaceHandle>::const_iterator it = hfs.begin(),
+                    end = hfs.end(); it != end; ++it) {
+                if(incident_cell(*it) != InvalidCellHandle) {
+                    std::cerr << "Warning: One of the specified half-faces is already incident to another cell!" << std::endl;
+                    return InvalidCellHandle;
+                }
+            }
+
+        }
+
     }
 
-    return TopologyKernel::add_cell(hfs,false);
+    return TopologyKernel::add_cell(hfs, false);
 }
 
 //========================================================================================
