@@ -476,9 +476,8 @@ void TopologyKernel::set_edge(const EdgeHandle& _eh, const VertexHandle& _fromVe
         const HalfEdgeHandle heh0 = halfedge_handle(_eh, 0);
         const HalfEdgeHandle heh1 = halfedge_handle(_eh, 1);
 
-        std::vector<HalfEdgeHandle>::iterator h_end = outgoing_hes_per_vertex_[fv.idx()].end();
-
-        h_end = std::remove(outgoing_hes_per_vertex_[fv.idx()].begin(), outgoing_hes_per_vertex_[fv.idx()].end(), heh0);
+        std::vector<HalfEdgeHandle>::iterator h_end =
+        		std::remove(outgoing_hes_per_vertex_[fv.idx()].begin(), outgoing_hes_per_vertex_[fv.idx()].end(), heh0);
         outgoing_hes_per_vertex_[fv.idx()].resize(h_end - outgoing_hes_per_vertex_[fv.idx()].begin());
 
         h_end = std::remove(outgoing_hes_per_vertex_[tv.idx()].begin(), outgoing_hes_per_vertex_[tv.idx()].end(), heh1);
@@ -509,9 +508,8 @@ void TopologyKernel::set_face(const FaceHandle& _fh, const std::vector<HalfEdgeH
         for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin(),
                 he_end = hes.end(); he_it != he_end; ++he_it) {
 
-        	std::vector<HalfFaceHandle>::iterator h_end = incident_hfs_per_he_[he_it->idx()].end();
-
-            h_end = std::remove(incident_hfs_per_he_[he_it->idx()].begin(),
+        	std::vector<HalfFaceHandle>::iterator h_end =
+        			std::remove(incident_hfs_per_he_[he_it->idx()].begin(),
                         		incident_hfs_per_he_[he_it->idx()].end(), hf0);
             incident_hfs_per_he_[he_it->idx()].resize(h_end - incident_hfs_per_he_[he_it->idx()].begin());
 
