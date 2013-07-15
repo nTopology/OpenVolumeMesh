@@ -1920,4 +1920,88 @@ TEST_F(HexahedralMeshBase, AddCellViaVerticesFunction2) {
     EXPECT_EQ(12u, mesh_.n_vertices());
 }
 
+//===========================================================================
+
+TEST_F(PolyhedralMeshBase, SwapVertices) {
+
+	generatePolyhedralMesh(mesh_);
+
+	Vec3d p1(0.0, 0.0, 0.0);
+	Vec3d p2(1.0, 0.0, 0.0);
+	Vec3d p3(1.0, 1.0, 0.0);
+	Vec3d p4(0.0, 1.0, 0.0);
+
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(0))[0], p1[0]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(0))[1], p1[1]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(0))[2], p1[2]);
+
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(1))[0], p2[0]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(1))[1], p2[1]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(1))[2], p2[2]);
+
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(2))[0], p3[0]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(2))[1], p3[1]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(2))[2], p3[2]);
+
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(3))[0], p4[0]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(3))[1], p4[1]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(3))[2], p4[2]);
+
+	EXPECT_EQ(12u, mesh_.n_vertices());
+
+	Vec3d p1n(1.0, 1.0, 1.0);
+	Vec3d p2n(0.0, 1.0, 2.0);
+	Vec3d p3n(0.0, 0.0, 3.0);
+	Vec3d p4n(1.0, 0.0, 4.0);
+
+	/*
+	 * Old coordinates
+	 */
+	Vec3d p5(0.0, 0.0, 1.0);
+	Vec3d p6(1.0, 0.0, 1.0);
+	Vec3d p7(1.0, 1.0, 1.0);
+	Vec3d p8(0.0, 1.0, 1.0);
+
+	Vec3d p9(0.0, 0.0, 2.0);
+	Vec3d p10(1.0, 0.0, 2.0);
+	Vec3d p11(1.0, 1.0, 2.0);
+	Vec3d p12(0.0, 1.0, 2.0);
+
+	std::vector<Vec3d> new_vertices;
+
+	new_vertices.push_back(p1n);
+	new_vertices.push_back(p2n);
+	new_vertices.push_back(p3n);
+	new_vertices.push_back(p4n);
+
+	new_vertices.push_back(p5);
+	new_vertices.push_back(p6);
+	new_vertices.push_back(p7);
+	new_vertices.push_back(p8);
+	new_vertices.push_back(p9);
+	new_vertices.push_back(p10);
+	new_vertices.push_back(p11);
+	new_vertices.push_back(p12);
+
+	mesh_.swap_vertices(new_vertices);
+
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(0))[0], p1n[0]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(0))[1], p1n[1]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(0))[2], p1n[2]);
+
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(1))[0], p2n[0]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(1))[1], p2n[1]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(1))[2], p2n[2]);
+
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(2))[0], p3n[0]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(2))[1], p3n[1]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(2))[2], p3n[2]);
+
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(3))[0], p4n[0]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(3))[1], p4n[1]);
+	EXPECT_DOUBLE_EQ(mesh_.vertex(VertexHandle(3))[2], p4n[2]);
+
+	EXPECT_EQ(12u, mesh_.n_vertices());
+}
+
 #endif // INCLUDE GUARD
