@@ -821,7 +821,7 @@ TEST_F(PolyhedralMeshBase, DeleteFaceBUTest1) {
     for(size_t i = 0; i < 4; ++i) {
         for(std::vector<HalfFaceHandle>::const_iterator hf_it = ihfs[i].begin(),
                 hf_end = ihfs[i].end(); hf_it != hf_end; ++hf_it) {
-            EXPECT_GT(nihfs[i].count(*hf_it), 0);
+            EXPECT_GT(nihfs[i].count(*hf_it), 0u);
         }
     }
 }
@@ -862,12 +862,12 @@ TEST_F(PolyhedralMeshBase, DeleteEdgeBUTest1) {
 
     for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes0.begin(),
             he_end = hes0.end(); he_it != he_end; ++he_it) {
-        EXPECT_GT(nhes0.count(*he_it), 0);
+        EXPECT_GT(nhes0.count(*he_it), 0u);
     }
 
     for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes1.begin(),
             he_end = hes1.end(); he_it != he_end; ++he_it) {
-        EXPECT_GT(nhes1.count(*he_it), 0);
+        EXPECT_GT(nhes1.count(*he_it), 0u);
     }
 }
 
@@ -950,7 +950,7 @@ TEST_F(PolyhedralMeshBase, DeleteFaceBUTest1noBU) {
     for(size_t i = 0; i < 4; ++i) {
         for(std::vector<HalfFaceHandle>::const_iterator hf_it = ihfs[i].begin(),
                 hf_end = ihfs[i].end(); hf_it != hf_end; ++hf_it) {
-            EXPECT_GT(nihfs[i].count(*hf_it), 0);
+            EXPECT_GT(nihfs[i].count(*hf_it), 0u);
         }
     }
 }
@@ -1005,12 +1005,12 @@ TEST_F(PolyhedralMeshBase, DeleteEdgeBUTest1noBU) {
 
     for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes0.begin(),
             he_end = hes0.end(); he_it != he_end; ++he_it) {
-        EXPECT_GT(nhes0.count(*he_it), 0);
+        EXPECT_GT(nhes0.count(*he_it), 0u);
     }
 
     for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes1.begin(),
             he_end = hes1.end(); he_it != he_end; ++he_it) {
-        EXPECT_GT(nhes1.count(*he_it), 0);
+        EXPECT_GT(nhes1.count(*he_it), 0u);
     }
 }
 
@@ -1487,7 +1487,7 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestTrackVertexHandles) {
     std::vector<CellHandle*> ch_empty;
 
     OpenVolumeMesh::VertexIter v_it = mesh_.vertices_begin();
-    for (v_it; v_it != mesh_.vertices_end(); ++v_it)
+    for (; v_it != mesh_.vertices_end(); ++v_it)
         vhs.push_back(*v_it);
 
     for (std::vector<VertexHandle>::iterator it = vhs.begin(); it != vhs.end(); ++it)
@@ -1496,7 +1496,7 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestTrackVertexHandles) {
     status.garbage_collection(track_vhs, hh_empty, hfh_empty, ch_empty, false);
 
     EXPECT_EQ(vhs[0], -1);
-    EXPECT_EQ(vhs[11], 10u);
+    EXPECT_EQ(vhs[11], 10);
 
     EXPECT_EQ(1u, mesh_.n_cells());
     EXPECT_EQ(11u, mesh_.n_vertices());
@@ -1519,7 +1519,7 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestTrackHalfedgeHandles) {
     std::vector<CellHandle*> ch_empty;
 
     OpenVolumeMesh::HalfEdgeIter hh_it = mesh_.halfedges_begin();
-    for (hh_it; hh_it != mesh_.halfedges_end(); ++hh_it)
+    for (; hh_it != mesh_.halfedges_end(); ++hh_it)
         hhs.push_back(*hh_it);
 
     for (std::vector<HalfEdgeHandle>::iterator it = hhs.begin(); it != hhs.end(); ++it)
@@ -1527,11 +1527,11 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestTrackHalfedgeHandles) {
 
     status.garbage_collection(vh_empty, track_hh, hfh_empty, ch_empty, false);
 
-    EXPECT_EQ(hhs[9], 9u);
+    EXPECT_EQ(hhs[9], 9);
     EXPECT_EQ(hhs[10], -1);
     EXPECT_EQ(hhs[11], -1);
-    EXPECT_EQ(hhs[12], 10u);
-    EXPECT_EQ(hhs[39], 37u);
+    EXPECT_EQ(hhs[12], 10);
+    EXPECT_EQ(hhs[39], 37);
 
     EXPECT_EQ(0u, mesh_.n_cells());
     EXPECT_EQ(8u, mesh_.n_faces());
@@ -1564,7 +1564,7 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestTrackHalffaceHandles) {
     std::vector<CellHandle*> ch_empty;
 
     OpenVolumeMesh::HalfFaceIter hfh_it = mesh_.halffaces_begin();
-    for (hfh_it; hfh_it != mesh_.halffaces_end(); ++hfh_it)
+    for (; hfh_it != mesh_.halffaces_end(); ++hfh_it)
         hfhs.push_back(*hfh_it);
 
     for (std::vector<HalfFaceHandle>::iterator it = hfhs.begin(); it != hfhs.end(); ++it)
@@ -1574,9 +1574,9 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestTrackHalffaceHandles) {
 
     EXPECT_EQ(hfhs[0], -1);
     EXPECT_EQ(hfhs[1], -1);
-    EXPECT_EQ(hfhs[2], 0u);
-    EXPECT_EQ(hfhs[3], 1u);
-    EXPECT_EQ(hfhs[21], 11u);
+    EXPECT_EQ(hfhs[2], 0);
+    EXPECT_EQ(hfhs[3], 1);
+    EXPECT_EQ(hfhs[21], 11);
 
 
     EXPECT_EQ(1u, mesh_.n_cells());
@@ -1600,7 +1600,7 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestTrackCellHandles) {
     std::vector<CellHandle*> track_ch;
 
     OpenVolumeMesh::CellIter c_it = mesh_.cells_begin();
-    for (c_it; c_it != mesh_.cells_end(); ++c_it)
+    for (; c_it != mesh_.cells_end(); ++c_it)
         chs.push_back(*c_it);
 
     for (std::vector<CellHandle>::iterator it = chs.begin(); it != chs.end(); ++it)
@@ -1609,7 +1609,7 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestTrackCellHandles) {
     status.garbage_collection(vh_empty, hh_empty, hfh_empty, track_ch, true);
 
     EXPECT_EQ(chs[0], -1);
-    EXPECT_EQ(chs[1], 0u);
+    EXPECT_EQ(chs[1], 0);
 
     EXPECT_EQ(1u, mesh_.n_cells());
     EXPECT_EQ(6u, mesh_.n_faces());
@@ -1663,17 +1663,17 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestProps1) {
         fprops_i.insert(fprop[f_it->idx()]);
     }
 
-    EXPECT_EQ(0, fprops_i.count(11));
-    EXPECT_EQ(1, fprops_i.count(10));
-    EXPECT_EQ(1, fprops_i.count(9));
-    EXPECT_EQ(0, fprops_i.count(8));
-    EXPECT_EQ(0, fprops_i.count(7));
-    EXPECT_EQ(1, fprops_i.count(6));
-    EXPECT_EQ(1, fprops_i.count(5));
-    EXPECT_EQ(1, fprops_i.count(4));
-    EXPECT_EQ(1, fprops_i.count(3));
-    EXPECT_EQ(1, fprops_i.count(2));
-    EXPECT_EQ(1, fprops_i.count(1));
+    EXPECT_EQ(0u, fprops_i.count(11));
+    EXPECT_EQ(1u, fprops_i.count(10));
+    EXPECT_EQ(1u, fprops_i.count(9));
+    EXPECT_EQ(0u, fprops_i.count(8));
+    EXPECT_EQ(0u, fprops_i.count(7));
+    EXPECT_EQ(1u, fprops_i.count(6));
+    EXPECT_EQ(1u, fprops_i.count(5));
+    EXPECT_EQ(1u, fprops_i.count(4));
+    EXPECT_EQ(1u, fprops_i.count(3));
+    EXPECT_EQ(1u, fprops_i.count(2));
+    EXPECT_EQ(1u, fprops_i.count(1));
 }
 
 TEST_F(HexahedralMeshBase, GarbageCollectionTestProps2) {
@@ -1722,17 +1722,17 @@ TEST_F(HexahedralMeshBase, GarbageCollectionTestProps2) {
         fprops_i.insert(fprop[f_it->idx()]);
     }
 
-    EXPECT_EQ(0, fprops_i.count(11));
-    EXPECT_EQ(1, fprops_i.count(10));
-    EXPECT_EQ(1, fprops_i.count(9));
-    EXPECT_EQ(1, fprops_i.count(8));
-    EXPECT_EQ(1, fprops_i.count(7));
-    EXPECT_EQ(1, fprops_i.count(6));
-    EXPECT_EQ(1, fprops_i.count(5));
-    EXPECT_EQ(1, fprops_i.count(4));
-    EXPECT_EQ(1, fprops_i.count(3));
-    EXPECT_EQ(1, fprops_i.count(2));
-    EXPECT_EQ(1, fprops_i.count(1));
+    EXPECT_EQ(0u, fprops_i.count(11));
+    EXPECT_EQ(1u, fprops_i.count(10));
+    EXPECT_EQ(1u, fprops_i.count(9));
+    EXPECT_EQ(1u, fprops_i.count(8));
+    EXPECT_EQ(1u, fprops_i.count(7));
+    EXPECT_EQ(1u, fprops_i.count(6));
+    EXPECT_EQ(1u, fprops_i.count(5));
+    EXPECT_EQ(1u, fprops_i.count(4));
+    EXPECT_EQ(1u, fprops_i.count(3));
+    EXPECT_EQ(1u, fprops_i.count(2));
+    EXPECT_EQ(1u, fprops_i.count(1));
 }
 
 TEST_F(HexahedralMeshBase, HalfEdgeFetchFunction1) {

@@ -180,7 +180,7 @@ void ResourceManager::remove_property(StdVecT& _vec, size_t _idx) {
 }
 
 template<class StdVecT>
-void ResourceManager::resize_props(StdVecT& _vec, unsigned int _n) {
+void ResourceManager::resize_props(StdVecT& _vec, size_t _n) {
 
     for(typename StdVecT::iterator it = _vec.begin();
             it != _vec.end(); ++it) {

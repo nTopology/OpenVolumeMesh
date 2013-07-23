@@ -78,16 +78,16 @@ public:
     template <class PropT, class HandleT> friend class PropertyPtr;
 
     /// Change size of stored vertex properties
-    void resize_vprops(unsigned int _nv);
+    void resize_vprops(size_t _nv);
 
     /// Change size of stored edge properties
-    void resize_eprops(unsigned int _ne);
+    void resize_eprops(size_t _ne);
 
     /// Change size of stored face properties
-    void resize_fprops(unsigned int _nf);
+    void resize_fprops(size_t _nf);
 
     /// Change size of stored cell properties
-    void resize_cprops(unsigned int _nc);
+    void resize_cprops(size_t _nc);
 
 protected:
 
@@ -116,17 +116,17 @@ public:
     void clear_mesh_props() { clearVec(mesh_props_); }
 
     /// Get number of vertices in mesh
-    virtual unsigned int n_vertices() const = 0;
+    virtual size_t n_vertices() const = 0;
     /// Get number of edges in mesh
-    virtual unsigned int n_edges() const = 0;
+    virtual size_t n_edges() const = 0;
     /// Get number of halfedges in mesh
-    virtual unsigned int n_halfedges() const = 0;
+    virtual size_t n_halfedges() const = 0;
     /// Get number of faces in mesh
-    virtual unsigned int n_faces() const = 0;
+    virtual size_t n_faces() const = 0;
     /// Get number of halffaces in mesh
-    virtual unsigned int n_halffaces() const = 0;
+    virtual size_t n_halffaces() const = 0;
     /// Get number of cells in mesh
-    virtual unsigned int n_cells() const = 0;
+    virtual size_t n_cells() const = 0;
 
     template<class T> VertexPropertyT<T> request_vertex_property(const std::string& _name = std::string(), const T _def = T());
 
@@ -160,19 +160,19 @@ private:
 
 public:
 
-    unsigned int n_vertex_props() const { return vertex_props_.size(); }
+    size_t n_vertex_props() const { return vertex_props_.size(); }
 
-    unsigned int n_edge_props() const { return edge_props_.size(); }
+    size_t n_edge_props() const { return edge_props_.size(); }
 
-    unsigned int n_halfedge_props() const { return halfedge_props_.size(); }
+    size_t n_halfedge_props() const { return halfedge_props_.size(); }
 
-    unsigned int n_face_props() const { return face_props_.size(); }
+    size_t n_face_props() const { return face_props_.size(); }
 
-    unsigned int n_halfface_props() const { return halfface_props_.size(); }
+    size_t n_halfface_props() const { return halfface_props_.size(); }
 
-    unsigned int n_cell_props() const { return cell_props_.size(); }
+    size_t n_cell_props() const { return cell_props_.size(); }
 
-    unsigned int n_mesh_props() const { return mesh_props_.size(); }
+    size_t n_mesh_props() const { return mesh_props_.size(); }
 
     template<class T> void set_persistent(VertexPropertyT<T>& _prop, bool _flag = true);
 
@@ -287,7 +287,7 @@ protected:
 private:
 
     template<class StdVecT>
-    void resize_props(StdVecT& _vec, unsigned int _n);
+    void resize_props(StdVecT& _vec, size_t _n);
 
     template<class StdVecT>
     void entity_deleted(StdVecT& _vec, const OpenVolumeMeshHandle& _h);

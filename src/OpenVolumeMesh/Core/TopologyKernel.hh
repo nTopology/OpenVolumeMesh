@@ -214,17 +214,17 @@ public:
      */
 
     /// Get number of vertices in mesh
-    virtual unsigned int n_vertices()   const { return n_vertices_; }
+    virtual size_t n_vertices()   const { return n_vertices_; }
     /// Get number of edges in mesh
-    virtual unsigned int n_edges()      const { return edges_.size(); }
+    virtual size_t n_edges()      const { return edges_.size(); }
     /// Get number of halfedges in mesh
-    virtual unsigned int n_halfedges()  const { return edges_.size() * 2u; }
+    virtual size_t n_halfedges()  const { return edges_.size() * 2u; }
     /// Get number of faces in mesh
-    virtual unsigned int n_faces()      const { return faces_.size(); }
+    virtual size_t n_faces()      const { return faces_.size(); }
     /// Get number of halffaces in mesh
-    virtual unsigned int n_halffaces()  const { return faces_.size() * 2u; }
+    virtual size_t n_halffaces()  const { return faces_.size() * 2u; }
     /// Get number of cells in mesh
-    virtual unsigned int n_cells()      const { return cells_.size(); }
+    virtual size_t n_cells()      const { return cells_.size(); }
 
     int genus() const {
 
@@ -243,7 +243,7 @@ public:
 private:
 
     // Cache total vertex number
-    unsigned int n_vertices_;
+    size_t n_vertices_;
 
 public:
 
@@ -325,36 +325,36 @@ public:
     HalfEdgeHandle prev_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const;
 
     /// Get valence of vertex (number of incident edges)
-    inline unsigned int valence(const VertexHandle& _vh) const {
+    inline size_t valence(const VertexHandle& _vh) const {
         if(!v_bottom_up_) {
             std::cerr << "Could not get vertex valence: No bottom-up incidences for vertices available!" << std::endl;
             return 0u;
         }
-        assert((unsigned int)_vh.idx() < outgoing_hes_per_vertex_.size());
+        assert((size_t)_vh.idx() < outgoing_hes_per_vertex_.size());
         return outgoing_hes_per_vertex_[_vh.idx()].size();
     }
 
     /// Get valence of edge (number of incident faces)
-    inline unsigned int valence(const EdgeHandle& _eh) const {
+    inline size_t valence(const EdgeHandle& _eh) const {
         if(!e_bottom_up_) {
             std::cerr << "Could not get edge valence: No bottom-up incidences for edges available!" << std::endl;
             return 0u;
         }
-        assert((unsigned int)halfedge_handle(_eh, 0).idx() < incident_hfs_per_he_.size());
+        assert((size_t)halfedge_handle(_eh, 0).idx() < incident_hfs_per_he_.size());
         return incident_hfs_per_he_[halfedge_handle(_eh, 0).idx()].size();
     }
 
     /// Get valence of face (number of incident edges)
-    inline unsigned int valence(const FaceHandle& _fh) const {
+    inline size_t valence(const FaceHandle& _fh) const {
 
-        assert((unsigned int)_fh.idx() < faces_.size());
+        assert((size_t)_fh.idx() < faces_.size());
         return face(_fh).halfedges().size();
     }
 
     /// Get valence of cell (number of incident faces)
-    inline unsigned int valence(const CellHandle& _ch) const {
+    inline size_t valence(const CellHandle& _ch) const {
 
-        assert((unsigned int)_ch.idx() < cells_.size());
+        assert((size_t)_ch.idx() < cells_.size());
         return cell(_ch).halffaces().size();
     }
 
@@ -622,7 +622,7 @@ public:
     CellHandle incident_cell(const HalfFaceHandle& _halfFaceHandle) const;
 
     bool is_boundary(const HalfFaceHandle& _halfFaceHandle) const {
-        return _halfFaceHandle.idx() >= 0 && (unsigned int)_halfFaceHandle.idx() < incident_cell_per_hf_.size() &&
+        return _halfFaceHandle.idx() >= 0 && (size_t)_halfFaceHandle.idx() < incident_cell_per_hf_.size() &&
                 incident_cell_per_hf_[_halfFaceHandle.idx()] == InvalidCellHandle;
     }
 
@@ -670,7 +670,7 @@ public:
         return false;
     }
 
-    unsigned int n_vertices_in_cell(const CellHandle& _ch) const {
+    size_t n_vertices_in_cell(const CellHandle& _ch) const {
 
         std::set<VertexHandle> vertices;
         std::vector<HalfFaceHandle> hfs = cell(_ch).halffaces();
