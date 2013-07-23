@@ -224,7 +224,7 @@ private:
     bool property_exists(const PropIterT& _begin, const PropIterT& _end, const std::string& _name) const {
 
         if(_name.length() == 0) {
-            std::cerr << "Checking for the existance of anonymous properties is ambiguous!" << std::endl;
+            std::cerr << "Checking for the existence of anonymous properties is ambiguous!" << std::endl;
             return false;
         }
 
