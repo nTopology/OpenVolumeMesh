@@ -66,7 +66,7 @@ public:
     // Vertices
     //==================
     const ColT& operator[](const VertexHandle& _h) const {
-        assert((unsigned int)_h.idx() < vcolor_prop_.size());
+        assert((unsigned int)_h.idx() < kernel_.n_vertices());
         return vcolor_prop_[_h.idx()];
     }
 
@@ -80,7 +80,7 @@ public:
     // Edges
     //==================
     const ColT& operator[](const EdgeHandle& _h) const {
-        assert((unsigned int)_h.idx() < ecolor_prop_.size());
+        assert((unsigned int)_h.idx() < kernel_.n_edges());
         return ecolor_prop_[_h.idx()];
     }
 
@@ -94,7 +94,7 @@ public:
     // Half-Edges
     //==================
     const ColT& operator[](const HalfEdgeHandle& _h) const {
-        assert((unsigned int)_h.idx() < hecolor_prop_.size());
+        assert((unsigned int)_h.idx() < kernel_.n_halfedges());
         return hecolor_prop_[_h.idx()];
     }
 
@@ -108,7 +108,7 @@ public:
     // Faces
     //==================
     const ColT& operator[](const FaceHandle& _h) const {
-        assert((unsigned int)_h.idx() < fcolor_prop_.size());
+        assert((unsigned int)_h.idx() < kernel_.n_faces());
         return fcolor_prop_[_h.idx()];
     }
 
@@ -122,7 +122,7 @@ public:
     // Half-Faces
     //==================
     const ColT& operator[](const HalfFaceHandle& _h) const {
-        assert((unsigned int)_h.idx() < hfcolor_prop_.size());
+        assert((unsigned int)_h.idx() < kernel_.n_halffaces());
         return hfcolor_prop_[_h.idx()];
     }
 
@@ -136,7 +136,7 @@ public:
     // Cells
     //==================
     const ColT& operator[](const CellHandle& _h) const {
-        assert((unsigned int)_h.idx() < ccolor_prop_.size());
+        assert((unsigned int)_h.idx() < kernel_.n_cells());
         return ccolor_prop_[_h.idx()];
     }
 

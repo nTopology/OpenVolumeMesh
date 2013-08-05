@@ -66,7 +66,7 @@ public:
     // Vertices
     //==================
     const TexCoordT& operator[](const VertexHandle& _h) const {
-        assert((unsigned int)_h.idx() < vtexcoord_prop_.size());
+        assert((unsigned int)_h.idx() < kernel_.n_vertices());
         return vtexcoord_prop_[_h.idx()];
     }
 
