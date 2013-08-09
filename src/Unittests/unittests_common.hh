@@ -7,10 +7,6 @@
 #include <OpenVolumeMesh/Mesh/HexahedralMesh.hh>
 #include <OpenVolumeMesh/Geometry/VectorT.hh>
 
-// Vector defines
-typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
-typedef OpenVolumeMesh::Geometry::Vec3f Vec3f;
-
 /*
  * Simple test setting for polyhedral meshes
  */

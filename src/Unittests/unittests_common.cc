@@ -7,6 +7,8 @@
 
 #include "unittests_common.hh"
 
+using namespace OpenVolumeMesh::Geometry;
+
 void PolyhedralMeshBase::generatePolyhedralMesh(PolyhedralMesh& _mesh) {
 
     Vec3d p1(0.0, 0.0, 0.0);
