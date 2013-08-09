@@ -162,9 +162,9 @@ TEST_F(PolyhedralMeshBase, SaveFileWithVectorProps) {
   VertexPropertyT<Vec2i> vprop2 = mesh_.request_vertex_property<Vec2i>("MyVertexProp");
 
   for(unsigned int i = 0; i < mesh_.n_halffaces(); ++i) {
-      EXPECT_FLOAT_EQ((double)i/2.0, hfprop2[i][0]);
-      EXPECT_FLOAT_EQ((double)i/2.0, hfprop2[i][1]);
-      EXPECT_FLOAT_EQ((double)i/2.0, hfprop2[i][2]);
+      EXPECT_DOUBLE_EQ((double)i/2.0, hfprop2[i][0]);
+      EXPECT_DOUBLE_EQ((double)i/2.0, hfprop2[i][1]);
+      EXPECT_DOUBLE_EQ((double)i/2.0, hfprop2[i][2]);
   }
   for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
       EXPECT_EQ(i, vprop2[i][0]);
@@ -227,9 +227,9 @@ TEST_F(PolyhedralMeshBase, SerializeVectorValuedProperties) {
   ifs2.close();
 
   for(unsigned int i = 0; i < mesh_.n_halffaces(); ++i) {
-      EXPECT_FLOAT_EQ((double)i/2.0, hfprop[i][0]);
-      EXPECT_FLOAT_EQ((double)i/2.0, hfprop[i][1]);
-      EXPECT_FLOAT_EQ((double)i/2.0, hfprop[i][2]);
+      EXPECT_DOUBLE_EQ((double)i/2.0, hfprop[i][0]);
+      EXPECT_DOUBLE_EQ((double)i/2.0, hfprop[i][1]);
+      EXPECT_DOUBLE_EQ((double)i/2.0, hfprop[i][2]);
   }
   for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
       EXPECT_EQ(i, vprop[i][0]);
