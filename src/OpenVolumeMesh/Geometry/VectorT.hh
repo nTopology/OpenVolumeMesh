@@ -99,7 +99,7 @@ template <typename Scalar,int N> struct VectorDataT
 /// This specialization enables us to use aligned SSE instructions.
 template <> struct VectorDataT<float, 4>
 {
-  union 
+  union
   {
     __m128  m128;
     float   values_[4];
@@ -141,7 +141,7 @@ template <> struct VectorDataT<float, 4>
 
 
 #define TEMPLATE_HEADER        template <typename Scalar>
-#define CLASSNAME              VectorT<Scalar,DIM> 
+#define CLASSNAME              VectorT<Scalar,DIM>
 #define DERIVED                VectorDataT<Scalar,DIM>
 
 
@@ -191,21 +191,21 @@ template <> struct VectorDataT<float, 4>
 /// cross product for Vec3f
 template<>
 inline VectorT<float,3>
-VectorT<float,3>::operator%(const VectorT<float,3>& _rhs) const 
+VectorT<float,3>::operator%(const VectorT<float,3>& _rhs) const
 {
-   return 
+   return
      VectorT<float,3>(values_[1]*_rhs.values_[2]-values_[2]*_rhs.values_[1],
 		      values_[2]*_rhs.values_[0]-values_[0]*_rhs.values_[2],
 		      values_[0]*_rhs.values_[1]-values_[1]*_rhs.values_[0]);
 }
-  
+
 
 /// cross product for Vec3d
 template<>
 inline VectorT<double,3>
 VectorT<double,3>::operator%(const VectorT<double,3>& _rhs) const
 {
- return 
+ return
    VectorT<double,3>(values_[1]*_rhs.values_[2]-values_[2]*_rhs.values_[1],
 		     values_[2]*_rhs.values_[0]-values_[0]*_rhs.values_[2],
 		     values_[0]*_rhs.values_[1]-values_[1]*_rhs.values_[0]);
@@ -229,16 +229,16 @@ inline VectorT<Scalar,N> operator*(Scalar _s, const VectorT<Scalar,N>& _v) {
 /// \relates OpenVolumeMesh::VectorT
 /// symmetric version of the dot product
 template<typename Scalar, int N>
-inline Scalar 
+inline Scalar
 dot(const VectorT<Scalar,N>& _v1, const VectorT<Scalar,N>& _v2) {
-  return (_v1 | _v2); 
+  return (_v1 | _v2);
 }
 
 
 /// \relates OpenVolumeMesh::VectorT
 /// symmetric version of the cross product
 template<typename Scalar, int N>
-inline VectorT<Scalar,N> 
+inline VectorT<Scalar,N>
 cross(const VectorT<Scalar,N>& _v1, const VectorT<Scalar,N>& _v2) {
   return (_v1 % _v2);
 }
@@ -335,6 +335,27 @@ typedef VectorT<double,6> Vec6d;
 
 //=============================================================================
 } // namespace Geometry
+
+using namespace Geometry;
+
+template <class T>
+const std::string typeName();
+
+template <> const std::string typeName<Vec2f>();
+template <> const std::string typeName<Vec2d>();
+template <> const std::string typeName<Vec2i>();
+template <> const std::string typeName<Vec2ui>();
+
+template <> const std::string typeName<Vec3f>();
+template <> const std::string typeName<Vec3d>();
+template <> const std::string typeName<Vec3i>();
+template <> const std::string typeName<Vec3ui>();
+
+template <> const std::string typeName<Vec4f>();
+template <> const std::string typeName<Vec4d>();
+template <> const std::string typeName<Vec4i>();
+template <> const std::string typeName<Vec4ui>();
+
 } // namespace OpenVolumeMesh
 //=============================================================================
 #endif // OPENVOLUMEMESH_VECTOR_HH defined

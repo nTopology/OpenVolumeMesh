@@ -118,6 +118,125 @@ TEST_F(PolyhedralMeshBase, SaveFileWithProps) {
   }
 }
 
+TEST_F(PolyhedralMeshBase, SaveFileWithVectorProps) {
+
+  OpenVolumeMesh::IO::FileManager fileManager;
+
+  ASSERT_TRUE(fileManager.readFile("Cylinder.ovm", mesh_));
+
+  EXPECT_EQ(399u, mesh_.n_vertices());
+  EXPECT_EQ(1070u, mesh_.n_edges());
+  EXPECT_EQ(960u, mesh_.n_faces());
+  EXPECT_EQ(288u, mesh_.n_cells());
+
+  // Attach non-persistent properties
+  HalfFacePropertyT<Vec3d> hfprop = mesh_.request_halfface_property<Vec3d>("MyHalfFaceProp");
+  VertexPropertyT<Vec2i> vprop = mesh_.request_vertex_property<Vec2i>("MyVertexProp");
+
+  for(unsigned int i = 0; i < mesh_.n_halffaces(); ++i) {
+      hfprop[i] = Vec3d((double)i/2.0, (double)i/2.0, (double)i/2.0);
+  }
+  for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
+      vprop[i] = Vec2i(i, i, i);
+  }
+
+  mesh_.set_persistent(hfprop);
+  mesh_.set_persistent(vprop);
+
+  // Write file
+  ASSERT_TRUE(fileManager.writeFile("Cylinder.copy.ovm", mesh_));
+
+  mesh_.clear();
+
+  ASSERT_TRUE(fileManager.readFile("Cylinder.copy.ovm", mesh_));
+
+  EXPECT_EQ(399u, mesh_.n_vertices());
+  EXPECT_EQ(1070u, mesh_.n_edges());
+  EXPECT_EQ(960u, mesh_.n_faces());
+  EXPECT_EQ(288u, mesh_.n_cells());
+
+  EXPECT_EQ(1u, mesh_.n_halfface_props());
+  EXPECT_EQ(1u, mesh_.n_vertex_props());
+
+  HalfFacePropertyT<Vec3d> hfprop2 = mesh_.request_halfface_property<Vec3d>("MyHalfFaceProp");
+  VertexPropertyT<Vec2i> vprop2 = mesh_.request_vertex_property<Vec2i>("MyVertexProp");
+
+  for(unsigned int i = 0; i < mesh_.n_halffaces(); ++i) {
+      EXPECT_FLOAT_EQ((double)i/2.0, hfprop2[i][0]);
+      EXPECT_FLOAT_EQ((double)i/2.0, hfprop2[i][1]);
+      EXPECT_FLOAT_EQ((double)i/2.0, hfprop2[i][2]);
+  }
+  for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
+      EXPECT_EQ(i, vprop2[i][0]);
+      EXPECT_EQ(i, vprop2[i][1]);
+  }
+}
+
+TEST_F(PolyhedralMeshBase, SerializeVectorValuedProperties) {
+
+  OpenVolumeMesh::IO::FileManager fileManager;
+
+  ASSERT_TRUE(fileManager.readFile("Cylinder.ovm", mesh_));
+
+  EXPECT_EQ(399u, mesh_.n_vertices());
+  EXPECT_EQ(1070u, mesh_.n_edges());
+  EXPECT_EQ(960u, mesh_.n_faces());
+  EXPECT_EQ(288u, mesh_.n_cells());
+
+  // Attach persistent properties
+  HalfFacePropertyT<Vec3d> hfprop = mesh_.request_halfface_property<Vec3d>("MyHalfFaceProp");
+  VertexPropertyT<Vec2i> vprop = mesh_.request_vertex_property<Vec2i>("MyVertexProp");
+
+  for(unsigned int i = 0; i < mesh_.n_halffaces(); ++i) {
+      hfprop[i] = Vec3d((double)i/2.0, (double)i/2.0, (double)i/2.0);
+  }
+  for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
+      vprop[i] = Vec2i(i, i, i);
+  }
+
+  mesh_.set_persistent(hfprop);
+  mesh_.set_persistent(vprop);
+
+  std::ofstream ofs1("hfVecPropTest");
+  std::ofstream ofs2("vVecPropTest");
+
+  hfprop.serialize(ofs1);
+  vprop.serialize(ofs2);
+
+  ofs1.close();
+  ofs2.close();
+
+  /*
+   * Change property values
+   */
+  for(unsigned int i = 0; i < mesh_.n_halffaces(); ++i) {
+	  hfprop[i] = Vec3d((double)i/3.0, (double)i/3.0, (double)i/3.0);
+  }
+
+  for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
+	  vprop[i] = Vec2i(2*i, 2*i, 2*i);
+  }
+
+  std::ifstream ifs1("hfVecPropTest");
+  std::ifstream ifs2("vVecPropTest");
+
+  hfprop.deserialize(ifs1);
+  vprop.deserialize(ifs2);
+
+  ifs1.close();
+  ifs2.close();
+
+  for(unsigned int i = 0; i < mesh_.n_halffaces(); ++i) {
+      EXPECT_FLOAT_EQ((double)i/2.0, hfprop[i][0]);
+      EXPECT_FLOAT_EQ((double)i/2.0, hfprop[i][1]);
+      EXPECT_FLOAT_EQ((double)i/2.0, hfprop[i][2]);
+  }
+  for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
+      EXPECT_EQ(i, vprop[i][0]);
+      EXPECT_EQ(i, vprop[i][1]);
+  }
+}
+
 TEST_F(PolyhedralMeshBase, LoadFileWithProps) {
 
   OpenVolumeMesh::IO::FileManager fileManager;

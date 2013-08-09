@@ -77,6 +77,10 @@ public:
 
     virtual bool anonymous() const = 0;
 
+    virtual const std::string entityType() const = 0;
+
+    virtual const std::string typeNameWrapper() const = 0;
+
 protected:
 
     virtual void delete_multiple_entries(const std::vector<bool>& _tags) = 0;

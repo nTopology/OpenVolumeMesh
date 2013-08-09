@@ -145,7 +145,6 @@ public:
 
 	// Function to serialize a property
     virtual void serialize(std::ostream& _ostr) const {
-        OpenVolumeMeshBaseProperty::serialize(_ostr);
         for(typename vector_type::const_iterator it = data_.begin();
                 it != data_.end(); ++it) {
             _ostr << *it << std::endl;

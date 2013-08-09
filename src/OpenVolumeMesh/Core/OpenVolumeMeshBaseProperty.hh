@@ -111,9 +111,7 @@ public:
 	}
 
 	// Function to serialize a property
-	virtual void serialize(std::ostream& _ostr) const {
-	    _ostr << "\"" << name_ << "\"" << std::endl;
-	}
+	virtual void serialize(std::ostream& /*_ostr*/) const {}
 
 	// Function to deserialize a property
     virtual void deserialize(std::istream& /*_istr*/) {}

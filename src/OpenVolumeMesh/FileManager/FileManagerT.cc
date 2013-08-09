@@ -58,6 +58,8 @@ namespace OpenVolumeMesh {
 
 namespace IO {
 
+using namespace OpenVolumeMesh::Geometry;
+
 //==================================================
 
 template <class MeshT>
@@ -329,6 +331,24 @@ void FileManager::readProperty(std::istream& _iff, MeshT& _mesh) const {
     else if(prop_t == typeName<float>()) generateGenericProperty<float, MeshT>(entity_t, name, _iff, _mesh);
     else if(prop_t == typeName<double>()) generateGenericProperty<double, MeshT>(entity_t, name, _iff, _mesh);
     else if(prop_t == typeName<std::string>()) generateGenericProperty<std::string, MeshT>(entity_t, name, _iff, _mesh);
+
+    else if(prop_t == typeName<Vec2f>()) generateGenericProperty<Vec2f, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<Vec2d>()) generateGenericProperty<Vec2d, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<Vec2i>()) generateGenericProperty<Vec2i, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<Vec2ui>()) generateGenericProperty<Vec2ui, MeshT>(entity_t, name, _iff, _mesh);
+
+    else if(prop_t == typeName<Vec3f>()) generateGenericProperty<Vec3f, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<Vec3d>()) generateGenericProperty<Vec3d, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<Vec3i>()) generateGenericProperty<Vec3i, MeshT>(entity_t, name, _iff, _mesh);
+    else if(prop_t == typeName<Vec3ui>()) generateGenericProperty<Vec3ui, MeshT>(entity_t, name, _iff, _mesh);
+
+    else if(prop_t == typeName<Vec4f>()) generateGenericProperty<Vec4f, MeshT>(entity_t, name, _iff, _mesh);
+	else if(prop_t == typeName<Vec4d>()) generateGenericProperty<Vec4d, MeshT>(entity_t, name, _iff, _mesh);
+	else if(prop_t == typeName<Vec4i>()) generateGenericProperty<Vec4i, MeshT>(entity_t, name, _iff, _mesh);
+	else if(prop_t == typeName<Vec4ui>()) generateGenericProperty<Vec4ui, MeshT>(entity_t, name, _iff, _mesh);
+
+
+
 }
 
 //==================================================
@@ -488,6 +508,11 @@ void FileManager::writeProps(std::ostream& _ostr, const IteratorT& _begin, const
             std::cerr << "Serialization of anonymous properties is not supported!" << std::endl;
             continue;
         }
+
+        _ostr << (*p_it)->entityType() << " ";
+        _ostr << (*p_it)->typeNameWrapper() << " ";
+        _ostr << "\"" << (*p_it)->name() << "\"" << std::endl;
+
         (*p_it)->serialize(_ostr);
     }
 }

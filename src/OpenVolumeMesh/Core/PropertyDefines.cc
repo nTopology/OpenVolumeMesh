@@ -42,6 +42,8 @@
 
 #include "PropertyDefines.hh"
 
+#include "../Geometry/VectorT.hh"
+
 namespace OpenVolumeMesh {
 
 template <> const std::string typeName<int>() { return "int"; }
