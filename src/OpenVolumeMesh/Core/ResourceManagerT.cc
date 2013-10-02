@@ -200,20 +200,22 @@ void ResourceManager::entity_deleted(StdVecT& _vec, const OpenVolumeMeshHandle& 
 template<class StdVecT>
 void ResourceManager::clearVec(StdVecT& _vec) {
 
+    StdVecT newVec;
     for(typename StdVecT::iterator it = _vec.begin();
             it != _vec.end(); ++it) {
         if(!(*it)->persistent()) {
-            std::cerr << "Could not clear properties since at " <<
-                    "least one property is still in use!" << std::endl;
-            return;
+#ifndef NDEBUG
+            std::cerr << "Keeping property \"" << (*it)->name()
+                      << "\" since it is still in use!" << std::endl;
+#endif
+            (*it)->resize(0);
+            newVec.push_back(*it);
         }
+        else
+            delete *it;
     }
 
-    for(typename StdVecT::iterator it = _vec.begin();
-            it != _vec.end(); ++it) {
-        delete *it;
-    }
-    _vec.clear();
+    _vec = newVec;
 }
 
 } // Namespace OpenVolumeMesh

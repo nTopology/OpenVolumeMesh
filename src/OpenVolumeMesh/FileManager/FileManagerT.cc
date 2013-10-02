@@ -82,7 +82,7 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     Point v = Point(0.0, 0.0, 0.0);
     unsigned int v1 = 0; unsigned int v2 = 0;
 
-    _mesh.clear();
+    _mesh.clear(false);
     // Temporarily disable bottom-up incidences
     // since it's way faster to first add all the
     // geometry and compute them in one pass afterwards
