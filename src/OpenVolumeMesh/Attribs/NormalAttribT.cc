@@ -54,9 +54,7 @@ template <class GeomKernelT>
 NormalAttrib<GeomKernelT>::NormalAttrib(GeomKernelT& _kernel) :
 kernel_(_kernel),
 v_normals_(_kernel.template request_vertex_property<typename GeomKernelT::PointT>("vertex_normals")),
-f_normals_(_kernel.template request_face_property<typename GeomKernelT::PointT>("face_normals")),
-vertex_normals_available_(false),
-face_normals_available_(false)
+f_normals_(_kernel.template request_face_property<typename GeomKernelT::PointT>("face_normals"))
 {
 
 }
@@ -80,8 +78,6 @@ void NormalAttrib<GeomKernelT>::update_vertex_normals() {
     for(VertexIter v_it = kernel_.v_iter(); v_it.valid(); ++v_it) {
         compute_vertex_normal(*v_it);
     }
-
-    vertex_normals_available_ = true;
 }
 
 template <class GeomKernelT>
@@ -97,7 +93,6 @@ void NormalAttrib<GeomKernelT>::update_face_normals() {
         // first two edges
         compute_face_normal(*f_it);
     }
-    face_normals_available_ = true;
 }
 
 template <class GeomKernelT>

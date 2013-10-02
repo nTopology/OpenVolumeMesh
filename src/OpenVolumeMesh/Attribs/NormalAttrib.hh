@@ -94,26 +94,20 @@ public:
 
     typename GeomKernelT::PointT& operator[](const VertexHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_vertices());
-        vertex_normals_available_ = true;
         return v_normals_[_h.idx()];
     }
 
     typename GeomKernelT::PointT& operator[](const FaceHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_faces());
-        face_normals_available_ = true;
         return f_normals_[_h.idx()];
     }
 
     typename GeomKernelT::PointT operator[](const HalfFaceHandle& _h) {
         assert((unsigned int)_h.idx() < kernel_.n_halffaces());
-        face_normals_available_ = true;
         double mult = 1.0;
         if(_h.idx() % 2 == 1) mult = -1.0;
         return f_normals_[kernel_.face_handle(_h).idx()] * mult;
     }
-
-    bool vertex_normals_available() { return vertex_normals_available_; }
-    bool face_normals_available()   { return face_normals_available_;  }
 
 private:
 
@@ -126,9 +120,6 @@ private:
     VertexPropertyT<typename GeomKernelT::PointT> v_normals_;
     FacePropertyT<typename GeomKernelT::PointT> f_normals_;
 
-
-    bool vertex_normals_available_;
-    bool face_normals_available_;
 };
 
 } // Namespace OpenVolumeMesh
