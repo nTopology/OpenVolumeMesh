@@ -49,6 +49,7 @@
 
 #include "BaseProperty.hh"
 #include "PropertyHandles.hh"
+#include "PropertyPtr.hh"
 
 namespace OpenVolumeMesh {
 
