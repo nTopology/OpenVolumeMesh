@@ -49,7 +49,7 @@ public:
                   *space >> qi::int_[boost::bind(&MeshGenerator::add_cell_vertex, &generator_, ::_1)] >>
                   *space >> qi::int_[boost::bind(&MeshGenerator::add_cell_vertex, &generator_, ::_1)] >>
                   *space >> qi::int_[boost::bind(&MeshGenerator::add_cell_vertex, &generator_, ::_1)] >>
-                  spirit::eol;;
+                  spirit::eol;
 
         face_section_header = qi::int_ /* Number of faces */ >> spirit::eol;
 
