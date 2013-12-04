@@ -137,7 +137,7 @@ TEST_F(PolyhedralMeshBase, SaveFileWithVectorProps) {
       hfprop[i] = Vec3d((double)i/2.0, (double)i/2.0, (double)i/2.0);
   }
   for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
-      vprop[i] = Vec2i(i, i, i);
+      vprop[i] = Vec2i(i, i);
   }
 
   mesh_.set_persistent(hfprop);
@@ -191,7 +191,7 @@ TEST_F(PolyhedralMeshBase, SerializeVectorValuedProperties) {
       hfprop[i] = Vec3d((double)i/2.0, (double)i/2.0, (double)i/2.0);
   }
   for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
-      vprop[i] = Vec2i(i, i, i);
+      vprop[i] = Vec2i(i, i);
   }
 
   mesh_.set_persistent(hfprop);
@@ -214,7 +214,7 @@ TEST_F(PolyhedralMeshBase, SerializeVectorValuedProperties) {
   }
 
   for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
-	  vprop[i] = Vec2i(2*i, 2*i, 2*i);
+	  vprop[i] = Vec2i(2*i, 2*i);
   }
 
   std::ifstream ifs1("hfVecPropTest");
