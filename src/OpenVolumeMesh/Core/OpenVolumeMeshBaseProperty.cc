@@ -40,6 +40,8 @@
  *                                                                           *
 \*===========================================================================*/
 
+#include <limits>
+
 #include "OpenVolumeMeshBaseProperty.hh"
 
 namespace OpenVolumeMesh {

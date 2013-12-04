@@ -45,15 +45,14 @@
 
 //== INCLUDES =================================================================
 
-#include <vector>
-#include <string>
-#include <iostream>
-#include <algorithm>
-#include <numeric>
 #include <cassert>
+#include <istream>
+#include <ostream>
+#include <numeric>
+#include <string>
+#include <vector>
 
 #include "OpenVolumeMeshBaseProperty.hh"
-#include "OpenVolumeMeshHandle.hh"
 
 namespace OpenVolumeMesh {
 

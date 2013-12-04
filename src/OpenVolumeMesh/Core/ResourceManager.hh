@@ -43,6 +43,9 @@
 #ifndef RESOURCEMANAGER_HH_
 #define RESOURCEMANAGER_HH_
 
+#ifndef NDEBUG
+#include <iostream>
+#endif
 #include <string>
 #include <vector>
 
@@ -223,8 +226,11 @@ private:
     template <class FullPropT, class PropIterT>
     bool property_exists(const PropIterT& _begin, const PropIterT& _end, const std::string& _name) const {
 
-        if(_name.length() == 0) {
-            std::cerr << "Checking for the existence of anonymous properties is ambiguous!" << std::endl;
+        if(_name.empty()) {
+#ifndef NDEBUG
+            std::cerr << "property_exists(): Checking for the existence of anonymous properties is" << std::endl;
+            std::cerr << "ambiguous!" << std::endl;
+#endif
             return false;
         }
 

@@ -40,10 +40,14 @@
  *                                                                           *
 \*===========================================================================*/
 
-#include <OpenVolumeMesh/System/FunctionalInclude.hh>
+#ifndef NDEBUG
+#include <iostream>
+#endif
+
 #include <queue>
 
 #include "TopologyKernel.hh"
+#include "../System/FunctionalInclude.hh"
 
 namespace OpenVolumeMesh {
 
@@ -91,18 +95,16 @@ EdgeHandle TopologyKernel::add_edge(const VertexHandle& _fromVertex,
                                     const VertexHandle& _toVertex,
                                     bool _allowDuplicates) {
 
-#ifndef NDEBUG
-    if((size_t)_fromVertex.idx() >= n_vertices() || (size_t)_toVertex.idx() >= n_vertices()) {
-        std::cerr << "Vertex handle is out of bounds!" << std::endl;
-        return InvalidEdgeHandle;
-    }
-#endif
+    // If the conditions are not fulfilled, assert will fail (instead
+	// of returning an invalid handle)
+    assert(_fromVertex.is_valid() && (size_t)_fromVertex.idx() < n_vertices());
+    assert(_toVertex.is_valid() && (size_t)_toVertex.idx() < n_vertices());
 
     // Test if edge does not exist, yet
     if(!_allowDuplicates) {
         if(v_bottom_up_) {
 
-            assert(outgoing_hes_per_vertex_.size() > (size_t)_fromVertex.idx());
+            assert((size_t)_fromVertex.idx() < outgoing_hes_per_vertex_.size());
             std::vector<HalfEdgeHandle>& ohes = outgoing_hes_per_vertex_[_fromVertex.idx()];
             for(std::vector<HalfEdgeHandle>::const_iterator he_it = ohes.begin(),
                     he_end = ohes.end(); he_it != he_end; ++he_it) {
@@ -134,8 +136,9 @@ EdgeHandle TopologyKernel::add_edge(const VertexHandle& _fromVertex,
 
     // Update vertex bottom-up incidences
     if(v_bottom_up_) {
-        assert(outgoing_hes_per_vertex_.size() > (size_t)_fromVertex.idx());
-        assert(outgoing_hes_per_vertex_.size() > (size_t)_toVertex.idx());
+        assert((size_t)_fromVertex.idx() < outgoing_hes_per_vertex_.size());
+        assert((size_t)_toVertex.idx() < outgoing_hes_per_vertex_.size());
+
         outgoing_hes_per_vertex_[_fromVertex.idx()].push_back(halfedge_handle(eh, 0));
         outgoing_hes_per_vertex_[_toVertex.idx()].push_back(halfedge_handle(eh, 1));
     }
@@ -155,14 +158,10 @@ EdgeHandle TopologyKernel::add_edge(const VertexHandle& _fromVertex,
 FaceHandle TopologyKernel::add_face(const std::vector<HalfEdgeHandle>& _halfedges, bool _topologyCheck) {
 
 #ifndef NDEBUG
-    // Test if all edges are valid
+    // Assert that halfedges are valid
     for(std::vector<HalfEdgeHandle>::const_iterator it = _halfedges.begin(),
-            end = _halfedges.end(); it != end; ++it) {
-        if((size_t)it->idx() >= edges_.size() * 2u) {
-            std::cerr << "Halfedge handle out of bounds!" << std::endl;
-            return InvalidFaceHandle;
-        }
-    }
+            end = _halfedges.end(); it != end; ++it)
+        assert(it->is_valid() && (size_t)it->idx() < edges_.size() * 2u);
 #endif
 
     // Perform topology check
@@ -193,7 +192,12 @@ FaceHandle TopologyKernel::add_face(const std::vector<HalfEdgeHandle>& _halfedge
         for(std::set<VertexHandle>::const_iterator v_it = fromVertices.begin(),
                 v_end = fromVertices.end(); v_it != v_end; ++v_it) {
             if(toVertices.count(*v_it) != 1) {
-                std::cerr << "The specified halfedges are not connected!" << std::endl;
+                // The situation here is different, the caller has requested a
+                // topology check and expects an invalid handle if the half-edges
+                // are not connected. Give him a message in debug mode.
+#ifndef NDEBUG
+                std::cerr << "add_face(): The specified halfedges are not connected!" << std::endl;
+#endif
                 return InvalidFaceHandle;
             }
         }
@@ -217,8 +221,10 @@ FaceHandle TopologyKernel::add_face(const std::vector<HalfEdgeHandle>& _halfedge
 
         for(std::vector<HalfEdgeHandle>::const_iterator it = _halfedges.begin(),
             end = _halfedges.end(); it != end; ++it) {
-            assert(incident_hfs_per_he_.size() > (size_t)it->idx());
-            assert(incident_hfs_per_he_.size() > (size_t)opposite_halfedge_handle(*it).idx());
+
+            assert((size_t)it->idx() < incident_hfs_per_he_.size());
+            assert((size_t)opposite_halfedge_handle(*it).idx() < incident_hfs_per_he_.size());
+
             incident_hfs_per_he_[it->idx()].push_back(halfface_handle(fh, 0));
             incident_hfs_per_he_[opposite_halfedge_handle(*it).idx()].push_back(halfface_handle(fh, 1));
         }
@@ -240,14 +246,10 @@ FaceHandle TopologyKernel::add_face(const std::vector<HalfEdgeHandle>& _halfedge
 FaceHandle TopologyKernel::add_face(const std::vector<VertexHandle>& _vertices) {
 
 #ifndef NDEBUG
-    // Test if all vertices exist
+    // Assert that all vertices have valid indices
     for(std::vector<VertexHandle>::const_iterator it = _vertices.begin(),
-            end = _vertices.end(); it != end; ++it) {
-        if((size_t)it->idx() >= n_vertices()) {
-            std::cerr << "Vertex handle out of bounds!" << std::endl;
-            return InvalidFaceHandle;
-        }
-    }
+            end = _vertices.end(); it != end; ++it)
+        assert(it->is_valid() && (size_t)it->idx() < n_vertices());
 #endif
 
     // Add edge for each pair of vertices
@@ -305,9 +307,8 @@ void TopologyKernel::reorder_incident_halffaces(const EdgeHandle& _eh) {
         HalfFaceHandle start_hf = InvalidHalfFaceHandle;
         HalfFaceHandle cur_hf = InvalidHalfFaceHandle;
 
-        // Start with one incident halfface and go
-        // into the first direction
-        assert(incident_hfs_per_he_.size() > (size_t)cur_he.idx());
+        // Start with one incident halfface and go into the first direction
+        assert((size_t)cur_he.idx() < incident_hfs_per_he_.size());
 
         if(incident_hfs_per_he_[cur_he.idx()].size() != 0) {
 
@@ -366,14 +367,10 @@ void TopologyKernel::reorder_incident_halffaces(const EdgeHandle& _eh) {
 CellHandle TopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halffaces, bool _topologyCheck) {
 
 #ifndef NDEBUG
-    // Test if halffaces have valid indices
+    // Assert that halffaces have valid indices
     for(std::vector<HalfFaceHandle>::const_iterator it = _halffaces.begin(),
-            end = _halffaces.end(); it != end; ++it) {
-        if((size_t)it->idx() >= faces_.size() * 2u) {
-            std::cerr << "HalfFace handle is out of bounds!" << std::endl;
-            return InvalidCellHandle;
-        }
-    }
+            end = _halffaces.end(); it != end; ++it)
+        assert(it->is_valid() && ((size_t)it->idx() < faces_.size() * 2u));
 #endif
 
     // Perform topology check
@@ -402,7 +399,9 @@ CellHandle TopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halfface
         }
 
         if(incidentHalfedges.size() != (incidentEdges.size() * 2u)) {
-            std::cerr << "The specified halffaces are not connected!" << std::endl;
+#ifndef NDEBUG
+            std::cerr << "add_cell(): The specified half-faces are not connected!" << std::endl;
+#endif
             return InvalidCellHandle;
         }
 
@@ -425,13 +424,20 @@ CellHandle TopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halfface
         std::set<EdgeHandle> cell_edges;
         for(std::vector<HalfFaceHandle>::const_iterator it = _halffaces.begin(),
                 end = _halffaces.end(); it != end; ++it) {
-            assert(incident_cell_per_hf_.size() > (size_t)it->idx());
+            assert((size_t)it->idx() < incident_cell_per_hf_.size());
 
+#ifndef NDEBUG
             if(_topologyCheck) {
                 if(incident_cell_per_hf_[it->idx()] != InvalidCellHandle) {
-                    std::cerr << "Warning: One of the specified half-faces is already incident to another cell!" << std::endl;
+                    // Shouldn't this situation be dealt with before adding the
+                    // cell and return InvalidCellHandle in this case?
+                	// Mike: Not if the user intends to add non-manifold
+                	// configurations. Although, in this case, he should be
+                	// warned about it.
+                    std::cerr << "add_cell(): One of the specified half-faces is already incident to another cell!" << std::endl;
                 }
             }
+#endif
 
             // Overwrite incident cell for current half-face
             incident_cell_per_hf_[it->idx()] = ch;
@@ -846,7 +852,7 @@ void TopologyKernel::get_incident_cells(const ContainerT& _fs,
  */
 VertexIter TopologyKernel::delete_vertex_core(const VertexHandle& _h) {
 
-    assert(_h.idx() < (int)n_vertices());
+    assert(_h.is_valid() && (size_t)_h.idx() < n_vertices());
 
     // 1)
     if(v_bottom_up_) {
@@ -885,7 +891,7 @@ VertexIter TopologyKernel::delete_vertex_core(const VertexHandle& _h) {
 
     // 2)
     if(v_bottom_up_) {
-        assert(outgoing_hes_per_vertex_.size() > (size_t)_h.idx());
+        assert((size_t)_h.idx() < outgoing_hes_per_vertex_.size());
         outgoing_hes_per_vertex_.erase(outgoing_hes_per_vertex_.begin() + _h.idx());
     }
 
@@ -922,14 +928,15 @@ VertexIter TopologyKernel::delete_vertex_core(const VertexHandle& _h) {
  */
 EdgeIter TopologyKernel::delete_edge_core(const EdgeHandle& _h) {
 
-    assert(_h.idx() < (int)edges_.size());
+    assert(_h.is_valid() && (size_t)_h.idx() < edges_.size());
 
     // 1)
     if(v_bottom_up_) {
 
         VertexHandle v0 = edge(_h).from_vertex();
         VertexHandle v1 = edge(_h).to_vertex();
-        assert(outgoing_hes_per_vertex_.size() > (size_t)std::max(v0.idx(), v1.idx()));
+        assert(v0.is_valid() && (size_t)v0.idx() < outgoing_hes_per_vertex_.size());
+        assert(v1.is_valid() && (size_t)v1.idx() < outgoing_hes_per_vertex_.size());
 
         outgoing_hes_per_vertex_[v0.idx()].erase(
                 std::remove(outgoing_hes_per_vertex_[v0.idx()].begin(),
@@ -947,7 +954,7 @@ EdgeIter TopologyKernel::delete_edge_core(const EdgeHandle& _h) {
     // 2)
     if(e_bottom_up_) {
 
-        assert(incident_hfs_per_he_.size() > (size_t)halfedge_handle(_h, 0).idx());
+        assert((size_t)halfedge_handle(_h, 0).idx() < incident_hfs_per_he_.size());
 
         // Decrease all half-edge handles > he and
         // delete all half-edge handles == he in face definitions
@@ -999,7 +1006,8 @@ EdgeIter TopologyKernel::delete_edge_core(const EdgeHandle& _h) {
 
     // 3)
     if(e_bottom_up_) {
-        assert(incident_hfs_per_he_.size() > (size_t)halfedge_handle(_h, 1).idx());
+        assert((size_t)halfedge_handle(_h, 1).idx() < incident_hfs_per_he_.size());
+
         incident_hfs_per_he_.erase(incident_hfs_per_he_.begin() + halfedge_handle(_h, 1).idx());
         incident_hfs_per_he_.erase(incident_hfs_per_he_.begin() + halfedge_handle(_h, 0).idx());
     }
@@ -1045,7 +1053,7 @@ EdgeIter TopologyKernel::delete_edge_core(const EdgeHandle& _h) {
  */
 FaceIter TopologyKernel::delete_face_core(const FaceHandle& _h) {
 
-    assert(_h.idx() < (int)faces_.size());
+    assert(_h.is_valid() && (size_t)_h.idx() < faces_.size());
 
     // 1)
     if(e_bottom_up_) {
@@ -1054,7 +1062,7 @@ FaceIter TopologyKernel::delete_face_core(const FaceHandle& _h) {
         for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin(),
                 he_end = hes.end(); he_it != he_end; ++he_it) {
 
-            assert(incident_hfs_per_he_.size() > (size_t)std::max(he_it->idx(), opposite_halfedge_handle(*he_it).idx()));
+            assert((size_t)std::max(he_it->idx(), opposite_halfedge_handle(*he_it).idx()) < incident_hfs_per_he_.size());
 
             incident_hfs_per_he_[he_it->idx()].erase(
                     std::remove(incident_hfs_per_he_[he_it->idx()].begin(),
@@ -1115,7 +1123,8 @@ FaceIter TopologyKernel::delete_face_core(const FaceHandle& _h) {
 
     // 3)
     if(f_bottom_up_) {
-        assert(incident_cell_per_hf_.size() > (size_t)halfface_handle(_h, 1).idx());
+        assert((size_t)halfface_handle(_h, 1).idx() < incident_cell_per_hf_.size());
+
         incident_cell_per_hf_.erase(incident_cell_per_hf_.begin() + halfface_handle(_h, 1).idx());
         incident_cell_per_hf_.erase(incident_cell_per_hf_.begin() + halfface_handle(_h, 0).idx());
     }
@@ -1157,14 +1166,14 @@ FaceIter TopologyKernel::delete_face_core(const FaceHandle& _h) {
  */
 CellIter TopologyKernel::delete_cell_core(const CellHandle& _h) {
 
-    assert(_h.idx() < (int)cells_.size());
+    assert(_h.is_valid() && (size_t)_h.idx() < cells_.size());
 
     // 1)
     if(f_bottom_up_) {
         const std::vector<HalfFaceHandle>& hfs = cell(_h).halffaces();
         for(std::vector<HalfFaceHandle>::const_iterator hf_it = hfs.begin(),
                 hf_end = hfs.end(); hf_it != hf_end; ++hf_it) {
-            assert(incident_cell_per_hf_.size() > (size_t)hf_it->idx());
+            assert((size_t)hf_it->idx() < incident_cell_per_hf_.size());
 
             incident_cell_per_hf_[hf_it->idx()] = InvalidCellHandle;
         }
@@ -1191,7 +1200,7 @@ CellIter TopologyKernel::delete_cell_core(const CellHandle& _h) {
 
 void TopologyKernel::delete_multiple_vertices(const std::vector<bool>& _tag) {
 
-    assert(_tag.size() == n_vertices_);
+    assert(_tag.size() == n_vertices());
 
     std::vector<int> newIndices(n_vertices(), -1);
     int curIdx = 0;
@@ -1322,7 +1331,7 @@ void TopologyKernel::delete_multiple_cells(const std::vector<bool>& _tag) {
 CellIter TopologyKernel::delete_cell_range(const CellIter& _first, const CellIter& _last) {
 
     assert(_first >= cells_begin());
-    assert(_last < cells_end());
+    assert(_last <= cells_end());
 
     std::vector<Cell>::iterator it = cells_.erase(cells_.begin() + _first->idx(), cells_.begin() + _last->idx());
 
@@ -1341,8 +1350,7 @@ CellIter TopologyKernel::delete_cell_range(const CellIter& _first, const CellIte
 const OpenVolumeMeshEdge& TopologyKernel::edge(const EdgeHandle& _edgeHandle) const {
 
     // Test if edge is valid
-    assert((size_t)_edgeHandle.idx() < edges_.size());
-    assert(_edgeHandle.idx() >= 0);
+    assert(_edgeHandle.is_valid() && (size_t)_edgeHandle.idx() < edges_.size());
 
     return edges_[_edgeHandle.idx()];
 }
@@ -1353,8 +1361,7 @@ const OpenVolumeMeshEdge& TopologyKernel::edge(const EdgeHandle& _edgeHandle) co
 const OpenVolumeMeshFace& TopologyKernel::face(const FaceHandle& _faceHandle) const {
 
     // Test if face is valid
-    assert((size_t)_faceHandle.idx() < faces_.size());
-    assert(_faceHandle.idx() >= 0);
+    assert(_faceHandle.is_valid() && (size_t)_faceHandle.idx() < faces_.size());
 
     return faces_[_faceHandle.idx()];
 }
@@ -1365,8 +1372,7 @@ const OpenVolumeMeshFace& TopologyKernel::face(const FaceHandle& _faceHandle) co
 const OpenVolumeMeshCell& TopologyKernel::cell(const CellHandle& _cellHandle) const {
 
     // Test if cell is valid
-    assert((size_t)_cellHandle.idx() < cells_.size());
-    assert(_cellHandle.idx() >= 0);
+    assert(_cellHandle.is_valid() && (size_t)_cellHandle.idx() < cells_.size());
 
     return cells_[_cellHandle.idx()];
 }
@@ -1377,8 +1383,7 @@ const OpenVolumeMeshCell& TopologyKernel::cell(const CellHandle& _cellHandle) co
 OpenVolumeMeshEdge& TopologyKernel::edge(const EdgeHandle& _edgeHandle) {
 
     // Test if edge is valid
-    assert((size_t)_edgeHandle.idx() < edges_.size());
-    assert(_edgeHandle.idx() >= 0);
+    assert(_edgeHandle.is_valid() && (size_t)_edgeHandle.idx() < edges_.size());
 
     return edges_[_edgeHandle.idx()];
 }
@@ -1538,8 +1543,8 @@ HalfFaceHandle TopologyKernel::halfface(const std::vector<HalfEdgeHandle>& _hes)
 
 HalfEdgeHandle TopologyKernel::next_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
 
-    assert((size_t)_hfh.idx() < faces_.size() * 2u);
-    assert((size_t)_heh.idx() < edges_.size() * 2u);
+    assert(_heh.is_valid() && (size_t)_heh.idx() < edges_.size() * 2u);
+    assert(_hfh.is_valid() && (size_t)_hfh.idx() < faces_.size() * 2u);
 
     std::vector<HalfEdgeHandle> hes = halfface(_hfh).halfedges();
 
@@ -1558,8 +1563,8 @@ HalfEdgeHandle TopologyKernel::next_halfedge_in_halfface(const HalfEdgeHandle& _
 
 HalfEdgeHandle TopologyKernel::prev_halfedge_in_halfface(const HalfEdgeHandle& _heh, const HalfFaceHandle& _hfh) const {
 
-    assert((size_t)_hfh.idx() < faces_.size() * 2u);
-    assert((size_t)_heh.idx() < edges_.size() * 2u);
+    assert(_heh.is_valid() && (size_t)_heh.idx() < edges_.size() * 2u);
+    assert(_hfh.is_valid() && (size_t)_hfh.idx() < faces_.size() * 2u);
 
     std::vector<HalfEdgeHandle> hes = halfface(_hfh).halfedges();
 
@@ -1579,15 +1584,11 @@ HalfEdgeHandle TopologyKernel::prev_halfedge_in_halfface(const HalfEdgeHandle& _
 HalfFaceHandle
 TopologyKernel::adjacent_halfface_in_cell(const HalfFaceHandle& _halfFaceHandle, const HalfEdgeHandle& _halfEdgeHandle) const {
 
-#ifndef NDEBUG
-    if((size_t)_halfFaceHandle.idx() >= incident_cell_per_hf_.size() || _halfFaceHandle.idx() < 0) {
-        return InvalidHalfFaceHandle;
-    }
-#endif
-    if(!has_face_bottom_up_incidences()) {
-        std::cerr << "Error: Function adjacent_halfface_in_cell() needs face bottom-up incidences!" << std::endl;
-        return InvalidHalfFaceHandle;
-    }
+    assert(_halfFaceHandle.is_valid() && (size_t)_halfFaceHandle.idx() < faces_.size() * 2u);
+    assert(_halfEdgeHandle.is_valid() && (size_t)_halfEdgeHandle.idx() < edges_.size() * 2u);
+    assert(has_face_bottom_up_incidences());
+    assert((size_t)_halfFaceHandle.idx() < incident_cell_per_hf_.size());
+
     if(incident_cell_per_hf_[_halfFaceHandle.idx()] == InvalidCellHandle) {
         // Specified halfface is on the outside of the complex
         return InvalidHalfFaceHandle;
@@ -1649,17 +1650,15 @@ void TopologyKernel::compute_vertex_bottom_up_incidences() {
     for(size_t i = 0; i < n_edges; ++i) {
 
         VertexHandle from = edges_[i].from_vertex();
-        if((size_t)from.idx() >= outgoing_hes_per_vertex_.size()) {
-            std::cerr << "update_incidences(): Vertex handle is out of bounds!" << std::endl;
-            return;
-        }
+        // If this condition is not fulfilled, it is out of caller's control and
+        // definitely our bug, therefore an assert
+        assert((size_t)from.idx() < outgoing_hes_per_vertex_.size());
+
         outgoing_hes_per_vertex_[from.idx()].push_back(halfedge_handle(EdgeHandle(i), 0));
 
         VertexHandle to = edges_[i].to_vertex();
-        if((size_t)to.idx() >= outgoing_hes_per_vertex_.size()) {
-            std::cerr << "update_incidences(): Vertex handle is out of bounds!" << std::endl;
-            return;
-        }
+        assert((size_t)to.idx() < outgoing_hes_per_vertex_.size());
+
         // Store opposite halfedge handle
         outgoing_hes_per_vertex_[to.idx()].push_back(halfedge_handle(EdgeHandle(i), 1));
     }
@@ -1713,8 +1712,10 @@ void TopologyKernel::compute_face_bottom_up_incidences() {
 
             } else {
 
-                std::cerr << "Detected non-three-manifold configuration!" << std::endl;
+#ifndef NDEBUG
+                std::cerr << "compute_face_bottom_up_incidences(): Detected non-three-manifold configuration!" << std::endl;
                 std::cerr << "Connectivity probably won't work." << std::endl;
+#endif
                 continue;
             }
         }

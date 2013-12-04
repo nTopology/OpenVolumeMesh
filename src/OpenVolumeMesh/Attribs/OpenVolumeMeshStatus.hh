@@ -43,7 +43,7 @@
 #ifndef STATUS_HH_
 #define STATUS_HH_
 
-#include <iostream>
+#include <iosfwd>
 
 namespace OpenVolumeMesh {
 

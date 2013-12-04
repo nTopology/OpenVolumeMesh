@@ -40,7 +40,8 @@
  *                                                                           *
 \*===========================================================================*/
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 
 #include "BaseEntities.hh"
 

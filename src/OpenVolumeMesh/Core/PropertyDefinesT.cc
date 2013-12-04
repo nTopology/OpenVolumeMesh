@@ -42,8 +42,10 @@
 
 #define PROPERTYDEFINEST_CC
 
+#include <istream>
+#include <ostream>
+
 #include "PropertyDefines.hh"
-#include "PropertyPtr.hh"
 
 namespace OpenVolumeMesh {
 

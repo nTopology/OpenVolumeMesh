@@ -40,6 +40,9 @@
  *                                                                           *
 \*===========================================================================*/
 
+#include <istream>
+#include <ostream>
+
 #include "OpenVolumeMeshStatus.hh"
 
 namespace OpenVolumeMesh {

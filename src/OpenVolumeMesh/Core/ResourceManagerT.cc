@@ -43,10 +43,7 @@
 #define RESOURCEMANAGERT_CC
 
 #include "ResourceManager.hh"
-
 #include "PropertyDefines.hh"
-
-#include "PropertyPtr.hh"
 
 namespace OpenVolumeMesh {
 

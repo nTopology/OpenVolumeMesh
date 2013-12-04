@@ -40,6 +40,10 @@
  *                                                                           *
 \*===========================================================================*/
 
+#ifndef NDEBUG
+#include <iostream>
+#endif
+
 #include "StatusAttrib.hh"
 
 #include "../Core/TopologyKernel.hh"
@@ -462,8 +466,10 @@ void StatusAttrib::garbage_collection(std_API_Container_VHandlePointer &vh_to_up
             garbage_collection(vh_to_update, hh_to_update, hfh_to_update, ch_to_update, false);
 
         } else {
+#ifndef NDEBUG
             std::cerr << "Preservation of three-manifoldness in garbage_collection() "
                     << "requires bottom-up incidences!" << std::endl;
+#endif
             return;
         }
     }

@@ -43,13 +43,10 @@
 #ifndef PROPERTYPTR_HH_
 #define PROPERTYPTR_HH_
 
-#include <iostream>
 #include <string>
-#include <cassert>
 
 #include "BaseProperty.hh"
-#include "PropertyHandles.hh"
-
+#include "OpenVolumeMeshHandle.hh"
 #include "../System/MemoryInclude.hh"
 
 namespace OpenVolumeMesh {

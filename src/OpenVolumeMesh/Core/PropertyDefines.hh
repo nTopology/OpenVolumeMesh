@@ -43,11 +43,11 @@
 #ifndef PROPERTYDEFINES_HH_
 #define PROPERTYDEFINES_HH_
 
-#include <iostream>
-#include <typeinfo>
+#include <iosfwd>
 #include <stdexcept>
+#include <string>
+#include <typeinfo>
 
-#include "BaseProperty.hh"
 #include "PropertyHandles.hh"
 #include "PropertyPtr.hh"
 
@@ -55,8 +55,6 @@ namespace OpenVolumeMesh {
 
 template <class T>
 class OpenVolumeMeshPropertyT;
-template <class PropT, class HandleT>
-class PropertyPtr;
 
 class ResourceManager;
 

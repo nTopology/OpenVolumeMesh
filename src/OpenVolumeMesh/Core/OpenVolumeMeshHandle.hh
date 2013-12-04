@@ -43,10 +43,11 @@
 #ifndef OPENVOLUMEMESHHANDLE_HH_
 #define OPENVOLUMEMESHHANDLE_HH_
 
-#include <iostream>
-#include <vector>
-#include <OpenVolumeMesh/System/FunctionalInclude.hh>
 #include <algorithm>
+#include <iosfwd>
+#include <vector>
+
+#include "../System/FunctionalInclude.hh"
 
 namespace OpenVolumeMesh {
 

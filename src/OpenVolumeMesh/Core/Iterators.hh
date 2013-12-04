@@ -43,9 +43,9 @@
 #ifndef ITERATORS_HH_
 #define ITERATORS_HH_
 
+#include <iterator>
 #include <set>
 #include <vector>
-#include <iterator>
 
 #include "OpenVolumeMeshHandle.hh"
 

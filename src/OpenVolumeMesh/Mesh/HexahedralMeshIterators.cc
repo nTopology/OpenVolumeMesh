@@ -58,7 +58,9 @@ CellSheetCellIter::CellSheetCellIter(const CellHandle& _ref_h,
 BaseIter(_mesh, _ref_h) {
 
     if(!_mesh->has_face_bottom_up_incidences()) {
+#ifndef NDEBUG
         std::cerr << "This iterator needs bottom-up incidences!" << std::endl;
+#endif
         BaseIter::valid(false);
         return;
     }
@@ -118,7 +120,9 @@ HalfFaceSheetHalfFaceIter::HalfFaceSheetHalfFaceIter(const HalfFaceHandle& _ref_
 BaseIter(_mesh, _ref_h) {
 
 	if(!_mesh->has_face_bottom_up_incidences()) {
+#ifndef NDEBUG
         std::cerr << "This iterator needs bottom-up incidences!" << std::endl;
+#endif
         BaseIter::valid(false);
         return;
     }
@@ -135,7 +139,9 @@ BaseIter(_mesh, _ref_h) {
 	 */
 
 	if(_mesh->is_boundary(_ref_h)) {
+#ifndef NDEBUG
 		std::cerr << "HalfFaceSheetHalfFaceIter: HalfFace is boundary!" << std::endl;
+#endif
 		BaseIter::valid(false);
         return;
 	}

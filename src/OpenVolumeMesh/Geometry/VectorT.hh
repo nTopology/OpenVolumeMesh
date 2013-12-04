@@ -59,10 +59,11 @@
 
 //== INCLUDES =================================================================
 
-#include <iostream>
-#include <assert.h>
-#include <math.h>
-#include <string.h>
+#include <istream>
+#include <ostream>
+#include <cassert>
+#include <cmath>
+#include <string>
 
 #if defined(__GNUC__) && defined(__SSE__)
 #include <xmmintrin.h>

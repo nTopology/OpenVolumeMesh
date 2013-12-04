@@ -44,9 +44,8 @@
 #ifndef OPENVOLUMEMESHBASEPROPERTY_HH
 #define OPENVOLUMEMESHBASEPROPERTY_HH
 
-#include <limits>
+#include <iosfwd>
 #include <string>
-#include <iostream>
 #include <vector>
 
 #include "OpenVolumeMeshHandle.hh"
