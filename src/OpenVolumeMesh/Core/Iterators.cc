@@ -203,14 +203,14 @@ BaseIter(_mesh, _ref_h) {
     }
 
     // Build up cell list
-    std::vector<HalfEdgeHandle> incidentHalfedges = BaseIter::mesh()->outgoing_hes_per_vertex_[_ref_h.idx()];
+    const std::vector<HalfEdgeHandle>& incidentHalfedges = BaseIter::mesh()->outgoing_hes_per_vertex_[_ref_h.idx()];
     for(std::vector<HalfEdgeHandle>::const_iterator it = incidentHalfedges.begin(); it != incidentHalfedges.end(); ++it) {
 
     	if(*it < 0 || (unsigned int)it->idx() >= BaseIter::mesh()->incident_hfs_per_he_.size()) continue;
-    	std::vector<HalfFaceHandle> incidentHalfFaces = BaseIter::mesh()->incident_hfs_per_he_[it->idx()];
+        const std::vector<HalfFaceHandle>& incidentHalfFaces = BaseIter::mesh()->incident_hfs_per_he_[it->idx()];
 
     	for(std::vector<HalfFaceHandle>::const_iterator hf_it = incidentHalfFaces.begin();
-    			hf_it != incidentHalfFaces.end(); ++hf_it) {
+                hf_it != incidentHalfFaces.end(); ++hf_it) {
     		if((unsigned int)hf_it->idx() < BaseIter::mesh()->incident_cell_per_hf_.size()) {
     			CellHandle c_idx = BaseIter::mesh()->incident_cell_per_hf_[hf_it->idx()];
     			if(c_idx != TopologyKernel::InvalidCellHandle)
@@ -331,7 +331,7 @@ BaseIter(_mesh, _ref_h) {
 
     std::vector<HalfFaceHandle>::const_iterator hf_iter = BaseIter::mesh()->cell(_ref_h).halffaces().begin();
     for(; hf_iter != BaseIter::mesh()->cell(_ref_h).halffaces().end(); ++hf_iter) {
-        std::vector<HalfEdgeHandle> hes = BaseIter::mesh()->halfface(*hf_iter).halfedges();
+        const std::vector<HalfEdgeHandle> hes = BaseIter::mesh()->halfface(*hf_iter).halfedges();
         for(std::vector<HalfEdgeHandle>::const_iterator he_iter = hes.begin(); he_iter != hes.end(); ++he_iter) {
             incident_vertices_.push_back(BaseIter::mesh()->halfedge(*he_iter).to_vertex());
         }
@@ -391,7 +391,8 @@ BaseIter(_mesh, _ref_h) {
     }
 
 	std::vector<HalfFaceHandle>::const_iterator hf_iter = BaseIter::mesh()->cell(_ref_h).halffaces().begin();
-	for(; hf_iter != BaseIter::mesh()->cell(_ref_h).halffaces().end(); ++hf_iter) {
+    std::vector<HalfFaceHandle>::const_iterator hf_end  = BaseIter::mesh()->cell(_ref_h).halffaces().end();
+    for(; hf_iter != hf_end; ++hf_iter) {
 
 		HalfFaceHandle opp_hf = BaseIter::mesh()->opposite_halfface_handle(*hf_iter);
 		CellHandle ch = BaseIter::mesh()->incident_cell_per_hf_[opp_hf.idx()];
@@ -442,7 +443,7 @@ BaseIter(_mesh, _ref_h) {
 
     if(!_ref_h.is_valid()) return;
 
-    std::vector<HalfEdgeHandle> hes = _mesh->halfface(_ref_h).halfedges();
+    const std::vector<HalfEdgeHandle> hes = _mesh->halfface(_ref_h).halfedges();
     for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin();
             he_it != hes.end(); ++he_it) {
         vertices_.push_back(_mesh->halfedge(*he_it).from_vertex());
@@ -497,7 +498,7 @@ BaseIter(_mesh, _ref_h) {
     }
 
     // Go over all incident halfedges
-    std::vector<HalfEdgeHandle> halfedges = _mesh->halfface(_ref_h).halfedges();
+    const std::vector<HalfEdgeHandle> halfedges = _mesh->halfface(_ref_h).halfedges();
     for(std::vector<HalfEdgeHandle>::const_iterator he_it = halfedges.begin();
             he_it != halfedges.end(); ++he_it) {
 
