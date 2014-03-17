@@ -63,8 +63,8 @@ public:
 	typedef std::bidirectional_iterator_tag iterator_category;
 	typedef int						        difference_type;
 	typedef OH  					        value_type;
-	typedef OH* 					        pointer;
-	typedef OH& 					        reference;
+	typedef const OH*				        pointer;
+	typedef const OH&				        reference;
 
 	BaseIterator(const TopologyKernel* _mesh, const IH& _ih, const OH& _ch) :
         valid_(true), cur_handle_(_ch), ref_handle_(_ih), mesh_(_mesh) {}
@@ -87,11 +87,11 @@ public:
 		return !this->operator==(_c);
 	}
 
-	const OH* operator->() const {
+	pointer operator->() const {
 		return &cur_handle_;
 	}
 
-	const OH& operator*() const {
+	reference operator*() const {
 		return cur_handle_;
 	}
 
@@ -120,7 +120,7 @@ public:
 	void cur_handle(const OH& _h) {
 		cur_handle_ = _h;
 	}
-	const OH& cur_handle() const {
+	reference cur_handle() const {
 		return cur_handle_;
 	}
 	const IH& ref_handle() const {
