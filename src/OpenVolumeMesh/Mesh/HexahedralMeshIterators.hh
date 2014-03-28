@@ -50,21 +50,12 @@ namespace OpenVolumeMesh {
 class HexahedralMeshTopologyKernel;
 
 
-class CellSheetCellIter : public BaseIterator<CellHandle,
-	CellHandle> {
+class CellSheetCellIter : public BaseCirculator<CellHandle, CellHandle> {
 private:
-	typedef BaseIterator<CellHandle,
-			CellHandle>    BaseIter;
+    typedef BaseCirculator<CellHandle, CellHandle>    BaseIter;
 public:
 	CellSheetCellIter(const CellHandle& _ref_h, const unsigned char _orthDir,
-			const HexahedralMeshTopologyKernel* _mesh);
-
-	CellSheetCellIter& operator=(const CellSheetCellIter& _c) {
-		BaseIter::operator=(_c);
-		neighb_sheet_cell_hs_ = _c.neighb_sheet_cell_hs_;
-		cur_it_ = neighb_sheet_cell_hs_.begin();
-		return *this;
-	}
+            const HexahedralMeshTopologyKernel* _mesh, int _max_laps = 1);
 
 	// Post increment/decrement operator
 	CellSheetCellIter operator++(int) {
@@ -108,25 +99,17 @@ public:
 	CellSheetCellIter& operator--();
 
 private:
-	std::set<CellHandle> neighb_sheet_cell_hs_;
-	std::set<CellHandle>::const_iterator cur_it_;
+    std::vector<CellHandle> neighb_sheet_cell_hs_;
+    size_t cur_index_;
 };
 
 
-class HalfFaceSheetHalfFaceIter : public BaseIterator<HalfFaceHandle,
-	HalfFaceHandle> {
+class HalfFaceSheetHalfFaceIter : public BaseCirculator<HalfFaceHandle,HalfFaceHandle> {
 private:
-	typedef BaseIterator<HalfFaceHandle,
-			HalfFaceHandle> BaseIter;
+    typedef BaseCirculator<HalfFaceHandle, HalfFaceHandle> BaseIter;
 public:
 	HalfFaceSheetHalfFaceIter(const HalfFaceHandle& _ref_h,
-			const HexahedralMeshTopologyKernel* _mesh);
-	HalfFaceSheetHalfFaceIter& operator=(const HalfFaceSheetHalfFaceIter& _c) {
-		BaseIter::operator=(_c);
-		adjacent_halffaces_ = _c.adjacent_halffaces_;
-		cur_it_ = adjacent_halffaces_.begin();
-		return *this;
-	}
+            const HexahedralMeshTopologyKernel* _mesh, int _max_laps = 1);
 
 	// Post increment/decrement operator
 	HalfFaceSheetHalfFaceIter operator++(int) {
@@ -169,13 +152,12 @@ public:
 	HalfFaceSheetHalfFaceIter& operator++();
 	HalfFaceSheetHalfFaceIter& operator--();
 
-	const EdgeHandle& common_edge() const { return *edge_it_; }
+    const EdgeHandle& common_edge() const { return common_edges_[cur_index_]; }
 
 private:
 	std::vector<HalfFaceHandle> adjacent_halffaces_;
-	std::vector<HalfFaceHandle>::const_iterator cur_it_;
-	std::vector<EdgeHandle> common_edges_;
-    std::vector<EdgeHandle>::const_iterator edge_it_;
+    std::vector<EdgeHandle> common_edges_;
+    size_t cur_index_;
 };
 
 /** \brief Iterate over all vertices of a hexahedron in a specific order
@@ -192,20 +174,15 @@ private:
  *   0-------1
  */
 
-class HexVertexIter : public BaseIterator<CellHandle,
+class HexVertexIter : public BaseCirculator<CellHandle,
     VertexHandle> {
 private:
-    typedef BaseIterator<CellHandle,
+    typedef BaseCirculator<CellHandle,
             VertexHandle> BaseIter;
 public:
     HexVertexIter(const CellHandle& _ref_h,
-            const HexahedralMeshTopologyKernel* _mesh);
-    HexVertexIter& operator=(const HexVertexIter& _c) {
-        BaseIter::operator=(_c);
-        vertices_ = _c.vertices_;
-        cur_it_ = vertices_.begin();
-        return *this;
-    }
+                  const HexahedralMeshTopologyKernel* _mesh,
+                  int _max_laps = 1);
 
     // Post increment/decrement operator
     HexVertexIter operator++(int) {
@@ -250,7 +227,7 @@ public:
 
 private:
     std::vector<VertexHandle> vertices_;
-    std::vector<VertexHandle>::const_iterator cur_it_;
+    size_t cur_index_;
 };
 
 } // Namespace OpenVolumeMesh

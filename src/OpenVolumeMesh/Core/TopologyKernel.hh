@@ -100,37 +100,99 @@ public:
     friend class HalfFaceIter;
     friend class CellIter;
 
-    VertexOHalfEdgeIter voh_iter(const VertexHandle& _h) const {
-        return VertexOHalfEdgeIter(_h, this);
+    /*
+     * Circulators
+     */
+
+protected:
+    template <class Circulator>
+    static Circulator make_end_circulator(const Circulator& _circ)
+    {
+        Circulator end = _circ;
+        if (end.valid()) {
+            end.lap(_circ.max_laps());
+            end.valid(false);
+        }
+        return end;
     }
 
-    HalfEdgeHalfFaceIter hehf_iter(const HalfEdgeHandle& _h) const {
-        return HalfEdgeHalfFaceIter(_h, this);
+public:
+
+    VertexOHalfEdgeIter voh_iter(const VertexHandle& _h, int _max_laps = 1) const {
+        return VertexOHalfEdgeIter(_h, this, _max_laps);
     }
 
-    VertexCellIter vc_iter(const VertexHandle& _h) const {
-        return VertexCellIter(_h, this);
+    std::pair<VertexOHalfEdgeIter, VertexOHalfEdgeIter> outgoing_halfedges(const VertexHandle& _h, int _max_laps = 1) const {
+        VertexOHalfEdgeIter begin = voh_iter(_h, _max_laps);
+        return std::make_pair(begin, make_end_circulator(begin));
     }
 
-    HalfEdgeCellIter hec_iter(const HalfEdgeHandle& _h) const {
-        return HalfEdgeCellIter(_h, this);
+    HalfEdgeHalfFaceIter hehf_iter(const HalfEdgeHandle& _h, int _max_laps = 1) const {
+        return HalfEdgeHalfFaceIter(_h, this, _max_laps);
     }
 
-    CellVertexIter cv_iter(const CellHandle& _h) const {
-        return CellVertexIter(_h, this);
+    std::pair<HalfEdgeHalfFaceIter, HalfEdgeHalfFaceIter> halfedge_halffaces(const HalfEdgeHandle& _h, int _max_laps = 1) const {
+        HalfEdgeHalfFaceIter begin = hehf_iter(_h, _max_laps);
+        return std::make_pair(begin, make_end_circulator(begin));
     }
 
-    CellCellIter cc_iter(const CellHandle& _h) const {
-        return CellCellIter(_h, this);
+    VertexCellIter vc_iter(const VertexHandle& _h, int _max_laps = 1) const {
+        return VertexCellIter(_h, this, _max_laps);
     }
 
-    HalfFaceVertexIter hfv_iter(const HalfFaceHandle& _h) const {
-        return HalfFaceVertexIter(_h, this);
+    std::pair<VertexCellIter, VertexCellIter> vertex_cells(const VertexHandle& _h, int _max_laps = 1){
+        VertexCellIter begin = vc_iter(_h, _max_laps);
+        return std::make_pair(begin, make_end_circulator(begin));
     }
 
-    BoundaryHalfFaceHalfFaceIter bhfhf_iter(const HalfFaceHandle& _ref_h) const {
-        return BoundaryHalfFaceHalfFaceIter(_ref_h, this);
+    HalfEdgeCellIter hec_iter(const HalfEdgeHandle& _h, int _max_laps = 1) const {
+        return HalfEdgeCellIter(_h, this, _max_laps);
     }
+
+    std::pair<HalfEdgeCellIter, HalfEdgeCellIter> halfedge_cells(const HalfEdgeHandle& _h, int _max_laps = 1){
+        HalfEdgeCellIter begin = hec_iter(_h, _max_laps);
+        return std::make_pair(begin, make_end_circulator(begin));
+    }
+
+    CellVertexIter cv_iter(const CellHandle& _h, int _max_laps = 1) const {
+        return CellVertexIter(_h, this, _max_laps);
+    }
+
+    std::pair<CellVertexIter, CellVertexIter> cell_vertices(const CellHandle& _h, int _max_laps = 1) const {
+        CellVertexIter begin = cv_iter(_h, _max_laps);
+        return std::make_pair(begin, make_end_circulator(begin));
+    }
+
+    CellCellIter cc_iter(const CellHandle& _h, int _max_laps = 1) const {
+        return CellCellIter(_h, this, _max_laps);
+    }
+
+    std::pair<CellCellIter, CellCellIter> cell_cells(const CellHandle& _h, int _max_laps = 1) const {
+        CellCellIter begin = cc_iter(_h, _max_laps);
+        return std::make_pair(begin, make_end_circulator(begin));
+    }
+
+    HalfFaceVertexIter hfv_iter(const HalfFaceHandle& _h, int _max_laps = 1) const {
+        return HalfFaceVertexIter(_h, this, _max_laps);
+    }
+
+    std::pair<HalfFaceVertexIter, HalfFaceVertexIter> halfface_vertices(const HalfFaceHandle& _h, int _max_laps = 1) const {
+        HalfFaceVertexIter begin = hfv_iter(_h, _max_laps);
+        return std::make_pair(begin, make_end_circulator(begin));
+    }
+
+    BoundaryHalfFaceHalfFaceIter bhfhf_iter(const HalfFaceHandle& _ref_h, int _max_laps = 1) const {
+        return BoundaryHalfFaceHalfFaceIter(_ref_h, this, _max_laps);
+    }
+
+    std::pair<BoundaryHalfFaceHalfFaceIter, BoundaryHalfFaceHalfFaceIter> boundary_halfface_halffaces(const HalfFaceHandle& _h, int _max_laps = 1) const {
+        BoundaryHalfFaceHalfFaceIter begin = bhfhf_iter(_h, _max_laps);
+        return std::make_pair(begin, make_end_circulator(begin));
+    }
+
+    /*
+     * Iterators
+     */
 
     BoundaryFaceIter bf_iter() const {
         return BoundaryFaceIter(this);
@@ -148,6 +210,10 @@ public:
         return VertexIter(this, VertexHandle(n_vertices()));
     }
 
+    std::pair<VertexIter, VertexIter> vertices() const {
+        return std::make_pair(vertices_begin(), vertices_end());
+    }
+
     EdgeIter e_iter() const {
         return EdgeIter(this);
     }
@@ -158,6 +224,10 @@ public:
 
     EdgeIter edges_end() const {
         return EdgeIter(this, EdgeHandle(edges_.size()));
+    }
+
+    std::pair<EdgeIter, EdgeIter> edges() const {
+        return std::make_pair(edges_begin(), edges_end());
     }
 
     HalfEdgeIter he_iter() const {
@@ -172,6 +242,10 @@ public:
         return HalfEdgeIter(this, HalfEdgeHandle(edges_.size() * 2));
     }
 
+    std::pair<HalfEdgeIter, HalfEdgeIter> halfedges() const {
+        return std::make_pair(halfedges_begin(), halfedges_end());
+    }
+
     FaceIter f_iter() const {
         return FaceIter(this);
     }
@@ -182,6 +256,10 @@ public:
 
     FaceIter faces_end() const {
         return FaceIter(this, FaceHandle(faces_.size()));
+    }
+
+    std::pair<FaceIter, FaceIter> faces() const {
+        return std::make_pair(faces_begin(), faces_end());
     }
 
     HalfFaceIter hf_iter() const {
@@ -196,6 +274,10 @@ public:
         return HalfFaceIter(this, HalfFaceHandle(faces_.size() * 2));
     }
 
+    std::pair<HalfFaceIter, HalfFaceIter> halffaces() const {
+        return std::make_pair(halffaces_begin(), halffaces_end());
+    }
+
     CellIter c_iter() const {
         return CellIter(this);
     }
@@ -206,6 +288,10 @@ public:
 
     CellIter cells_end() const {
         return CellIter(this, CellHandle(cells_.size()));
+    }
+
+    std::pair<CellIter, CellIter> cells() const {
+        return std::make_pair(cells_begin(), cells_end());
     }
 
     /*

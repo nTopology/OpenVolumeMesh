@@ -54,7 +54,6 @@ namespace OpenVolumeMesh {
 class TopologyKernel;
 
 template <
-class IH /*  Input handle type */,
 class OH /* Output handle type */>
 class BaseIterator {
 public:
@@ -66,21 +65,19 @@ public:
 	typedef const OH*				        pointer;
 	typedef const OH&				        reference;
 
-	BaseIterator(const TopologyKernel* _mesh, const IH& _ih, const OH& _ch) :
-        valid_(true), cur_handle_(_ch), ref_handle_(_ih), mesh_(_mesh) {}
 
-	BaseIterator(const TopologyKernel* _mesh, const IH& _ih) :
-        valid_(true), ref_handle_(_ih), mesh_(_mesh) {}
+    BaseIterator(const TopologyKernel* _mesh, const OH& _ch) :
+        valid_(true), cur_handle_(_ch), mesh_(_mesh) {}
 
-	BaseIterator(const TopologyKernel* _mesh) :
+    BaseIterator(const TopologyKernel* _mesh) :
         valid_(true), mesh_(_mesh) {}
 
-	// STL compliance (needs to have default constructor)
+    // STL compliance (needs to have default constructor)
 	BaseIterator() : valid_(false), mesh_(0) {}
 	virtual ~BaseIterator() {}
 	bool operator== (const BaseIterator& _c) const {
-		return (this->cur_handle_ == _c.cur_handle() &&
-				this->ref_handle_ == _c.ref_handle() &&
+        return (this->cur_handle_ == _c.cur_handle() &&
+                this->valid_ == _c.valid() &&
 				this->mesh_ == _c.mesh());
 	}
 	bool operator!= (const BaseIterator& _c) const {
@@ -101,8 +98,7 @@ public:
 
 	BaseIterator& operator=(const BaseIterator& _c) {
 		this->valid_ = _c.valid();
-		this->cur_handle_ = _c.cur_handle();
-		this->ref_handle_ = _c.ref_handle();
+        this->cur_handle_ = _c.cur_handle();
 		this->mesh_ = _c.mesh();
 		return *this;
 	}
@@ -113,45 +109,119 @@ public:
 
 	void valid(bool _valid) {
 		valid_ = _valid;
-	}
-	bool valid() const {
-		return valid_;
-	}
+    }
+    bool valid() const {
+        return valid_;
+    }
 	void cur_handle(const OH& _h) {
 		cur_handle_ = _h;
 	}
 	reference cur_handle() const {
 		return cur_handle_;
-	}
-	const IH& ref_handle() const {
-		return ref_handle_;
-	}
+    }
 	const TopologyKernel* mesh() const {
 		return mesh_;
 	}
 
 private:
 
-	bool valid_;
-	OH cur_handle_;
-	IH ref_handle_;
+    bool valid_;
+    OH cur_handle_;
 	const TopologyKernel* mesh_;
+};
+
+template <
+class IH /*  Input handle type */,
+class OH /* Output handle type */>
+class BaseCirculator : public BaseIterator<OH> {
+public:
+
+    typedef BaseIterator<OH> BaseIter;
+
+    BaseCirculator(const TopologyKernel* _mesh, const IH& _ih, const OH& _oh, int _max_laps = 1) :
+        BaseIter(_mesh, _oh),
+        lap_(0),
+        max_laps_(_max_laps),
+        ref_handle_(_ih)
+    {}
+
+    BaseCirculator(const TopologyKernel* _mesh, const IH& _ih, int _max_laps = 1) :
+        BaseIter(_mesh, OH()),
+        lap_(0),
+        max_laps_(_max_laps),
+        ref_handle_(_ih)
+    {}
+
+    // STL compliance (needs to have default constructor)
+    BaseCirculator() :
+        BaseIter()
+    {}
+
+    virtual ~BaseCirculator() {}
+
+    bool operator== (const BaseCirculator& _c) const {
+        return (BaseIter::operator==(_c) &&
+                this->lap() == _c.lap() &&
+                this->ref_handle() == _c.ref_handle());
+    }
+    bool operator!= (const BaseCirculator& _c) const {
+        return !this->operator==(_c);
+    }
+
+    bool operator< (const BaseCirculator& _c) const {
+        if (lap_ == _c.lap_)
+            return BaseIter::operator<(_c);
+        else
+            return lap_ < _c.lap_;
+    }
+
+    BaseCirculator& operator=(const BaseCirculator& _c) {
+        BaseIter::operator=(_c);
+        this->ref_handle_ = _c.ref_handle();
+        this->lap_ = _c.lap_;
+        this->max_laps_ = _c.max_laps_;
+        return *this;
+    }
+
+    const IH& ref_handle() const {
+        return ref_handle_;
+    }
+
+    void lap(int _lap) {
+        lap_ = _lap;
+    }
+    int lap() const {
+        return lap_;
+    }
+
+    void max_laps(int _max_laps) {
+        max_laps_ = _max_laps;
+    }
+    int max_laps() const {
+        return max_laps_;
+    }
+
+protected:
+    int lap_;
+    int max_laps_;
+    IH ref_handle_;
+
 };
 
 //===========================================================================
 
 class VertexOHalfEdgeIter :
-	public BaseIterator<
+    public BaseCirculator<
 	VertexHandle,
 	HalfEdgeHandle> {
 public:
-	typedef BaseIterator<
+    typedef BaseCirculator<
 			VertexHandle,
 			HalfEdgeHandle> BaseIter;
 
 
 	VertexOHalfEdgeIter(const VertexHandle& _vIdx,
-			const TopologyKernel* _mesh);
+            const TopologyKernel* _mesh, int _max_laps = 1);
 
 	// Post increment/decrement operator
 	VertexOHalfEdgeIter operator++(int) {
@@ -196,21 +266,21 @@ public:
 
 private:
 
-	int cur_index_;
+    size_t cur_index_;
 };
 
 //===========================================================================
 
-class HalfEdgeHalfFaceIter : public BaseIterator<
+class HalfEdgeHalfFaceIter : public BaseCirculator<
 	HalfEdgeHandle,
 	HalfFaceHandle> {
 public:
-	typedef BaseIterator<
+    typedef BaseCirculator<
 			HalfEdgeHandle,
 			HalfFaceHandle> BaseIter;
 
 
-	HalfEdgeHalfFaceIter(const HalfEdgeHandle& _heIdx, const TopologyKernel* _mesh);
+    HalfEdgeHalfFaceIter(const HalfEdgeHandle& _heIdx, const TopologyKernel* _mesh, int _max_laps);
 
 	// Post increment/decrement operator
 	HalfEdgeHalfFaceIter operator++(int) {
@@ -254,25 +324,20 @@ public:
 	HalfEdgeHalfFaceIter& operator--();
 
 private:
-	int cur_index_;
+    size_t cur_index_;
 };
 
 //===========================================================================
 
-class VertexCellIter : public BaseIterator<
+class VertexCellIter : public BaseCirculator<
 	VertexHandle,
 	CellHandle> {
 public:
-	typedef BaseIterator<
+    typedef BaseCirculator<
 			VertexHandle,
 			CellHandle> BaseIter;
 
-	VertexCellIter(const VertexHandle& _vIdx, const TopologyKernel* _mesh);
-	VertexCellIter& operator=(const VertexCellIter& _c) {
-		BaseIter::operator=(_c);
-		cell_iter_ = cells_.begin();
-		return *this;
-	}
+    VertexCellIter(const VertexHandle& _vIdx, const TopologyKernel* _mesh, int _max_laps = 1);
 
 	// Post increment/decrement operator
 	VertexCellIter operator++(int) {
@@ -316,20 +381,20 @@ public:
 	VertexCellIter& operator--();
 
 private:
-	std::set<CellHandle> cells_;
-	std::set<CellHandle>::const_iterator cell_iter_;
+    std::vector<CellHandle> cells_;
+    size_t cur_index_;
 };
 
-class HalfEdgeCellIter : public BaseIterator<
+class HalfEdgeCellIter : public BaseCirculator<
 	HalfEdgeHandle,
 	CellHandle> {
 public:
-	typedef BaseIterator<
+    typedef BaseCirculator<
 			HalfEdgeHandle,
 			CellHandle> BaseIter;
 
 
-	HalfEdgeCellIter(const HalfEdgeHandle& _heIdx, const TopologyKernel* _mesh);
+    HalfEdgeCellIter(const HalfEdgeHandle& _heIdx, const TopologyKernel* _mesh, int _max_laps = 1);
 
 	// Post increment/decrement operator
 	HalfEdgeCellIter operator++(int) {
@@ -340,8 +405,8 @@ public:
 	HalfEdgeCellIter operator--(int) {
 		HalfEdgeCellIter cpy = *this;
 		--(*this);
-		return cpy;
-	}
+        return cpy;
+    }
 	HalfEdgeCellIter operator+(int _n) {
 		HalfEdgeCellIter cpy = *this;
 		for(int i = 0; i < _n; ++i) {
@@ -373,26 +438,24 @@ public:
 	HalfEdgeCellIter& operator--();
 
 private:
-	int cur_index_;
+    CellHandle getCellHandle(int _cur_index) const;
+
+private:
+    std::vector<CellHandle> cells_;
+    size_t cur_index_;
 };
 
 //===========================================================================
 
-class CellVertexIter : public BaseIterator<
+class CellVertexIter : public BaseCirculator<
 	CellHandle,
 	VertexHandle> {
 public:
-	typedef BaseIterator<
+    typedef BaseCirculator<
 			CellHandle,
 			VertexHandle> BaseIter;
 
-	CellVertexIter(const CellHandle& _cIdx, const TopologyKernel* _mesh);
-	CellVertexIter& operator=(const CellVertexIter& _c) {
-		BaseIter::operator=(_c);
-		incident_vertices_ = _c.incident_vertices_;
-		v_iter_ = incident_vertices_.begin();
-		return *this;
-	}
+    CellVertexIter(const CellHandle& _cIdx, const TopologyKernel* _mesh, int _max_laps = 1);
 
 	// Post increment/decrement operator
 	CellVertexIter operator++(int) {
@@ -437,26 +500,20 @@ public:
 
 private:
 	std::vector<VertexHandle> incident_vertices_;
-	std::vector<VertexHandle>::const_iterator v_iter_;
+    size_t cur_index_;
 };
 
 //===========================================================================
 
-class CellCellIter : public BaseIterator<
+class CellCellIter : public BaseCirculator<
 	CellHandle,
 	CellHandle> {
 public:
-	typedef BaseIterator<
+    typedef BaseCirculator<
 			CellHandle,
 			CellHandle> BaseIter;
 
-	CellCellIter(const CellHandle& _cIdx, const TopologyKernel* _mesh);
-	CellCellIter& operator=(const CellCellIter& _c) {
-		BaseIter::operator=(_c);
-		adjacent_cells_ = _c.adjacent_cells_;
-		c_iter_ = adjacent_cells_.begin();
-		return *this;
-	}
+    CellCellIter(const CellHandle& _cIdx, const TopologyKernel* _mesh, int _max_laps = 1);
 
 	// Post increment/decrement operator
 	CellCellIter operator++(int) {
@@ -500,27 +557,21 @@ public:
 	CellCellIter& operator--();
 
 private:
-	std::set<CellHandle> adjacent_cells_;
-	std::set<CellHandle>::const_iterator c_iter_;
+    std::vector<CellHandle> adjacent_cells_;
+    size_t cur_index_;
 };
 
 //===========================================================================
 
-class HalfFaceVertexIter : public BaseIterator<
+class HalfFaceVertexIter : public BaseCirculator<
     HalfFaceHandle,
     VertexHandle> {
 public:
-    typedef BaseIterator<
+    typedef BaseCirculator<
             HalfFaceHandle,
             VertexHandle> BaseIter;
 
-    HalfFaceVertexIter(const HalfFaceHandle& _hIdx, const TopologyKernel* _mesh);
-    HalfFaceVertexIter& operator=(const HalfFaceVertexIter& _c) {
-        BaseIter::operator=(_c);
-        vertices_ = _c.vertices_;
-        iter_ = vertices_.begin();
-        return *this;
-    }
+    HalfFaceVertexIter(const HalfFaceHandle& _hIdx, const TopologyKernel* _mesh, int _max_laps = 1);
 
     // Post increment/decrement operator
     HalfFaceVertexIter operator++(int) {
@@ -565,25 +616,19 @@ public:
 
 private:
     std::vector<VertexHandle> vertices_;
-    std::vector<VertexHandle>::const_iterator iter_;
+    size_t cur_index_;
 };
 
 //===========================================================================
 
-class BoundaryHalfFaceHalfFaceIter : public BaseIterator<HalfFaceHandle,
+class BoundaryHalfFaceHalfFaceIter : public BaseCirculator<HalfFaceHandle,
     HalfFaceHandle> {
 private:
-    typedef BaseIterator<HalfFaceHandle,
+    typedef BaseCirculator<HalfFaceHandle,
             HalfFaceHandle> BaseIter;
 public:
     BoundaryHalfFaceHalfFaceIter(const HalfFaceHandle& _ref_h,
-            const TopologyKernel* _mesh);
-    BoundaryHalfFaceHalfFaceIter& operator=(const BoundaryHalfFaceHalfFaceIter& _c) {
-        BaseIter::operator=(_c);
-        neighbor_halffaces_ = _c.neighbor_halffaces_;
-        cur_it_ = neighbor_halffaces_.begin();
-        return *this;
-    }
+            const TopologyKernel* _mesh, int _max_laps = 1);
 
     // Post increment/decrement operator
     BoundaryHalfFaceHalfFaceIter operator++(int) {
@@ -623,7 +668,7 @@ public:
         return *this;
     }
 
-    const EdgeHandle& common_edge() const { return *edge_it_; }
+    const EdgeHandle& common_edge() const { return common_edges_[cur_index_]; }
 
     BoundaryHalfFaceHalfFaceIter& operator++();
     BoundaryHalfFaceHalfFaceIter& operator--();
@@ -631,22 +676,17 @@ public:
 private:
     std::vector<HalfFaceHandle> neighbor_halffaces_;
     std::vector<EdgeHandle> common_edges_;
-    std::vector<HalfFaceHandle>::const_iterator cur_it_;
-    std::vector<EdgeHandle>::const_iterator edge_it_;
+    size_t cur_index_;
 };
 
 //===========================================================================
 
-class VertexIter : public BaseIterator<
-	VertexHandle,
-	VertexHandle> {
+class VertexIter : public BaseIterator<VertexHandle> {
 public:
-	typedef BaseIterator<
-			VertexHandle,
-			VertexHandle> BaseIter;
+    typedef BaseIterator<VertexHandle> BaseIter;
 
 
-	VertexIter(const TopologyKernel* _mesh, const VertexHandle& _vh = VertexHandle(0));
+    VertexIter(const TopologyKernel* _mesh, const VertexHandle& _vh = VertexHandle(0));
 
 	// Post increment/decrement operator
 	VertexIter operator++(int) {
@@ -690,18 +730,14 @@ public:
 	VertexIter& operator--();
 
 private:
-	int cur_index_;
+    int cur_index_;
 };
 
 //===========================================================================
 
-class EdgeIter : public BaseIterator<
-	EdgeHandle,
-	EdgeHandle> {
+class EdgeIter : public BaseIterator<EdgeHandle> {
 public:
-	typedef BaseIterator<
-			EdgeHandle,
-			EdgeHandle> BaseIter;
+    typedef BaseIterator<EdgeHandle> BaseIter;
 
 
 	EdgeIter(const TopologyKernel* _mesh, const EdgeHandle& _eh = EdgeHandle(0));
@@ -748,18 +784,14 @@ public:
 	EdgeIter& operator--();
 
 private:
-	int cur_index_;
+    int cur_index_;
 };
 
 //===========================================================================
 
-class HalfEdgeIter : public BaseIterator<
-	HalfEdgeHandle,
-	HalfEdgeHandle> {
+class HalfEdgeIter : public BaseIterator<HalfEdgeHandle> {
 public:
-	typedef BaseIterator<
-			HalfEdgeHandle,
-			HalfEdgeHandle> BaseIter;
+    typedef BaseIterator<HalfEdgeHandle> BaseIter;
 
 
 	HalfEdgeIter(const TopologyKernel* _mesh, const HalfEdgeHandle& _heh = HalfEdgeHandle(0));
@@ -806,18 +838,14 @@ public:
 	HalfEdgeIter& operator--();
 
 private:
-	int cur_index_;
+    int cur_index_;
 };
 
 //===========================================================================
 
-class FaceIter : public BaseIterator<
-	FaceHandle,
-	FaceHandle> {
+class FaceIter : public BaseIterator<FaceHandle> {
 public:
-	typedef BaseIterator<
-			FaceHandle,
-			FaceHandle> BaseIter;
+    typedef BaseIterator<FaceHandle> BaseIter;
 
 
 	FaceIter(const TopologyKernel* _mesh, const FaceHandle& _fh = FaceHandle(0));
@@ -864,18 +892,14 @@ public:
 	FaceIter& operator--();
 
 private:
-	int cur_index_;
+    int cur_index_;
 };
 
 //===========================================================================
 
-class HalfFaceIter : public BaseIterator<
-	HalfFaceHandle,
-	HalfFaceHandle> {
+class HalfFaceIter : public BaseIterator<HalfFaceHandle> {
 public:
-	typedef BaseIterator<
-			HalfFaceHandle,
-			HalfFaceHandle> BaseIter;
+    typedef BaseIterator<HalfFaceHandle> BaseIter;
 
 
 	HalfFaceIter(const TopologyKernel* _mesh, const HalfFaceHandle& _hfh = HalfFaceHandle(0));
@@ -922,18 +946,14 @@ public:
 	HalfFaceIter& operator--();
 
 private:
-	int cur_index_;
+    int cur_index_;
 };
 
 //===========================================================================
 
-class CellIter : public BaseIterator<
-	CellHandle,
-	CellHandle> {
+class CellIter : public BaseIterator<CellHandle> {
 public:
-	typedef BaseIterator<
-			CellHandle,
-			CellHandle> BaseIter;
+    typedef BaseIterator<CellHandle> BaseIter;
 
 
 	CellIter(const TopologyKernel* _mesh, const CellHandle& _ch = CellHandle(0));
@@ -980,16 +1000,14 @@ public:
 	CellIter& operator--();
 
 private:
-	int cur_index_;
+    int cur_index_;
 };
 
 //===========================================================================
 
-class BoundaryFaceIter : public BaseIterator<FaceHandle,FaceHandle> {
+class BoundaryFaceIter : public BaseIterator<FaceHandle> {
 public:
-    typedef BaseIterator<
-            FaceHandle,
-            FaceHandle> BaseIter;
+    typedef BaseIterator<FaceHandle> BaseIter;
 
 
     BoundaryFaceIter(const TopologyKernel* _mesh);
