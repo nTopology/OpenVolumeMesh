@@ -154,7 +154,9 @@ public:
 
     // STL compliance (needs to have default constructor)
     BaseCirculator() :
-        BaseIter()
+        BaseIter(),
+        lap_(0),
+        max_laps_(1)
     {}
 
     virtual ~BaseCirculator() {}
