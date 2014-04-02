@@ -80,7 +80,6 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     unsigned int c = 0u;
     typedef typename MeshT::PointT Point;
     Point v = Point(0.0, 0.0, 0.0);
-    unsigned int v1 = 0; unsigned int v2 = 0;
 
     _mesh.clear(false);
     // Temporarily disable bottom-up incidences
@@ -179,6 +178,8 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
         // Read in edges
         for(unsigned int i = 0u; i < c; ++i) {
 
+        	unsigned int v1 = 0;
+        	unsigned int v2 = 0;
             getCleanLine(iff, line);
             sstr.clear();
             sstr.str(line);
@@ -223,6 +224,8 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
 
             // Read half-edge indices
             for(unsigned int e = 0; e < val; ++e) {
+
+            	unsigned int v1 = 0;
                 sstr >> v1;
                 hes.push_back(HalfEdgeHandle(v1));
             }
@@ -266,6 +269,8 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
 
             // Read half-face indices
             for(unsigned int f = 0; f < val; ++f) {
+
+            	unsigned int v1 = 0;
                 sstr >> v1;
                 hfs.push_back(HalfFaceHandle(v1));
             }
