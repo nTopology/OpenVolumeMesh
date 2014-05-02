@@ -371,6 +371,7 @@ CellHandle HalfEdgeCellIter::getCellHandle(int _cur_index) const
 {
     const std::vector<HalfFaceHandle>& halffacehandles = BaseIter::mesh()->incident_hfs_per_he_[BaseIter::ref_handle().idx()];
     HalfFaceHandle currentHalfface = halffacehandles[_cur_index];
+    if(!currentHalfface.is_valid()) return CellHandle(-1);
     CellHandle cellhandle = BaseIter::mesh()->incident_cell_per_hf_[currentHalfface.idx()];
     return cellhandle;
 }
