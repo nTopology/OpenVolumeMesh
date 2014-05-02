@@ -317,7 +317,7 @@ cur_index_(0) {
     const std::vector<HalfFaceHandle>& incidentHalffaces = BaseIter::mesh()->incident_hfs_per_he_[_ref_h.idx()];
     for (unsigned int i = 0; i < incidentHalffaces.size(); ++i)
     {
-        CellHandle ch = getCellHandle(i);
+        CellHandle ch = getCellHandle(incidentHalffaces[i]);
         if (ch.is_valid())
             cells_.push_back(ch);
     }
