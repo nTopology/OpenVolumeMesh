@@ -315,17 +315,17 @@ cur_index_(0) {
 
     // collect cell handles
     const std::vector<HalfFaceHandle>& incidentHalffaces = BaseIter::mesh()->incident_hfs_per_he_[_ref_h.idx()];
+    std::set<CellHandle> cells;
     for (unsigned int i = 0; i < incidentHalffaces.size(); ++i)
     {
         CellHandle ch = getCellHandle(i);
-        if (ch.is_valid())
-            cells_.push_back(ch);
+        if (ch.is_valid()) {
+            if(cells.count(ch) == 0) {
+                cells_.push_back(ch);
+            }
+            cells.insert(ch);
+        }
     }
-
-    // Remove all duplicate entries
-    std::sort(cells_.begin(), cells_.end());
-    cells_.resize(std::unique(cells_.begin(), cells_.end()) - cells_.begin());
-
 
     BaseIter::valid(cells_.size() > 0);
 
