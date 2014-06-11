@@ -33,18 +33,6 @@ if(GTEST_FOUND)
     
 	if ( NOT WIN32 )
           set (TMP_FLAGS "-Wall -Wextra -Wuninitialized -Wunused -g -pedantic -ansi -Wno-long-long")
-          if ( APPLE )
-             include(CheckCXXCompilerFlag)
-             CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-             CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
- 
-            if(COMPILER_SUPPORTS_CXX11)
-              set( TMP_FLAGS          "${TMP_FLAGS} -std=c++11")
-            elseif(COMPILER_SUPPORTS_CXX0X)
-              set( TMP_FLAGS          "${TMP_FLAGS} -std=c++0x")
-            endif()
- 
-          endif()
 
 	  # Set compiler flags
           set_target_properties(unittests PROPERTIES COMPILE_FLAGS "${TMP_FLAGS}")
