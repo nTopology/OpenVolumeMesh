@@ -32,17 +32,32 @@ if(GTEST_FOUND)
 
     
 	if ( NOT WIN32 )
+          set (TMP_FLAGS "-Wall -Wextra -Wuninitialized -Wunused -g -pedantic -ansi -Wno-long-long")
+          if ( APPLE )
+             include(CheckCXXCompilerFlag)
+             CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+             CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+ 
+            if(COMPILER_SUPPORTS_CXX11)
+              set( CMAKE_CXX_FLAGS_DEBUG          "${TMP_FLAGS} -std=c++11")
+            elseif(COMPILER_SUPPORTS_CXX0X)
+              set( CMAKE_CXX_FLAGS_DEBUG          "${TMP_FLAGS} -std=c++0x")
+            endif()
+ 
+          endif()
+
 	  # Set compiler flags
-      set_target_properties(unittests PROPERTIES COMPILE_FLAGS "-Wall -Wextra -Wuninitialized -Wunused -g -pedantic -ansi -Wno-long-long")
+          set_target_properties(unittests PROPERTIES COMPILE_FLAGS "${TMP_FLAGS}")
+
 	else()
 	  # Set compiler flags
-      set_target_properties(unittests PROPERTIES COMPILE_FLAGS "" )
+          set_target_properties(unittests PROPERTIES COMPILE_FLAGS "" )
 
 	  # copy exe file to "Build" directory
-      # Visual studio will create this file in a subdirectory so we can't use
-      # RUNTIME_OUTPUT_DIRECTORY directly here
-      add_custom_command (TARGET unittests POST_BUILD
-                          COMMAND ${CMAKE_COMMAND} -E
+          # Visual studio will create this file in a subdirectory so we can't use
+          # RUNTIME_OUTPUT_DIRECTORY directly here
+          add_custom_command (TARGET unittests POST_BUILD
+                              COMMAND ${CMAKE_COMMAND} -E
                                   copy_if_different
                                     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/unittests.exe
                                     ${CMAKE_BINARY_DIR}/Unittests/unittests.exe)
