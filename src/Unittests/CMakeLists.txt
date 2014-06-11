@@ -39,9 +39,9 @@ if(GTEST_FOUND)
              CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
  
             if(COMPILER_SUPPORTS_CXX11)
-              set( CMAKE_CXX_FLAGS_DEBUG          "${TMP_FLAGS} -std=c++11")
+              set( TMP_FLAGS          "${TMP_FLAGS} -std=c++11")
             elseif(COMPILER_SUPPORTS_CXX0X)
-              set( CMAKE_CXX_FLAGS_DEBUG          "${TMP_FLAGS} -std=c++0x")
+              set( TMP_FLAGS          "${TMP_FLAGS} -std=c++0x")
             endif()
  
           endif()
