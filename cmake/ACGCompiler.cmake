@@ -75,33 +75,6 @@ if (UNIX)
   endif ()  
 
   ################################################################################
-  # C++ 11 support
-  ################################################################################
-
-  # On apple, if we have c++ 11 support, we enable it automatically here
-  if (APPLE)
-
-    include(CheckCXXCompilerFlag)
-    CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-    CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-
-    if(COMPILER_SUPPORTS_CXX11)
-       list(APPEND ADDITIONAL_CXX_DEBUG_FLAGS          "-std=c++11" )
-       list(APPEND ADDITIONAL_CXX_RELEASE_FLAGS        "-std=c++11" )
-       list(APPEND ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS "-std=c++11" )
-    elseif(COMPILER_SUPPORTS_CXX0X)
-       list(APPEND ADDITIONAL_CXX_DEBUG_FLAGS          "-std=c++0x" )
-       list(APPEND ADDITIONAL_CXX_RELEASE_FLAGS        "-std=c++0x" )
-       list(APPEND ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS "-std=c++0x" )
-    else()
-        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Falling back to non C++11 mode. If you encounter errors, please use a different C++ compiler.")
-    endif()
-
-  endif()
-
-
-  
-  ################################################################################
   # STL Vector checks
   ################################################################################
   
@@ -121,6 +94,7 @@ if (UNIX)
     list(APPEND ADDITIONAL_C_DEBUG_FLAGS            "-D_GLIBCXX_DEBUG_PEDANTIC")
     list(APPEND ADDITIONAL_C_RELWITHDEBINFO_FLAGS   "-D_GLIBCXX_DEBUG" )
     list(APPEND ADDITIONAL_C_RELWITHDEBINFO_FLAGS   "-D_GLIBCXX_DEBUG_PEDANTIC")
+  endif()
 
   ################################################################################
   # Process the additional flags:
