@@ -97,7 +97,7 @@ void StatusAttrib::garbage_collection(std_API_Container_VHandlePointer &vh_to_up
         typename std_API_Container_VHandlePointer::iterator it = vh_to_update.begin();
         typename std_API_Container_VHandlePointer::iterator end = vh_to_update.end();
 
-        for (it; it != end; ++it) {
+        for (; it != end; ++it) {
             vh_map[(*it)->idx()] = (*it)->idx();
         }
     }
@@ -105,7 +105,7 @@ void StatusAttrib::garbage_collection(std_API_Container_VHandlePointer &vh_to_up
         typename std_API_Container_HHandlePointer::iterator it = hh_to_update.begin();
         typename std_API_Container_HHandlePointer::iterator end = hh_to_update.end();
 
-        for (it; it != end; ++it) {
+        for (; it != end; ++it) {
             hh_map[(*it)->idx()] = (*it)->idx();
         }
     }
@@ -113,7 +113,7 @@ void StatusAttrib::garbage_collection(std_API_Container_VHandlePointer &vh_to_up
         typename std_API_Container_HFHandlePointer::iterator it = hfh_to_update.begin();
         typename std_API_Container_HFHandlePointer::iterator end = hfh_to_update.end();
 
-        for (it; it != end; ++it) {
+        for (; it != end; ++it) {
             hfh_map[(*it)->idx()] = (*it)->idx();
         }
     }
@@ -121,7 +121,7 @@ void StatusAttrib::garbage_collection(std_API_Container_VHandlePointer &vh_to_up
         typename std_API_Container_CHandlePointer::iterator it = ch_to_update.begin();
         typename std_API_Container_CHandlePointer::iterator end = ch_to_update.end();
 
-        for (it; it != end; ++it) {
+        for (; it != end; ++it) {
             ch_map[(*it)->idx()] = (*it)->idx();
         }
     }
