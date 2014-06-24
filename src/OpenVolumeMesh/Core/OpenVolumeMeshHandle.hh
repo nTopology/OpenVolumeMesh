@@ -118,7 +118,13 @@ class HEHandleCorrection {
 public:
     HEHandleCorrection(HalfEdgeHandle _thld) : thld_(_thld) {}
     void correctVecValue(std::vector<HalfEdgeHandle>& _vec) {
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+        for(std::vector<HalfEdgeHandle>::iterator it = _vec.begin(), end = _vec.end(); it != end; ++it) {
+            correctValue(*it);
+        }
+#else
         std::for_each(_vec.begin(), _vec.end(), fun::bind(&HEHandleCorrection::correctValue, this, fun::placeholders::_1));
+#endif
     }
     void correctValue(HalfEdgeHandle& _h) {
         if(_h > thld_) _h.idx(_h.idx() - 2);
@@ -130,7 +136,13 @@ class HFHandleCorrection {
 public:
     HFHandleCorrection(HalfFaceHandle _thld) : thld_(_thld) {}
     void correctVecValue(std::vector<HalfFaceHandle>& _vec) {
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+        for(std::vector<HalfFaceHandle>::iterator it = _vec.begin(), end = _vec.end(); it != end; ++it) {
+            correctValue(*it);
+        }
+#else
         std::for_each(_vec.begin(), _vec.end(), fun::bind(&HFHandleCorrection::correctValue, this, fun::placeholders::_1));
+#endif
     }
     void correctValue(HalfFaceHandle& _h) {
         if(_h > thld_) _h.idx(_h.idx() - 2);

@@ -631,8 +631,15 @@ public:
             compute_edge_bottom_up_incidences();
 
             if(f_bottom_up_) {
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+                for(EdgeIter e_it = edges_begin(), e_end = edges_end();
+                    e_it != e_end; ++e_it) {
+                    reorder_incident_halffaces(*e_it);
+                }
+#else
                 std::for_each(edges_begin(), edges_end(),
                               fun::bind(&TopologyKernel::reorder_incident_halffaces, this, fun::placeholders::_1));
+#endif
             }
         }
 
@@ -662,8 +669,15 @@ public:
 
         if(updateOrder) {
             if(e_bottom_up_) {
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+                for(EdgeIter e_it = edges_begin(), e_end = edges_end();
+                    e_it != e_end; ++e_it) {
+                    reorder_incident_halffaces(*e_it);
+                }
+#else
                 std::for_each(edges_begin(), edges_end(),
                               fun::bind(&TopologyKernel::reorder_incident_halffaces, this, fun::placeholders::_1));
+#endif
             }
         }
     }

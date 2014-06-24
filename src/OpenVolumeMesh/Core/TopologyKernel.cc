@@ -979,8 +979,15 @@ EdgeIter TopologyKernel::delete_edge_core(const EdgeHandle& _h) {
             hes.erase(std::remove(hes.begin(), hes.end(), halfedge_handle(_h, 0)), hes.end());
             hes.erase(std::remove(hes.begin(), hes.end(), halfedge_handle(_h, 1)), hes.end());
 
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+            for(std::vector<HalfEdgeHandle>::iterator it = hes.begin(), end = hes.end();
+                it != end; ++it) {
+                cor.correctValue(*it);
+            }
+#else
             std::for_each(hes.begin(), hes.end(),
                           fun::bind(&HEHandleCorrection::correctValue, &cor, fun::placeholders::_1));
+#endif
             face(*f_it).set_halfedges(hes);
         }
     } else {
@@ -998,8 +1005,15 @@ EdgeIter TopologyKernel::delete_edge_core(const EdgeHandle& _h) {
 
             // Decrease all half-edge handles greater than _h in face
             HEHandleCorrection cor(halfedge_handle(_h, 1));
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+            for(std::vector<HalfEdgeHandle>::iterator it = hes.begin(), end = hes.end();
+                    it != end; ++it) {
+                cor.correctValue(*it);
+            }
+#else
             std::for_each(hes.begin(), hes.end(),
                           fun::bind(&HEHandleCorrection::correctValue, &cor, fun::placeholders::_1));
+#endif
             face(*f_it).set_halfedges(hes);
         }
     }
@@ -1015,9 +1029,16 @@ EdgeIter TopologyKernel::delete_edge_core(const EdgeHandle& _h) {
     // 4)
     if(v_bottom_up_) {
         HEHandleCorrection cor(halfedge_handle(_h, 1));
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+        for(std::vector<std::vector<HalfEdgeHandle> >::iterator it = outgoing_hes_per_vertex_.begin(),
+                end = outgoing_hes_per_vertex_.end(); it != end; ++it) {
+            cor.correctVecValue(*it);
+        }
+#else
         std::for_each(outgoing_hes_per_vertex_.begin(),
                       outgoing_hes_per_vertex_.end(),
                       fun::bind(&HEHandleCorrection::correctVecValue, &cor, fun::placeholders::_1));
+#endif
     }
 
     // 5)
@@ -1098,8 +1119,15 @@ FaceIter TopologyKernel::delete_face_core(const FaceHandle& _h) {
             hfs.erase(std::remove(hfs.begin(), hfs.end(), halfface_handle(_h, 1)), hfs.end());
 
             HFHandleCorrection cor(halfface_handle(_h, 1));
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+            for(std::vector<HalfFaceHandle>::iterator it = hfs.begin(),
+                    end = hfs.end(); it != end; ++it) {
+                cor.correctValue(*it);
+            }
+#else
             std::for_each(hfs.begin(), hfs.end(),
                           fun::bind(&HFHandleCorrection::correctValue, &cor, fun::placeholders::_1));
+#endif
             cell(*c_it).set_halffaces(hfs);
         }
 
@@ -1115,8 +1143,15 @@ FaceIter TopologyKernel::delete_face_core(const FaceHandle& _h) {
             hfs.erase(std::remove(hfs.begin(), hfs.end(), halfface_handle(_h, 1)), hfs.end());
 
             HFHandleCorrection cor(halfface_handle(_h, 1));
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+            for(std::vector<HalfFaceHandle>::iterator it = hfs.begin(),
+                    end = hfs.end(); it != end; ++it) {
+                cor.correctValue(*it);
+            }
+#else
             std::for_each(hfs.begin(), hfs.end(),
                           fun::bind(&HFHandleCorrection::correctValue, &cor, fun::placeholders::_1));
+#endif
             cell(*c_it).set_halffaces(hfs);
         }
     }
@@ -1132,9 +1167,15 @@ FaceIter TopologyKernel::delete_face_core(const FaceHandle& _h) {
     // 4)
     if(e_bottom_up_) {
         HFHandleCorrection cor(halfface_handle(_h, 1));
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+        for(std::vector<std::vector<HalfFaceHandle> >::iterator it = incident_hfs_per_he_.begin(), end = incident_hfs_per_he_.end(); it != end; ++it) {
+            cor.correctVecValue(*it);
+        }
+#else
         std::for_each(incident_hfs_per_he_.begin(),
                       incident_hfs_per_he_.end(),
                       fun::bind(&HFHandleCorrection::correctVecValue, &cor, fun::placeholders::_1));
+#endif
     }
 
     // 5)
@@ -1182,9 +1223,16 @@ CellIter TopologyKernel::delete_cell_core(const CellHandle& _h) {
     // 2)
     if(f_bottom_up_) {
         CHandleCorrection cor(_h);
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+        for(std::vector<CellHandle>::iterator it = incident_cell_per_hf_.begin(),
+                end = incident_cell_per_hf_.end(); it != end; ++it) {
+            cor.correctValue(*it);
+        }
+#else
         std::for_each(incident_cell_per_hf_.begin(),
                       incident_cell_per_hf_.end(),
                       fun::bind(&CHandleCorrection::correctValue, &cor, fun::placeholders::_1));
+#endif
     }
 
     // 3)

@@ -63,8 +63,14 @@
 	 namespace fun = std::tr1;
    #else
      // hope for TR1 equivalents
-     #include <tr1/functional>
-     namespace fun = std::tr1;
+     #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+       // Mavericks special treatment
+       #include <functional>
+       namespace fun = std;
+     #else
+       #include <tr1/functional>
+       namespace fun = std::tr1;
+     #endif
    #endif
 #endif
 

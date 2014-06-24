@@ -73,10 +73,16 @@
      #pragma warning "TR1 not available! Please install Visual Studio Service Pack 1!"
     #endif
    #else
-     // hope for TR1 equivalents
-     #include <tr1/memory>
-     namespace ptr = std::tr1;
-     #define ACG_UNIQUE_POINTER_SUPPORTED 0
+    // hope for TR1 equivalents
+    #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+      // Mavericks special treatment
+      #include <memory>
+      namespace ptr = std;
+    #else
+      #include <tr1/memory>
+      namespace ptr = std::tr1;
+    #endif
+    #define ACG_UNIQUE_POINTER_SUPPORTED 0
    #endif
 #endif
 

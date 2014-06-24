@@ -279,4 +279,8 @@ private:
 
 } // Namespace OpenVolumeMesh
 
+#if defined(INCLUDE_TEMPLATES) && !defined(STATUSATTRIBT_CC)
+#include "StatusAttribT.cc"
+#endif
+
 #endif /* STATUSATTRIB_HH_ */
