@@ -74,7 +74,7 @@
     #endif
    #else
     // hope for TR1 equivalents
-    #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+    #if defined(__APPLE__) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9)
       // Mavericks special treatment
       #include <memory>
       namespace ptr = std;
