@@ -118,7 +118,7 @@ class HEHandleCorrection {
 public:
     HEHandleCorrection(HalfEdgeHandle _thld) : thld_(_thld) {}
     void correctVecValue(std::vector<HalfEdgeHandle>& _vec) {
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+#if defined(__clang_major__) && (__clang_major__ >= 5)
         for(std::vector<HalfEdgeHandle>::iterator it = _vec.begin(), end = _vec.end(); it != end; ++it) {
             correctValue(*it);
         }
@@ -136,7 +136,7 @@ class HFHandleCorrection {
 public:
     HFHandleCorrection(HalfFaceHandle _thld) : thld_(_thld) {}
     void correctVecValue(std::vector<HalfFaceHandle>& _vec) {
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+#if defined(__clang_major__) && (__clang_major__ >= 5)
         for(std::vector<HalfFaceHandle>::iterator it = _vec.begin(), end = _vec.end(); it != end; ++it) {
             correctValue(*it);
         }

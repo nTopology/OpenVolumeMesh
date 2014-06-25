@@ -631,7 +631,7 @@ public:
             compute_edge_bottom_up_incidences();
 
             if(f_bottom_up_) {
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+#if defined(__clang_major__) && (__clang_major__ >= 5)
                 for(EdgeIter e_it = edges_begin(), e_end = edges_end();
                     e_it != e_end; ++e_it) {
                     reorder_incident_halffaces(*e_it);
@@ -669,7 +669,7 @@ public:
 
         if(updateOrder) {
             if(e_bottom_up_) {
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
+#if defined(__clang_major__) && (__clang_major__ >= 5)
                 for(EdgeIter e_it = edges_begin(), e_end = edges_end();
                     e_it != e_end; ++e_it) {
                     reorder_incident_halffaces(*e_it);
