@@ -182,8 +182,9 @@ public:
 
     void swap_vertices(std::vector<VecT>& _copy) {
         if(_copy.size() != vertices_.size()) {
-            std::cerr << "Vertex vectors differ in size!" << std::endl;
-            return;
+            std::cerr << "Vertex vectors differ in size! The size of the copy " <<
+            		"is artificially set to the correct one. Some values may not be correctly initialized." << std::endl;
+            _copy.resize(vertices_.size());
         }
         std::swap(vertices_, _copy);
     }
