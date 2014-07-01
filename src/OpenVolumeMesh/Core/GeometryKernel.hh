@@ -44,6 +44,7 @@
 #define GEOMETRYKERNEL_HH_
 
 #include <cassert>
+#include <iostream>
 
 #include "../Geometry/VectorT.hh"
 #include "TopologyKernel.hh"
