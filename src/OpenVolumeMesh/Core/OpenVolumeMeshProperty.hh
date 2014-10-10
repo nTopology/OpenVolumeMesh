@@ -293,6 +293,23 @@ public:
 		return _n_elem / 8 + ((_n_elem % 8) != 0);
 	}
 
+	// Function to serialize a property
+        virtual void serialize(std::ostream& _ostr) const {
+            for(typename vector_type::const_iterator it = data_.begin();
+                  it != data_.end(); ++it) {
+                _ostr << *it << std::endl;
+            }
+        }
+
+        // Function to deserialize a property
+        virtual void deserialize(std::istream& _istr) {
+            for(unsigned int i = 0; i < n_elements(); ++i) {
+                value_type val;
+                _istr >> val;
+                data_[i] = val;
+            }
+        }
+
 public:
 
 	/// Access the i'th element. No range check is performed!
