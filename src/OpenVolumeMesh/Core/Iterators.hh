@@ -61,7 +61,7 @@ public:
 	// STL compliance
 	typedef std::bidirectional_iterator_tag iterator_category;
 	typedef int						        difference_type;
-	typedef OH  					        value_type;
+	typedef const OH				        value_type;
 	typedef const OH*				        pointer;
 	typedef const OH&				        reference;
 
