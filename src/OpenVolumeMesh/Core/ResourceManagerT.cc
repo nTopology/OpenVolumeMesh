@@ -98,7 +98,6 @@ PropT ResourceManager::request_property(StdVecT& _vec, const std::string& _name,
             if((*it)->name() == _name) {
                 PropT* prop = dynamic_cast<PropT*>(*it);
                 if(prop != NULL) return *prop;
-                else break;
             }
         }
     }
