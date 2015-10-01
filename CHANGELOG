@@ -1,1 +1,7 @@
-= Changelog
+Version 1.2 (2015/10/01)
+
+- Status Attribute offers a garbage collection which removes all elements previously tagged as deleted.
+- Circulators will now circulate as often as desired.
+- Property (de)serialization now done via (de)serialize functions allowing to customize (de)serialization for custom properties.
+- Fixed some compatibility issues.
+- Various smaller improvements and bugfixes.
