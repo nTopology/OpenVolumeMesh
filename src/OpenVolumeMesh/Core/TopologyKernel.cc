@@ -63,8 +63,10 @@ TopologyKernel::TopologyKernel() :
     n_vertices_(0u),
     v_bottom_up_(true),
     e_bottom_up_(true),
-    f_bottom_up_(true) {
-
+    f_bottom_up_(true),
+    deferred_deletion(true),
+    fast_deletion(true)
+{
 }
 
 TopologyKernel::~TopologyKernel() {
@@ -75,6 +77,7 @@ TopologyKernel::~TopologyKernel() {
 VertexHandle TopologyKernel::add_vertex() {
 
     ++n_vertices_;
+    vertex_deleted_.push_back(false);
 
     // Create item for vertex bottom-up incidences
     if(v_bottom_up_) {
@@ -128,6 +131,7 @@ EdgeHandle TopologyKernel::add_edge(const VertexHandle& _fromVertex,
 
     // Store edge locally
     edges_.push_back(e);
+    edge_deleted_.push_back(false);
 
     // Resize props
     resize_eprops(n_edges());
@@ -209,6 +213,7 @@ FaceHandle TopologyKernel::add_face(const std::vector<HalfEdgeHandle>& _halfedge
     OpenVolumeMeshFace face(_halfedges);
 
     faces_.push_back(face);
+    face_deleted_.push_back(false);
 
     // Get added face's handle
     FaceHandle fh(faces_.size() - 1);
@@ -329,6 +334,9 @@ void TopologyKernel::reorder_incident_halffaces(const EdgeHandle& _eh) {
 
                 // End when we're through
                 if(cur_hf == start_hf) break;
+                // if one of the faces of the cell was already incident to another cell we need this check
+                // to prevent running into an infinite loop.
+                if(std::find(new_halffaces.begin(), new_halffaces.end(), cur_hf) != new_halffaces.end()) break;
             }
 
             // First direction has terminated
@@ -350,6 +358,9 @@ void TopologyKernel::reorder_incident_halffaces(const EdgeHandle& _eh) {
                      if(cur_hf != InvalidHalfFaceHandle)
                          new_halffaces.insert(new_halffaces.begin(), cur_hf);
                      else break;
+                     // if one of the faces of the cell was already incident to another cell we need this check
+                     // to prevent running into an infinite loop.
+                     if(std::find(new_halffaces.begin(), new_halffaces.end(), cur_hf) != new_halffaces.end()) break;
                 }
             }
 
@@ -412,6 +423,7 @@ CellHandle TopologyKernel::add_cell(const std::vector<HalfFaceHandle>& _halfface
     OpenVolumeMeshCell cell(_halffaces);
 
     cells_.push_back(cell);
+    cell_deleted_.push_back(false);
 
     // Resize props
     resize_cprops(n_cells());
@@ -702,6 +714,49 @@ CellIter TopologyKernel::delete_cell(const CellHandle& _h) {
     return delete_cell_core(_h);
 }
 
+/**
+ * \brief Delete all entities that are marked as deleted
+ */
+void TopologyKernel::collect_garbage()
+{
+    if (!deferred_deletion_enabled())
+        return; // nothing todo
+
+    enable_deferred_deletion(false);
+
+    for (unsigned int i = n_cells(); i > 0; --i)
+        if (is_deleted(CellHandle(i-1)))
+        {
+            cell_deleted_[i-1] = false;
+            delete_cell_core(CellHandle(i-1));
+        }
+
+    for (unsigned int i = n_faces(); i > 0; --i)
+        if (is_deleted(FaceHandle(i-1)))
+        {
+            face_deleted_[i-1] = false;
+            delete_face_core(FaceHandle(i-1));
+        }
+
+    for (unsigned int i = n_edges(); i > 0; --i)
+        if (is_deleted(EdgeHandle(i-1)))
+        {
+            edge_deleted_[i-1] = false;
+            delete_edge_core(EdgeHandle(i-1));
+        }
+
+    for (unsigned int i = n_vertices(); i > 0; --i)
+        if (is_deleted(VertexHandle(i-1)))
+        {
+            vertex_deleted_[i-1] = false;
+            delete_vertex_core(VertexHandle(i-1));
+        }
+
+
+    enable_deferred_deletion();
+
+}
+
 //========================================================================================
 
 template <class ContainerT>
@@ -852,57 +907,84 @@ void TopologyKernel::get_incident_cells(const ContainerT& _fs,
  */
 VertexIter TopologyKernel::delete_vertex_core(const VertexHandle& _h) {
 
-    assert(_h.is_valid() && (size_t)_h.idx() < n_vertices());
+    VertexHandle h = _h;
+    assert(h.is_valid() && (size_t)h.idx() < n_vertices());
 
-    // 1)
-    if(v_bottom_up_) {
+    if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last not deleted vertex
+    {
+        VertexHandle last_undeleted_vertex = VertexHandle(n_vertices()-1);
+        swap_vertices(h, last_undeleted_vertex);
+        h = last_undeleted_vertex;
+    }
 
-        // Decrease all vertex handles >= _h in all edge definitions
-        for(int i = _h.idx(), end = n_vertices(); i < end; ++i) {
-            const std::vector<HalfEdgeHandle>& hes = outgoing_hes_per_vertex_[i];
-            for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin(),
+    if (deferred_deletion_enabled())
+    {
+        vertex_deleted_[h.idx()] = true;
+//        deleted_vertices_.push_back(h);
+
+        // Iterator to next element in vertex list
+//        return (vertices_begin() + h.idx()+1);
+        return VertexIter(this, VertexHandle(h.idx()+1));
+    }
+    else
+    {
+        // 1)
+        if(v_bottom_up_) {
+
+            // Decrease all vertex handles >= _h in all edge definitions
+            for(int i = h.idx(), end = n_vertices(); i < end; ++i) {
+                const std::vector<HalfEdgeHandle>& hes = outgoing_hes_per_vertex_[i];
+                for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin(),
                     he_end = hes.end(); he_it != he_end; ++he_it) {
 
-                Edge& e = edge(edge_handle(*he_it));
-                if(e.from_vertex().idx() == i) {
-                    e.set_from_vertex(VertexHandle(i-1));
-                }
-                if(e.to_vertex().idx() == i) {
-                    e.set_to_vertex(VertexHandle(i-1));
+                    Edge& e = edge(edge_handle(*he_it));
+                    if(e.from_vertex().idx() == i) {
+                        e.set_from_vertex(VertexHandle(i-1));
+                    }
+                    if(e.to_vertex().idx() == i) {
+                        e.set_to_vertex(VertexHandle(i-1));
+                    }
                 }
             }
-        }
 
-    } else {
+        } else {
 
-        // Iterate over all edges
-        for(EdgeIter e_it = edges_begin(), e_end = edges_end();
+            // Iterate over all edges
+            for(EdgeIter e_it = edges_begin(), e_end = edges_end();
                 e_it != e_end; ++e_it) {
 
-            // Decrease all vertex handles in edge definitions that are greater than _h
-            if(edge(*e_it).from_vertex() > _h) {
-                edge(*e_it).set_from_vertex(VertexHandle(edge(*e_it).from_vertex().idx() - 1));
-            }
-            if(edge(*e_it).to_vertex() > _h) {
-                edge(*e_it).set_to_vertex(VertexHandle(edge(*e_it).to_vertex().idx() - 1));
+                // Decrease all vertex handles in edge definitions that are greater than _h
+                if(edge(*e_it).from_vertex() > h) {
+                    edge(*e_it).set_from_vertex(VertexHandle(edge(*e_it).from_vertex().idx() - 1));
+                }
+                if(edge(*e_it).to_vertex() > h) {
+                    edge(*e_it).set_to_vertex(VertexHandle(edge(*e_it).to_vertex().idx() - 1));
+                }
             }
         }
+
+        // 2)
+
+        if(v_bottom_up_) {
+            assert((size_t)h.idx() < outgoing_hes_per_vertex_.size());
+            outgoing_hes_per_vertex_.erase(outgoing_hes_per_vertex_.begin() + h.idx());
+        }
+
+
+        // 3)
+
+        --n_vertices_;
+        vertex_deleted_.erase(vertex_deleted_.begin() + h.idx());
+
+        // 4)
+
+        vertex_deleted(h);
+
+        // Iterator to next element in vertex list
+//        return (vertices_begin() + h.idx());
+        return VertexIter(this, h);
+
     }
-
-    // 2)
-    if(v_bottom_up_) {
-        assert((size_t)_h.idx() < outgoing_hes_per_vertex_.size());
-        outgoing_hes_per_vertex_.erase(outgoing_hes_per_vertex_.begin() + _h.idx());
-    }
-
-    // 3)
-    --n_vertices_;
-
-    // 4)
-    vertex_deleted(_h);
-
-    // Iterator to next element in vertex list
-    return (vertices_begin() + _h.idx());
 }
 
 //========================================================================================
@@ -928,127 +1010,163 @@ VertexIter TopologyKernel::delete_vertex_core(const VertexHandle& _h) {
  */
 EdgeIter TopologyKernel::delete_edge_core(const EdgeHandle& _h) {
 
-    assert(_h.is_valid() && (size_t)_h.idx() < edges_.size());
+    EdgeHandle h = _h;
+
+    assert(h.is_valid() && (size_t)h.idx() < edges_.size());
+
+    if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last one
+    {
+        EdgeHandle last_edge = EdgeHandle(edges_.size()-1);
+        swap_edges(h, last_edge);
+        h = last_edge;
+    }
+
 
     // 1)
     if(v_bottom_up_) {
 
-        VertexHandle v0 = edge(_h).from_vertex();
-        VertexHandle v1 = edge(_h).to_vertex();
+        VertexHandle v0 = edge(h).from_vertex();
+        VertexHandle v1 = edge(h).to_vertex();
         assert(v0.is_valid() && (size_t)v0.idx() < outgoing_hes_per_vertex_.size());
         assert(v1.is_valid() && (size_t)v1.idx() < outgoing_hes_per_vertex_.size());
 
         outgoing_hes_per_vertex_[v0.idx()].erase(
                 std::remove(outgoing_hes_per_vertex_[v0.idx()].begin(),
                             outgoing_hes_per_vertex_[v0.idx()].end(),
-                            halfedge_handle(_h, 0)),
+                            halfedge_handle(h, 0)),
                             outgoing_hes_per_vertex_[v0.idx()].end());
 
         outgoing_hes_per_vertex_[v1.idx()].erase(
                 std::remove(outgoing_hes_per_vertex_[v1.idx()].begin(),
                             outgoing_hes_per_vertex_[v1.idx()].end(),
-                            halfedge_handle(_h, 1)),
+                            halfedge_handle(h, 1)),
                             outgoing_hes_per_vertex_[v1.idx()].end());
     }
 
-    // 2)
-    if(e_bottom_up_) {
+    if (deferred_deletion_enabled())
+    {
+        edge_deleted_[h.idx()] = true;
+//        deleted_edges_.push_back(h);
 
-        assert((size_t)halfedge_handle(_h, 0).idx() < incident_hfs_per_he_.size());
+        // Return iterator to next element in list
+//        return (edges_begin() + h.idx()+1);
+        return EdgeIter(this, EdgeHandle(h.idx()+1));
+    }
+    else
+    {
 
-        // Decrease all half-edge handles > he and
-        // delete all half-edge handles == he in face definitions
-        // Get all faces that need updates
-        std::set<FaceHandle> update_faces;
-        for(std::vector<std::vector<HalfFaceHandle> >::const_iterator iit =
-                (incident_hfs_per_he_.begin() + halfedge_handle(_h, 0).idx()),
-                iit_end = incident_hfs_per_he_.end(); iit != iit_end; ++iit) {
-            for(std::vector<HalfFaceHandle>::const_iterator it = iit->begin(),
-                    end = iit->end(); it != end; ++it) {
-                update_faces.insert(face_handle(*it));
+        if (!fast_deletion_enabled())
+        {
+            // 2)
+            if(e_bottom_up_) {
+
+                assert((size_t)halfedge_handle(h, 0).idx() < incident_hfs_per_he_.size());
+
+                // Decrease all half-edge handles > he and
+                // delete all half-edge handles == he in face definitions
+                // Get all faces that need updates
+                std::set<FaceHandle> update_faces;
+                for(std::vector<std::vector<HalfFaceHandle> >::const_iterator iit =
+                    (incident_hfs_per_he_.begin() + halfedge_handle(h, 0).idx()),
+                    iit_end = incident_hfs_per_he_.end(); iit != iit_end; ++iit) {
+                    for(std::vector<HalfFaceHandle>::const_iterator it = iit->begin(),
+                        end = iit->end(); it != end; ++it) {
+                        update_faces.insert(face_handle(*it));
+                    }
+                }
+                // Update respective handles
+                HEHandleCorrection cor(halfedge_handle(h, 1));
+                for(std::set<FaceHandle>::iterator f_it = update_faces.begin(),
+                    f_end = update_faces.end(); f_it != f_end; ++f_it) {
+
+                    std::vector<HalfEdgeHandle> hes = face(*f_it).halfedges();
+
+                    // Delete current half-edge from face's half-edge list
+                    hes.erase(std::remove(hes.begin(), hes.end(), halfedge_handle(h, 0)), hes.end());
+                    hes.erase(std::remove(hes.begin(), hes.end(), halfedge_handle(h, 1)), hes.end());
+
+    #if defined(__clang_major__) && (__clang_major__ >= 5)
+                    for(std::vector<HalfEdgeHandle>::iterator it = hes.begin(), end = hes.end();
+                        it != end; ++it) {
+                        cor.correctValue(*it);
+                    }
+    #else
+                    std::for_each(hes.begin(), hes.end(),
+                                  fun::bind(&HEHandleCorrection::correctValue, &cor, fun::placeholders::_1));
+    #endif
+                    face(*f_it).set_halfedges(hes);
+                }
+            } else {
+
+                // Iterate over all faces
+                for(FaceIter f_it = faces_begin(), f_end = faces_end();
+                    f_it != f_end; ++f_it) {
+
+                    // Get face's half-edges
+                    std::vector<HalfEdgeHandle> hes = face(*f_it).halfedges();
+
+                    // Delete current half-edge from face's half-edge list
+                    hes.erase(std::remove(hes.begin(), hes.end(), halfedge_handle(h, 0)), hes.end());
+                    hes.erase(std::remove(hes.begin(), hes.end(), halfedge_handle(h, 1)), hes.end());
+
+                    // Decrease all half-edge handles greater than _h in face
+                    HEHandleCorrection cor(halfedge_handle(h, 1));
+    #if defined(__clang_major__) && (__clang_major__ >= 5)
+                    for(std::vector<HalfEdgeHandle>::iterator it = hes.begin(), end = hes.end();
+                        it != end; ++it) {
+                        cor.correctValue(*it);
+                    }
+    #else
+                    std::for_each(hes.begin(), hes.end(),
+                                  fun::bind(&HEHandleCorrection::correctValue, &cor, fun::placeholders::_1));
+    #endif
+                    face(*f_it).set_halfedges(hes);
+                }
             }
         }
-        // Update respective handles
-        HEHandleCorrection cor(halfedge_handle(_h, 1));
-        for(std::set<FaceHandle>::iterator f_it = update_faces.begin(),
-                f_end = update_faces.end(); f_it != f_end; ++f_it) {
 
-            std::vector<HalfEdgeHandle> hes = face(*f_it).halfedges();
+        // 3)
 
-            // Delete current half-edge from face's half-edge list
-            hes.erase(std::remove(hes.begin(), hes.end(), halfedge_handle(_h, 0)), hes.end());
-            hes.erase(std::remove(hes.begin(), hes.end(), halfedge_handle(_h, 1)), hes.end());
+        if(e_bottom_up_) {
+            assert((size_t)halfedge_handle(h, 1).idx() < incident_hfs_per_he_.size());
 
-#if defined(__clang_major__) && (__clang_major__ >= 5)
-            for(std::vector<HalfEdgeHandle>::iterator it = hes.begin(), end = hes.end();
-                it != end; ++it) {
-                cor.correctValue(*it);
+            incident_hfs_per_he_.erase(incident_hfs_per_he_.begin() + halfedge_handle(h, 1).idx());
+            incident_hfs_per_he_.erase(incident_hfs_per_he_.begin() + halfedge_handle(h, 0).idx());
+        }
+
+        if (!fast_deletion_enabled())
+        {
+            // 4)
+            if(v_bottom_up_) {
+                HEHandleCorrection cor(halfedge_handle(h, 1));
+    #if defined(__clang_major__) && (__clang_major__ >= 5)
+                for(std::vector<std::vector<HalfEdgeHandle> >::iterator it = outgoing_hes_per_vertex_.begin(),
+                    end = outgoing_hes_per_vertex_.end(); it != end; ++it) {
+                    cor.correctVecValue(*it);
+                }
+    #else
+                std::for_each(outgoing_hes_per_vertex_.begin(),
+                              outgoing_hes_per_vertex_.end(),
+                              fun::bind(&HEHandleCorrection::correctVecValue, &cor, fun::placeholders::_1));
+    #endif
             }
-#else
-            std::for_each(hes.begin(), hes.end(),
-                          fun::bind(&HEHandleCorrection::correctValue, &cor, fun::placeholders::_1));
-#endif
-            face(*f_it).set_halfedges(hes);
         }
-    } else {
 
-        // Iterate over all faces
-        for(FaceIter f_it = faces_begin(), f_end = faces_end();
-                f_it != f_end; ++f_it) {
 
-            // Get face's half-edges
-            std::vector<HalfEdgeHandle> hes = face(*f_it).halfedges();
+        // 5)
+        edges_.erase(edges_.begin() + h.idx());
+        edge_deleted_.erase(edge_deleted_.begin() + h.idx());
 
-            // Delete current half-edge from face's half-edge list
-            hes.erase(std::remove(hes.begin(), hes.end(), halfedge_handle(_h, 0)), hes.end());
-            hes.erase(std::remove(hes.begin(), hes.end(), halfedge_handle(_h, 1)), hes.end());
 
-            // Decrease all half-edge handles greater than _h in face
-            HEHandleCorrection cor(halfedge_handle(_h, 1));
-#if defined(__clang_major__) && (__clang_major__ >= 5)
-            for(std::vector<HalfEdgeHandle>::iterator it = hes.begin(), end = hes.end();
-                    it != end; ++it) {
-                cor.correctValue(*it);
-            }
-#else
-            std::for_each(hes.begin(), hes.end(),
-                          fun::bind(&HEHandleCorrection::correctValue, &cor, fun::placeholders::_1));
-#endif
-            face(*f_it).set_halfedges(hes);
-        }
+        // 6)
+
+        edge_deleted(h);
+
+        // Return iterator to next element in list
+//        return (edges_begin() + h.idx());
+        return EdgeIter(this, h);
+
     }
-
-    // 3)
-    if(e_bottom_up_) {
-        assert((size_t)halfedge_handle(_h, 1).idx() < incident_hfs_per_he_.size());
-
-        incident_hfs_per_he_.erase(incident_hfs_per_he_.begin() + halfedge_handle(_h, 1).idx());
-        incident_hfs_per_he_.erase(incident_hfs_per_he_.begin() + halfedge_handle(_h, 0).idx());
-    }
-
-    // 4)
-    if(v_bottom_up_) {
-        HEHandleCorrection cor(halfedge_handle(_h, 1));
-#if defined(__clang_major__) && (__clang_major__ >= 5)
-        for(std::vector<std::vector<HalfEdgeHandle> >::iterator it = outgoing_hes_per_vertex_.begin(),
-                end = outgoing_hes_per_vertex_.end(); it != end; ++it) {
-            cor.correctVecValue(*it);
-        }
-#else
-        std::for_each(outgoing_hes_per_vertex_.begin(),
-                      outgoing_hes_per_vertex_.end(),
-                      fun::bind(&HEHandleCorrection::correctVecValue, &cor, fun::placeholders::_1));
-#endif
-    }
-
-    // 5)
-    edges_.erase(edges_.begin() + _h.idx());
-
-    // 6)
-    edge_deleted(_h);
-
-    // Return iterator to next element in list
-    return (edges_begin() + _h.idx());
 }
 
 //========================================================================================
@@ -1074,12 +1192,22 @@ EdgeIter TopologyKernel::delete_edge_core(const EdgeHandle& _h) {
  */
 FaceIter TopologyKernel::delete_face_core(const FaceHandle& _h) {
 
-    assert(_h.is_valid() && (size_t)_h.idx() < faces_.size());
+    FaceHandle h = _h;
+
+    assert(h.is_valid() && (size_t)h.idx() < faces_.size());
+
+
+    if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last one
+    {
+        FaceHandle last_face = FaceHandle(faces_.size()-1);
+        swap_faces(h, last_face);
+        h = last_face;
+    }
 
     // 1)
     if(e_bottom_up_) {
 
-        const std::vector<HalfEdgeHandle>& hes = face(_h).halfedges();
+        const std::vector<HalfEdgeHandle>& hes = face(h).halfedges();
         for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin(),
                 he_end = hes.end(); he_it != he_end; ++he_it) {
 
@@ -1088,104 +1216,128 @@ FaceIter TopologyKernel::delete_face_core(const FaceHandle& _h) {
             incident_hfs_per_he_[he_it->idx()].erase(
                     std::remove(incident_hfs_per_he_[he_it->idx()].begin(),
                                 incident_hfs_per_he_[he_it->idx()].end(),
-                                halfface_handle(_h, 0)), incident_hfs_per_he_[he_it->idx()].end());
+                                halfface_handle(h, 0)), incident_hfs_per_he_[he_it->idx()].end());
 
 
             incident_hfs_per_he_[opposite_halfedge_handle(*he_it).idx()].erase(
                     std::remove(incident_hfs_per_he_[opposite_halfedge_handle(*he_it).idx()].begin(),
                                 incident_hfs_per_he_[opposite_halfedge_handle(*he_it).idx()].end(),
-                                halfface_handle(_h, 1)), incident_hfs_per_he_[opposite_halfedge_handle(*he_it).idx()].end());
+                                halfface_handle(h, 1)), incident_hfs_per_he_[opposite_halfedge_handle(*he_it).idx()].end());
         }
     }
 
-    // 2)
-    if(f_bottom_up_) {
+    if (deferred_deletion_enabled())
+    {
+        face_deleted_[h.idx()] = true;
+//        deleted_faces_.push_back(h);
 
-        // Decrease all half-face handles > _h in all cells
-        // and delete all half-face handles == _h
-        std::set<CellHandle> update_cells;
-        for(std::vector<CellHandle>::const_iterator c_it = (incident_cell_per_hf_.begin() + halfface_handle(_h, 0).idx()),
-                c_end = incident_cell_per_hf_.end(); c_it != c_end; ++c_it) {
-            if(!c_it->is_valid()) continue;
-            update_cells.insert(*c_it);
-        }
-        for(std::set<CellHandle>::const_iterator c_it = update_cells.begin(),
-                c_end = update_cells.end(); c_it != c_end; ++c_it) {
+        // Return iterator to next element in list
+//        return (faces_begin() + h.idx()+1);
+        return FaceIter(this, FaceHandle(h.idx()+1));
+    }
+    else
+    {
 
-            std::vector<HalfFaceHandle> hfs = cell(*c_it).halffaces();
+        if (!fast_deletion_enabled())
+        {
+            // 2)
+            if(f_bottom_up_) {
 
-            // Delete current half-faces from cell's half-face list
-            hfs.erase(std::remove(hfs.begin(), hfs.end(), halfface_handle(_h, 0)), hfs.end());
-            hfs.erase(std::remove(hfs.begin(), hfs.end(), halfface_handle(_h, 1)), hfs.end());
+                // Decrease all half-face handles > _h in all cells
+                // and delete all half-face handles == _h
+                std::set<CellHandle> update_cells;
+                for(std::vector<CellHandle>::const_iterator c_it = (incident_cell_per_hf_.begin() + halfface_handle(h, 0).idx()),
+                    c_end = incident_cell_per_hf_.end(); c_it != c_end; ++c_it) {
+                    if(!c_it->is_valid()) continue;
+                    update_cells.insert(*c_it);
+                }
+                for(std::set<CellHandle>::const_iterator c_it = update_cells.begin(),
+                    c_end = update_cells.end(); c_it != c_end; ++c_it) {
 
-            HFHandleCorrection cor(halfface_handle(_h, 1));
+                    std::vector<HalfFaceHandle> hfs = cell(*c_it).halffaces();
+
+                    // Delete current half-faces from cell's half-face list
+                    hfs.erase(std::remove(hfs.begin(), hfs.end(), halfface_handle(h, 0)), hfs.end());
+                    hfs.erase(std::remove(hfs.begin(), hfs.end(), halfface_handle(h, 1)), hfs.end());
+
+                    HFHandleCorrection cor(halfface_handle(h, 1));
 #if defined(__clang_major__) && (__clang_major__ >= 5)
-            for(std::vector<HalfFaceHandle>::iterator it = hfs.begin(),
-                    end = hfs.end(); it != end; ++it) {
-                cor.correctValue(*it);
+                    for(std::vector<HalfFaceHandle>::iterator it = hfs.begin(),
+                        end = hfs.end(); it != end; ++it) {
+                        cor.correctValue(*it);
+                    }
+#else
+                    std::for_each(hfs.begin(), hfs.end(),
+                                  fun::bind(&HFHandleCorrection::correctValue, &cor, fun::placeholders::_1));
+#endif
+                    cell(*c_it).set_halffaces(hfs);
+                }
+
+            } else {
+
+                // Iterate over all cells
+                for(CellIter c_it = cells_begin(), c_end = cells_end(); c_it != c_end; ++c_it) {
+
+                    std::vector<HalfFaceHandle> hfs = cell(*c_it).halffaces();
+
+                    // Delete current half-faces from cell's half-face list
+                    hfs.erase(std::remove(hfs.begin(), hfs.end(), halfface_handle(h, 0)), hfs.end());
+                    hfs.erase(std::remove(hfs.begin(), hfs.end(), halfface_handle(h, 1)), hfs.end());
+
+                    HFHandleCorrection cor(halfface_handle(h, 1));
+#if defined(__clang_major__) && (__clang_major__ >= 5)
+                    for(std::vector<HalfFaceHandle>::iterator it = hfs.begin(),
+                        end = hfs.end(); it != end; ++it) {
+                        cor.correctValue(*it);
+                    }
+#else
+                    std::for_each(hfs.begin(), hfs.end(),
+                                  fun::bind(&HFHandleCorrection::correctValue, &cor, fun::placeholders::_1));
+#endif
+                    cell(*c_it).set_halffaces(hfs);
+                }
             }
-#else
-            std::for_each(hfs.begin(), hfs.end(),
-                          fun::bind(&HFHandleCorrection::correctValue, &cor, fun::placeholders::_1));
-#endif
-            cell(*c_it).set_halffaces(hfs);
         }
 
-    } else {
 
-        // Iterate over all cells
-        for(CellIter c_it = cells_begin(), c_end = cells_end(); c_it != c_end; ++c_it) {
+        // 3)
+        if(f_bottom_up_) {
+            assert((size_t)halfface_handle(h, 1).idx() < incident_cell_per_hf_.size());
 
-            std::vector<HalfFaceHandle> hfs = cell(*c_it).halffaces();
+            incident_cell_per_hf_.erase(incident_cell_per_hf_.begin() + halfface_handle(h, 1).idx());
+            incident_cell_per_hf_.erase(incident_cell_per_hf_.begin() + halfface_handle(h, 0).idx());
+        }
 
-            // Delete current half-faces from cell's half-face list
-            hfs.erase(std::remove(hfs.begin(), hfs.end(), halfface_handle(_h, 0)), hfs.end());
-            hfs.erase(std::remove(hfs.begin(), hfs.end(), halfface_handle(_h, 1)), hfs.end());
 
-            HFHandleCorrection cor(halfface_handle(_h, 1));
+        if (!fast_deletion_enabled())
+        {
+            // 4)
+            if(e_bottom_up_) {
+                HFHandleCorrection cor(halfface_handle(h, 1));
 #if defined(__clang_major__) && (__clang_major__ >= 5)
-            for(std::vector<HalfFaceHandle>::iterator it = hfs.begin(),
-                    end = hfs.end(); it != end; ++it) {
-                cor.correctValue(*it);
+                for(std::vector<std::vector<HalfFaceHandle> >::iterator it = incident_hfs_per_he_.begin(), end = incident_hfs_per_he_.end(); it != end; ++it) {
+                    cor.correctVecValue(*it);
+                }
+#else
+                std::for_each(incident_hfs_per_he_.begin(),
+                              incident_hfs_per_he_.end(),
+                              fun::bind(&HFHandleCorrection::correctVecValue, &cor, fun::placeholders::_1));
+#endif
             }
-#else
-            std::for_each(hfs.begin(), hfs.end(),
-                          fun::bind(&HFHandleCorrection::correctValue, &cor, fun::placeholders::_1));
-#endif
-            cell(*c_it).set_halffaces(hfs);
         }
+
+        // 5)
+        faces_.erase(faces_.begin() + h.idx());
+        face_deleted_.erase(face_deleted_.begin() + h.idx());
+
+        // 6)
+        face_deleted(h);
+
+        // Return iterator to next element in list
+//        return (faces_begin() + h.idx());
+        return FaceIter(this, h);
     }
 
-    // 3)
-    if(f_bottom_up_) {
-        assert((size_t)halfface_handle(_h, 1).idx() < incident_cell_per_hf_.size());
-
-        incident_cell_per_hf_.erase(incident_cell_per_hf_.begin() + halfface_handle(_h, 1).idx());
-        incident_cell_per_hf_.erase(incident_cell_per_hf_.begin() + halfface_handle(_h, 0).idx());
-    }
-
-    // 4)
-    if(e_bottom_up_) {
-        HFHandleCorrection cor(halfface_handle(_h, 1));
-#if defined(__clang_major__) && (__clang_major__ >= 5)
-        for(std::vector<std::vector<HalfFaceHandle> >::iterator it = incident_hfs_per_he_.begin(), end = incident_hfs_per_he_.end(); it != end; ++it) {
-            cor.correctVecValue(*it);
-        }
-#else
-        std::for_each(incident_hfs_per_he_.begin(),
-                      incident_hfs_per_he_.end(),
-                      fun::bind(&HFHandleCorrection::correctVecValue, &cor, fun::placeholders::_1));
-#endif
-    }
-
-    // 5)
-    faces_.erase(faces_.begin() + _h.idx());
-
-    // 6)
-    face_deleted(_h);
-
-    // Return iterator to next element in list
-    return (faces_begin() + _h.idx());
 }
 
 //========================================================================================
@@ -1207,41 +1359,442 @@ FaceIter TopologyKernel::delete_face_core(const FaceHandle& _h) {
  */
 CellIter TopologyKernel::delete_cell_core(const CellHandle& _h) {
 
-    assert(_h.is_valid() && (size_t)_h.idx() < cells_.size());
+    CellHandle h = _h;
+
+    assert(h.is_valid() && (size_t)h.idx() < cells_.size());
+
+
+    if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last not deleted vertex
+    {
+        CellHandle last_undeleted_cell = CellHandle(cells_.size()-1);
+        swap_cells(h, last_undeleted_cell);
+        h = last_undeleted_cell;
+    }
+
 
     // 1)
     if(f_bottom_up_) {
-        const std::vector<HalfFaceHandle>& hfs = cell(_h).halffaces();
+        const std::vector<HalfFaceHandle>& hfs = cell(h).halffaces();
         for(std::vector<HalfFaceHandle>::const_iterator hf_it = hfs.begin(),
                 hf_end = hfs.end(); hf_it != hf_end; ++hf_it) {
             assert((size_t)hf_it->idx() < incident_cell_per_hf_.size());
-
-            incident_cell_per_hf_[hf_it->idx()] = InvalidCellHandle;
+            if (incident_cell_per_hf_[hf_it->idx()] == h)
+                incident_cell_per_hf_[hf_it->idx()] = InvalidCellHandle;
         }
     }
 
-    // 2)
-    if(f_bottom_up_) {
-        CHandleCorrection cor(_h);
+    if (deferred_deletion_enabled())
+    {
+        cell_deleted_[h.idx()] = true;
+//        deleted_cells_.push_back(h);
+//        deleted_cells_set.insert(h);
+
+//        return (cells_begin() + h.idx()+1);
+        return CellIter(this, CellHandle(h.idx()+1));
+    }
+    else
+    {
+        // 2)
+        if (!fast_deletion_enabled())
+        {
+            if(f_bottom_up_) {
+                CHandleCorrection cor(h);
 #if defined(__clang_major__) && (__clang_major__ >= 5)
-        for(std::vector<CellHandle>::iterator it = incident_cell_per_hf_.begin(),
-                end = incident_cell_per_hf_.end(); it != end; ++it) {
-            cor.correctValue(*it);
-        }
+                for(std::vector<CellHandle>::iterator it = incident_cell_per_hf_.begin(),
+                    end = incident_cell_per_hf_.end(); it != end; ++it) {
+                    cor.correctValue(*it);
+                }
 #else
-        std::for_each(incident_cell_per_hf_.begin(),
-                      incident_cell_per_hf_.end(),
-                      fun::bind(&CHandleCorrection::correctValue, &cor, fun::placeholders::_1));
+                std::for_each(incident_cell_per_hf_.begin(),
+                              incident_cell_per_hf_.end(),
+                              fun::bind(&CHandleCorrection::correctValue, &cor, fun::placeholders::_1));
 #endif
+            }
+        }
+
+        // 3)
+        cells_.erase(cells_.begin() + h.idx());
+        cell_deleted_.erase(cell_deleted_.begin() + h.idx());
+
+        // 4)
+        cell_deleted(h);
+
+        // return handle to original position
+//        return (cells_begin() + h.idx()+1);
+        return CellIter(this, h);
+    }
+}
+
+void TopologyKernel::swap_cells(CellHandle _h1, CellHandle _h2)
+{
+    assert(_h1.idx() >= 0 && _h1.idx() < (int)cells_.size());
+    assert(_h2.idx() >= 0 && _h2.idx() < (int)cells_.size());
+
+    if (_h1 == _h2)
+        return;
+
+    unsigned int id1 = _h1.idx();
+    unsigned int id2 = _h2.idx();
+
+    Cell c1 = cells_[id1];
+    Cell c2 = cells_[id2];
+
+    // correct pointers to those cells
+    std::vector<HalfFaceHandle> hfhs1 = c1.halffaces();
+    for (unsigned int i = 0; i < hfhs1.size(); ++i)
+    {
+        HalfFaceHandle hfh = hfhs1[i];
+        incident_cell_per_hf_[hfh.idx()] = id2;
     }
 
-    // 3)
-    cells_.erase(cells_.begin() + _h.idx());
+    std::vector<HalfFaceHandle> hfhs2 = c2.halffaces();
+    for (unsigned int i = 0; i < hfhs2.size(); ++i)
+    {
+        HalfFaceHandle hfh = hfhs2[i];
+        incident_cell_per_hf_[hfh.idx()] = id1;
+    }
 
-    // 4)
-    cell_deleted(_h);
+    // swap vector entries
+    std::swap(cells_[id1], cells_[id2]);
+    bool tmp = cell_deleted_[id1];
+    cell_deleted_[id1] = cell_deleted_[id2];
+    cell_deleted_[id2] = tmp;
+    swap_cell_properties(_h1, _h2);
+}
 
-    return (cells_begin() + _h.idx());
+void TopologyKernel::swap_faces(FaceHandle _h1, FaceHandle _h2)
+{
+    assert(_h1.idx() >= 0 && _h1.idx() < (int)faces_.size());
+    assert(_h2.idx() >= 0 && _h2.idx() < (int)faces_.size());
+
+    if (_h1 == _h2)
+        return;
+
+
+    std::vector<unsigned int> ids;
+    ids.push_back(_h1.idx());
+    ids.push_back(_h2.idx());
+
+    unsigned int id1 = _h1.idx();
+    unsigned int id2 = _h2.idx();
+
+    // correct pointers to those faces
+
+    // correct cells that contain a swapped faces
+    if (has_face_bottom_up_incidences())
+    {
+        for (unsigned int i = 0; i < 2; ++i) // For both swapped faces
+        {
+            unsigned int id = ids[i];
+            for (unsigned int j = 0; j < 2; ++j) // for both halffaces
+            {
+                HalfFaceHandle hfh = HalfFaceHandle(2*id+j);
+                CellHandle ch = incident_cell_per_hf_[hfh];
+                if (!ch.is_valid())
+                    continue;
+
+
+                std::set<unsigned int> processed_cells; // to ensure ids are only swapped once (in the case that the two swapped face belong to a common cell)
+
+                if (processed_cells.find(ch.idx()) == processed_cells.end())
+                {
+
+                    Cell& c = cells_[ch.idx()];
+
+                    // replace old halffaces with new halffaces where the ids are swapped
+
+                    std::vector<HalfFaceHandle> new_halffaces;
+                    for (unsigned int k = 0; k < c.halffaces().size(); ++k)
+                        if (c.halffaces()[k].idx()/2 == (int)id1) // if halfface belongs to swapped face
+                            new_halffaces.push_back(HalfFaceHandle(2 * id2 + (c.halffaces()[k].idx() % 2)));
+                        else if (c.halffaces()[k].idx()/2 == (int)id2) // if halfface belongs to swapped face
+                            new_halffaces.push_back(HalfFaceHandle(2 * id1 + (c.halffaces()[k].idx() % 2)));
+                        else
+                            new_halffaces.push_back(c.halffaces()[k]);
+                    c.set_halffaces(new_halffaces);
+
+                    processed_cells.insert(ch.idx());
+                }
+            }
+        }
+    }
+    else
+    {
+        // serach for all cells that contain a swapped face
+        for (unsigned int i = 0; i < cells_.size(); ++i)
+        {
+            Cell& c = cells_[i];
+
+            // check if c contains a swapped face
+            bool contains_swapped_face = false;
+            for (unsigned int k = 0; k < c.halffaces().size(); ++k)
+            {
+                if (c.halffaces()[k].idx()/2 == (int)id1)
+                    contains_swapped_face = true;
+                if (c.halffaces()[k].idx()/2 == (int)id2)
+                    contains_swapped_face = true;
+                if (contains_swapped_face)
+                    break;
+            }
+
+            if (contains_swapped_face)
+            {
+            // replace old halffaces with new halffaces where the ids are swapped
+                std::vector<HalfFaceHandle> new_halffaces;
+                for (unsigned int k = 0; k < c.halffaces().size(); ++k)
+                    if (c.halffaces()[k].idx()/2 == (int)id1) // if halfface belongs to swapped face
+                        new_halffaces.push_back(HalfFaceHandle(2 * id2 + (c.halffaces()[k].idx() % 2)));
+                    else if (c.halffaces()[k].idx()/2 == (int)id2) // if halfface belongs to swapped face
+                        new_halffaces.push_back(HalfFaceHandle(2 * id1 + (c.halffaces()[k].idx() % 2)));
+                    else
+                        new_halffaces.push_back(c.halffaces()[k]);
+                c.set_halffaces(new_halffaces);
+            }
+        }
+    }
+
+    // correct bottom up indices
+
+    if (has_edge_bottom_up_incidences())
+    {
+        for (unsigned int i = 0; i < 2; ++i) // For both swapped faces
+        {
+            unsigned int id = ids[i];
+            for (unsigned int j = 0; j < 2; ++j) // for both halffaces
+            {
+                HalfFaceHandle hfh = HalfFaceHandle(2*id+j);
+                Face hf = halfface(hfh);
+
+                for (unsigned int k = 0; k < hf.halfedges().size(); ++k)
+                {
+                    HalfEdgeHandle heh = hf.halfedges()[k];
+
+                    std::vector<HalfFaceHandle>& incident_halffaces = incident_hfs_per_he_[heh.idx()];
+                    for (unsigned int l = 0; l < incident_halffaces.size(); ++l)
+                    {
+                        HalfFaceHandle& hfh2 = incident_halffaces[l];
+
+                        if (hfh2.idx()/2 == (int)id1) // if halfface belongs to swapped face
+                            hfh2 = HalfFaceHandle(2 * id2 + (hfh2.idx() % 2));
+                        else if (hfh2.idx()/2 == (int)id2) // if halfface belongs to swapped face
+                            hfh2 = HalfFaceHandle(2 * id1 + (hfh2.idx() % 2));
+                    }
+                }
+            }
+        }
+    }
+
+    // swap vector entries
+    std::swap(faces_[ids[0]], faces_[ids[1]]);
+    bool tmp = face_deleted_[ids[0]];
+    face_deleted_[ids[0]] = face_deleted_[ids[1]];
+    face_deleted_[ids[1]] = tmp;
+    swap_face_properties(_h1, _h2);
+    swap_halfface_properties(halfface_handle(_h1, 0), halfface_handle(_h2, 0));
+    swap_halfface_properties(halfface_handle(_h1, 1), halfface_handle(_h2, 1));
+
+}
+
+void TopologyKernel::swap_edges(EdgeHandle _h1, EdgeHandle _h2)
+{
+    assert(_h1.idx() >= 0 && _h1.idx() < (int)edges_.size());
+    assert(_h2.idx() >= 0 && _h2.idx() < (int)edges_.size());
+
+    if (_h1 == _h2)
+        return;
+
+    std::vector<unsigned int> ids;
+    ids.push_back(_h1.idx());
+    ids.push_back(_h2.idx());
+
+
+    // correct pointers to those edges
+
+    if (has_edge_bottom_up_incidences())
+    {
+
+        for (unsigned int i = 0; i < 2; ++i) // For both swapped edges
+        {
+            HalfEdgeHandle heh = HalfEdgeHandle(2+ids[i]);
+
+            std::set<unsigned int> processed_faces; // to ensure ids are only swapped once (in the case that the two swapped edges belong to a common face)
+
+            std::vector<HalfFaceHandle>& incident_halffaces = incident_hfs_per_he_[heh.idx()];
+            for (unsigned int j = 0; j < incident_halffaces.size(); ++j) // for each incident halfface
+            {
+                HalfFaceHandle hfh = incident_halffaces[j];
+
+                unsigned int f_id = hfh.idx() / 2;
+
+                if (processed_faces.find(f_id) == processed_faces.end())
+                {
+
+                    Face& f = faces_[f_id];
+
+                    // replace old incident halfedges with new incident halfedges where the ids are swapped
+                    std::vector<HalfEdgeHandle> new_halfedges;
+                    for (unsigned int k = 0; k < f.halfedges().size(); ++k)
+                    {
+                        HalfEdgeHandle heh2 = f.halfedges()[k];
+                        if (heh2.idx() / 2 == (int)ids[0])
+                            new_halfedges.push_back(HalfEdgeHandle(2*ids[1] + (heh2.idx() % 2)));
+                        else if (heh2.idx() / 2 == (int)ids[1])
+                            new_halfedges.push_back(HalfEdgeHandle(2*ids[0] + (heh2.idx() % 2)));
+                        else
+                            new_halfedges.push_back(heh2);
+                    }
+                    f.set_halfedges(new_halfedges);
+
+                    processed_faces.insert(f_id);
+                }
+            }
+        }
+    }
+    else
+    {
+        // search for all faces that contain one of the swapped edges
+        for (unsigned int i = 0; i < faces_.size(); ++i)
+        {
+            Face& f = faces_[i];
+
+            // check if f contains a swapped edge
+            bool contains_swapped_edge = false;
+            for (unsigned int k = 0; k < f.halfedges().size(); ++k)
+            {
+                if (f.halfedges()[k].idx()/2 == (int)ids[0])
+                    contains_swapped_edge = true;
+                if (f.halfedges()[k].idx()/2 == (int)ids[1])
+                    contains_swapped_edge = true;
+                if (contains_swapped_edge)
+                    break;
+            }
+
+            if (contains_swapped_edge)
+            {
+                // replace old incident halfedges with new incident halfedges where the ids are swapped
+                std::vector<HalfEdgeHandle> new_halfedges;
+                for (unsigned int k = 0; k < f.halfedges().size(); ++k)
+                {
+                    HalfEdgeHandle heh2 = f.halfedges()[k];
+                    if (heh2.idx() / 2 == (int)ids[0])
+                        new_halfedges.push_back(HalfEdgeHandle(2*ids[1] + (heh2.idx() % 2)));
+                    else if (heh2.idx() / 2 == (int)ids[1])
+                        new_halfedges.push_back(HalfEdgeHandle(2*ids[0] + (heh2.idx() % 2)));
+                    else
+                        new_halfedges.push_back(heh2);
+                }
+                f.set_halfedges(new_halfedges);
+            }
+        }
+    }
+
+    // correct bottom up incidences
+
+    if (has_vertex_bottom_up_incidences())
+    {
+
+        for (unsigned int i = 0; i < 2; ++i) // For both swapped edges
+        {
+            Edge e = edge(EdgeHandle(ids[i]));
+            std::vector<VertexHandle> vhs;
+            vhs.push_back(e.from_vertex());
+            vhs.push_back(e.to_vertex());
+
+            for (unsigned int j = 0; j < 2; ++j) // for both incident vertices
+            {
+                std::vector<HalfEdgeHandle>& outgoing_hes = outgoing_hes_per_vertex_[vhs[j].idx()];
+                for (unsigned int k = 0; k < outgoing_hes.size(); ++k)
+                {
+                    HalfEdgeHandle& heh = outgoing_hes[k];
+                    if (heh.idx() / 2 == (int)ids[0])
+                        heh = HalfEdgeHandle(2 * ids[1] + (heh.idx() % 2));
+                    else if (heh.idx() / 2 == (int)ids[1])
+                        heh = HalfEdgeHandle(2 * ids[0] + (heh.idx() % 2));
+                }
+            }
+
+        }
+    }
+
+    // swap vector entries
+    std::swap(edges_[ids[0]], edges_[ids[1]]);
+    bool tmp = edge_deleted_[ids[0]];
+    edge_deleted_[ids[0]] = edge_deleted_[ids[1]];
+    edge_deleted_[ids[1]] = tmp;
+    swap_edge_properties(_h1, _h2);
+    swap_halfedge_properties(halfedge_handle(_h1, 0), halfedge_handle(_h2, 0));
+    swap_halfedge_properties(halfedge_handle(_h1, 1), halfedge_handle(_h2, 1));
+
+}
+
+void TopologyKernel::swap_vertices(VertexHandle _h1, VertexHandle _h2)
+{
+    assert(_h1.idx() >= 0 && _h1.idx() < (int)n_vertices_);
+    assert(_h2.idx() >= 0 && _h2.idx() < (int)n_vertices_);
+
+    if (_h1 == _h2)
+        return;
+
+    std::vector<unsigned int> ids;
+    ids.push_back(_h1.idx());
+    ids.push_back(_h2.idx());
+
+
+    // correct pointers to those vertices
+
+    if (has_vertex_bottom_up_incidences())
+    {
+        for (unsigned int i = 0; i < 2; ++i) // For both swapped vertices
+        {
+            std::set<unsigned int> processed_edges; // to ensure ids are only swapped once (in the case that the two swapped vertices are connected by an edge)
+            std::vector<HalfEdgeHandle>& outgoing_hes = outgoing_hes_per_vertex_[ids[i]];
+            for (unsigned int k = 0; k < outgoing_hes.size(); ++k) // for each outgoing halfedge
+            {
+                unsigned int e_id = outgoing_hes[k].idx() / 2;
+
+                if (processed_edges.find(e_id) == processed_edges.end())
+                {
+                    Edge& e = edges_[e_id];
+                    if (e.from_vertex() == (int)ids[0])
+                        e.set_from_vertex(VertexHandle(ids[1]));
+                    else if (e.from_vertex() == (int)ids[1])
+                        e.set_from_vertex(VertexHandle(ids[0]));
+
+                    if (e.to_vertex() == (int)ids[0])
+                        e.set_to_vertex(VertexHandle(ids[1]));
+                    else if (e.to_vertex() == (int)ids[1])
+                        e.set_to_vertex(VertexHandle(ids[0]));
+
+                    processed_edges.insert(e_id);
+                }
+            }
+        }
+
+    }
+    else
+    {
+        // search for all edges containing a swapped vertex
+
+        for (unsigned int i = 0; i < edges_.size(); ++i)
+        {
+            Edge& e = edges_[i];
+            if (e.from_vertex() == (int)ids[0])
+                e.set_from_vertex(VertexHandle(ids[1]));
+            else if (e.from_vertex() == (int)ids[1])
+                e.set_from_vertex(VertexHandle(ids[0]));
+
+            if (e.to_vertex() == (int)ids[0])
+                e.set_to_vertex(VertexHandle(ids[1]));
+            else if (e.to_vertex() == (int)ids[1])
+                e.set_to_vertex(VertexHandle(ids[0]));
+        }
+    }
+
+    // swap vector entries
+    bool tmp = vertex_deleted_[ids[0]];
+    vertex_deleted_[ids[0]] = vertex_deleted_[ids[1]];
+    vertex_deleted_[ids[1]] = tmp;
+    swap_vertex_properties(_h1, _h2);
 }
 
 //========================================================================================
@@ -1696,6 +2249,8 @@ void TopologyKernel::compute_vertex_bottom_up_incidences() {
     // Store outgoing halfedges per vertex
     size_t n_edges = edges_.size();
     for(size_t i = 0; i < n_edges; ++i) {
+        if (edge_deleted_[i])
+            continue;
 
         VertexHandle from = edges_[i].from_vertex();
         // If this condition is not fulfilled, it is out of caller's control and
@@ -1723,6 +2278,8 @@ void TopologyKernel::compute_edge_bottom_up_incidences() {
     // Store incident halffaces per halfedge
     size_t n_faces = faces_.size();
     for(size_t i = 0; i < n_faces; ++i) {
+        if (face_deleted_[i])
+            continue;
 
         std::vector<HalfEdgeHandle> halfedges = faces_[i].halfedges();
 
@@ -1747,6 +2304,8 @@ void TopologyKernel::compute_face_bottom_up_incidences() {
 
     size_t n_cells = cells_.size();
     for(size_t i = 0; i < n_cells; ++i) {
+        if (cell_deleted_[i])
+            continue;
 
         std::vector<HalfFaceHandle> halffaces = cells_[i].halffaces();
 

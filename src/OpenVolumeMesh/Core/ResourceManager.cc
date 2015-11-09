@@ -106,6 +106,36 @@ void ResourceManager::cell_deleted(const CellHandle& _h) {
     entity_deleted(cell_props_, _h);
 }
 
+void ResourceManager::swap_cell_properties(CellHandle _h1, CellHandle _h2){
+
+    swap_property_elements(cell_props_begin(), cell_props_end(), _h1, _h2);
+}
+
+void ResourceManager::swap_face_properties(FaceHandle _h1, FaceHandle _h2){
+
+    swap_property_elements(face_props_begin(), face_props_end(), _h1, _h2);
+}
+
+void ResourceManager::swap_halfface_properties(HalfFaceHandle _h1, HalfFaceHandle _h2){
+
+    swap_property_elements(halfface_props_begin(), halfface_props_end(), _h1, _h2);
+}
+
+void ResourceManager::swap_edge_properties(EdgeHandle _h1, EdgeHandle _h2){
+
+    swap_property_elements(edge_props_begin(), edge_props_end(), _h1, _h2);
+}
+
+void ResourceManager::swap_halfedge_properties(HalfEdgeHandle _h1, HalfEdgeHandle _h2){
+
+    swap_property_elements(halfedge_props_begin(), halfedge_props_end(), _h1, _h2);
+}
+
+void ResourceManager::swap_vertex_properties(VertexHandle _h1, VertexHandle _h2){
+
+    swap_property_elements(vertex_props_begin(), vertex_props_end(), _h1, _h2);
+}
+
 void ResourceManager::release_property(VertexPropHandle _handle) {
 
     remove_property(vertex_props_, _handle.idx());

@@ -102,6 +102,27 @@ protected:
 
     void cell_deleted(const CellHandle& _h);
 
+    void swap_cell_properties(CellHandle _h1, CellHandle _h2);
+
+    void swap_face_properties(FaceHandle _h1, FaceHandle _h2);
+
+    void swap_halfface_properties(HalfFaceHandle _h1, HalfFaceHandle _h2);
+
+    void swap_edge_properties(EdgeHandle _h1, EdgeHandle _h2);
+
+    void swap_halfedge_properties(HalfEdgeHandle _h1, HalfEdgeHandle _h2);
+
+    void swap_vertex_properties(VertexHandle _h1, VertexHandle _h2);
+
+    template <typename PropIterator, typename Handle>
+    void swap_property_elements(PropIterator _begin, PropIterator _end, Handle _h1, Handle _h2)
+    {
+        PropIterator p_iter =  _begin;
+        for (; p_iter != _end; ++p_iter)
+            (*p_iter)->swap_elements(_h1, _h2);
+    }
+
+
 public:
 
     void clear_vertex_props() { clearVec(vertex_props_); }

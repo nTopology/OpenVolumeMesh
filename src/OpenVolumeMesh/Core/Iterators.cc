@@ -240,6 +240,10 @@ BaseIter(_mesh, _ref_h, _max_laps) {
     std::sort(cells_.begin(), cells_.end());
     cells_.resize(std::unique(cells_.begin(), cells_.end()) - cells_.begin());
 
+    // Remove invalid handles
+    if ((cells_.size() > 0) && !cells_.front().is_valid())
+        cells_.erase(cells_.begin());
+
     cur_index_ = 0;
     BaseIter::valid(cells_.size()>0);
     if(BaseIter::valid()) {
@@ -386,8 +390,9 @@ CellVertexIter::CellVertexIter(const CellHandle& _ref_h,
         const TopologyKernel* _mesh, int _max_laps) :
 BaseIter(_mesh, _ref_h, _max_laps) {
 
-    std::vector<HalfFaceHandle>::const_iterator hf_iter = BaseIter::mesh()->cell(_ref_h).halffaces().begin();
-    for(; hf_iter != BaseIter::mesh()->cell(_ref_h).halffaces().end(); ++hf_iter) {
+    OpenVolumeMeshCell c = BaseIter::mesh()->cell(_ref_h);
+    std::vector<HalfFaceHandle>::const_iterator hf_iter = c.halffaces().begin();
+    for(; hf_iter != c.halffaces().end(); ++hf_iter) {
         const OpenVolumeMeshFace& halfface = BaseIter::mesh()->halfface(*hf_iter);
         const std::vector<HalfEdgeHandle>& hes = halfface.halfedges();
         for(std::vector<HalfEdgeHandle>::const_iterator he_iter = hes.begin(); he_iter != hes.end(); ++he_iter) {
@@ -661,7 +666,8 @@ bf_it_(_mesh->faces_begin()) {
     }
 
 	while(bf_it_ != BaseIter::mesh()->faces_end() &&
-	        !BaseIter::mesh()->is_boundary(*bf_it_)) {
+            !BaseIter::mesh()->is_boundary(*bf_it_) &&
+            BaseIter::mesh()->is_deleted(bf_it_.cur_handle())){
 	    ++bf_it_;
 	}
 	BaseIter::valid(bf_it_ != BaseIter::mesh()->faces_end());
@@ -675,7 +681,8 @@ BoundaryFaceIter& BoundaryFaceIter::operator--() {
 
     --bf_it_;
     while(bf_it_ >= BaseIter::mesh()->faces_begin() &&
-            !BaseIter::mesh()->is_boundary(*bf_it_)) {
+            !BaseIter::mesh()->is_boundary(*bf_it_) &&
+            BaseIter::mesh()->is_deleted(bf_it_.cur_handle())){
         --bf_it_;
     }
 	if(bf_it_ >= BaseIter::mesh()->faces_begin()) {
@@ -691,7 +698,8 @@ BoundaryFaceIter& BoundaryFaceIter::operator++() {
 
 	++bf_it_;
 	while(bf_it_ != BaseIter::mesh()->faces_end() &&
-            !BaseIter::mesh()->is_boundary(*bf_it_)) {
+            !BaseIter::mesh()->is_boundary(*bf_it_) &&
+            BaseIter::mesh()->is_deleted(bf_it_.cur_handle())){
         ++bf_it_;
     }
 	if(bf_it_ != BaseIter::mesh()->faces_end()) {
@@ -711,18 +719,20 @@ VertexIter::VertexIter(const TopologyKernel* _mesh, const VertexHandle& _vh) :
 BaseIter(_mesh, _vh),
 cur_index_(_vh.idx()) {
 
-	if((unsigned int)cur_index_ >= BaseIter::mesh()->n_vertices()) {
-		BaseIter::valid(false);
-	}
-	if(BaseIter::valid()) {
-		BaseIter::cur_handle(VertexHandle(cur_index_));
-	}
+    while ((unsigned int)cur_index_ < BaseIter::mesh()->n_vertices() && BaseIter::mesh()->is_deleted(VertexHandle(cur_index_)))
+        ++cur_index_;
+    if((unsigned int)cur_index_ >= BaseIter::mesh()->n_vertices()) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(VertexHandle(cur_index_));
 }
 
 
 VertexIter& VertexIter::operator--() {
 
     --cur_index_;
+    while (cur_index_ >= 0 && BaseIter::mesh()->is_deleted(VertexHandle(cur_index_)))
+        --cur_index_;
     if(cur_index_ < 0) {
         BaseIter::valid(false);
     }
@@ -734,6 +744,8 @@ VertexIter& VertexIter::operator--() {
 VertexIter& VertexIter::operator++() {
 
 	++cur_index_;
+    while ((unsigned int)cur_index_ < BaseIter::mesh()->n_vertices() && BaseIter::mesh()->is_deleted(VertexHandle(cur_index_)))
+        ++cur_index_;
     if((unsigned int)cur_index_ >= BaseIter::mesh()->n_vertices()) {
         BaseIter::valid(false);
     }
@@ -750,34 +762,38 @@ EdgeIter::EdgeIter(const TopologyKernel* _mesh, const EdgeHandle& _eh) :
 BaseIter(_mesh, _eh),
 cur_index_(_eh.idx()) {
 
-	if((unsigned int)cur_index_ >= BaseIter::mesh()->edges_.size()) {
-		BaseIter::valid(false);
-	}
-	if(BaseIter::valid()) {
-		BaseIter::cur_handle(EdgeHandle(cur_index_));
-	}
+    while ((unsigned int)cur_index_ < BaseIter::mesh()->edges_.size() && BaseIter::mesh()->is_deleted(EdgeHandle(cur_index_)))
+        ++cur_index_;
+    if((unsigned int)cur_index_ >= BaseIter::mesh()->edges_.size()) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(EdgeHandle(cur_index_));
 }
 
 
 EdgeIter& EdgeIter::operator--() {
 
-	--cur_index_;
-	if(cur_index_ < 0) {
-		BaseIter::valid(false);
-	}
-	BaseIter::cur_handle(EdgeHandle(cur_index_));
-	return *this;
+    --cur_index_;
+    while (cur_index_ >= 0 && BaseIter::mesh()->is_deleted(EdgeHandle(cur_index_)))
+        --cur_index_;
+    if(cur_index_ < 0) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(EdgeHandle(cur_index_));
+    return *this;
 }
 
 
 EdgeIter& EdgeIter::operator++() {
 
-	++cur_index_;
-	if((unsigned int)cur_index_ >= BaseIter::mesh()->edges_.size()) {
-		BaseIter::valid(false);
-	}
-	BaseIter::cur_handle(EdgeHandle(cur_index_));
-	return *this;
+    ++cur_index_;
+    while ((unsigned int)cur_index_ < BaseIter::mesh()->edges_.size() && BaseIter::mesh()->is_deleted(EdgeHandle(cur_index_)))
+        ++cur_index_;
+    if((unsigned int)cur_index_ >= BaseIter::mesh()->edges_.size()) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(EdgeHandle(cur_index_));
+    return *this;
 }
 
 ////================================================================================================
@@ -789,34 +805,38 @@ HalfEdgeIter::HalfEdgeIter(const TopologyKernel* _mesh, const HalfEdgeHandle& _h
 BaseIter(_mesh, _heh),
 cur_index_(_heh.idx()) {
 
-	if((unsigned int)cur_index_ >= BaseIter::mesh()->edges_.size() * 2) {
-		BaseIter::valid(false);
-	}
-	if(BaseIter::valid()) {
-		BaseIter::cur_handle(HalfEdgeHandle(cur_index_));
-	}
+    while ((unsigned int)cur_index_ < BaseIter::mesh()->edges_.size() * 2 && BaseIter::mesh()->is_deleted(HalfEdgeHandle(cur_index_)))
+        ++cur_index_;
+    if((unsigned int)cur_index_ >= BaseIter::mesh()->edges_.size() * 2) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(HalfEdgeHandle(cur_index_));
 }
 
 
 HalfEdgeIter& HalfEdgeIter::operator--() {
 
-	--cur_index_;
-	if(cur_index_ < 0) {
-		BaseIter::valid(false);
-	}
-	BaseIter::cur_handle(HalfEdgeHandle(cur_index_));
-	return *this;
+    --cur_index_;
+    while (cur_index_ >= 0 && BaseIter::mesh()->is_deleted(HalfEdgeHandle(cur_index_)))
+        --cur_index_;
+    if(cur_index_ < 0) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(HalfEdgeHandle(cur_index_));
+    return *this;
 }
 
 
 HalfEdgeIter& HalfEdgeIter::operator++() {
 
-	++cur_index_;
-	if((unsigned int)cur_index_ >= BaseIter::mesh()->edges_.size() * 2) {
-		BaseIter::valid(false);
-	}
-	BaseIter::cur_handle(HalfEdgeHandle(cur_index_));
-	return *this;
+    ++cur_index_;
+    while ((unsigned int)cur_index_ < BaseIter::mesh()->edges_.size() * 2 && BaseIter::mesh()->is_deleted(HalfEdgeHandle(cur_index_)))
+        ++cur_index_;
+    if((unsigned int)cur_index_ >= BaseIter::mesh()->edges_.size() * 2) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(HalfEdgeHandle(cur_index_));
+    return *this;
 }
 
 ////================================================================================================
@@ -828,34 +848,38 @@ FaceIter::FaceIter(const TopologyKernel* _mesh, const FaceHandle& _fh) :
 BaseIter(_mesh, _fh),
 cur_index_(_fh.idx()) {
 
-	if((unsigned int)cur_index_ >= BaseIter::mesh()->faces_.size()) {
-		BaseIter::valid(false);
-	}
-	if(BaseIter::valid()) {
-		BaseIter::cur_handle(FaceHandle(cur_index_));
-	}
+    while ((unsigned int)cur_index_ < BaseIter::mesh()->faces_.size() && BaseIter::mesh()->is_deleted(FaceHandle(cur_index_)))
+        ++cur_index_;
+    if((unsigned int)cur_index_ >= BaseIter::mesh()->faces_.size()) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(FaceHandle(cur_index_));
 }
 
 
 FaceIter& FaceIter::operator--() {
 
-	--cur_index_;
-	if(cur_index_ < 0) {
-		BaseIter::valid(false);
-	}
-	BaseIter::cur_handle(FaceHandle(cur_index_));
-	return *this;
+    --cur_index_;
+    while (cur_index_ >= 0 && BaseIter::mesh()->is_deleted(FaceHandle(cur_index_)))
+        --cur_index_;
+    if(cur_index_ < 0) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(FaceHandle(cur_index_));
+    return *this;
 }
 
 
 FaceIter& FaceIter::operator++() {
 
-	++cur_index_;
-	if((unsigned int)cur_index_ >= BaseIter::mesh()->faces_.size()) {
-		BaseIter::valid(false);
-	}
-	BaseIter::cur_handle(FaceHandle(cur_index_));
-	return *this;
+    ++cur_index_;
+    while ((unsigned int)cur_index_ < BaseIter::mesh()->faces_.size() && BaseIter::mesh()->is_deleted(FaceHandle(cur_index_)))
+        ++cur_index_;
+    if((unsigned int)cur_index_ >= BaseIter::mesh()->faces_.size()) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(FaceHandle(cur_index_));
+    return *this;
 }
 
 ////================================================================================================
@@ -867,34 +891,38 @@ HalfFaceIter::HalfFaceIter(const TopologyKernel* _mesh, const HalfFaceHandle& _h
 BaseIter(_mesh, _hfh),
 cur_index_(_hfh.idx()) {
 
-	if((unsigned int)cur_index_ >= BaseIter::mesh()->faces_.size() * 2) {
-		BaseIter::valid(false);
-	}
-	if(BaseIter::valid()) {
-		BaseIter::cur_handle(HalfFaceHandle(cur_index_));
-	}
+    while ((unsigned int)cur_index_ < BaseIter::mesh()->faces_.size() * 2 && BaseIter::mesh()->is_deleted(HalfFaceHandle(cur_index_)))
+        ++cur_index_;
+    if((unsigned int)cur_index_ >= BaseIter::mesh()->faces_.size() * 2) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(HalfFaceHandle(cur_index_));
 }
 
 
 HalfFaceIter& HalfFaceIter::operator--() {
 
-	--cur_index_;
-	if(cur_index_ < 0) {
-		BaseIter::valid(false);
-	}
-	BaseIter::cur_handle(HalfFaceHandle(cur_index_));
-	return *this;
+    --cur_index_;
+    while (cur_index_ >= 0 && BaseIter::mesh()->is_deleted(HalfFaceHandle(cur_index_)))
+        --cur_index_;
+    if(cur_index_ < 0) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(HalfFaceHandle(cur_index_));
+    return *this;
 }
 
 
 HalfFaceIter& HalfFaceIter::operator++() {
 
-	++cur_index_;
-	if((unsigned int)cur_index_ >= BaseIter::mesh()->faces_.size() * 2) {
-		BaseIter::valid(false);
-	}
-	BaseIter::cur_handle(HalfFaceHandle(cur_index_));
-	return *this;
+    ++cur_index_;
+    while ((unsigned int)cur_index_ < BaseIter::mesh()->faces_.size() * 2 && BaseIter::mesh()->is_deleted(HalfFaceHandle(cur_index_)))
+        ++cur_index_;
+    if((unsigned int)cur_index_ >= BaseIter::mesh()->faces_.size() * 2) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(HalfFaceHandle(cur_index_));
+    return *this;
 }
 
 ////================================================================================================
@@ -906,34 +934,38 @@ CellIter::CellIter(const TopologyKernel* _mesh, const CellHandle& _ch) :
 BaseIter(_mesh, _ch),
 cur_index_(_ch.idx()) {
 
-	if((unsigned int)cur_index_ >= BaseIter::mesh()->cells_.size()) {
-		BaseIter::valid(false);
-	}
-	if(BaseIter::valid()) {
-		BaseIter::cur_handle(CellHandle(cur_index_));
-	}
+    while ((unsigned int)cur_index_ < BaseIter::mesh()->cells_.size() && BaseIter::mesh()->is_deleted(CellHandle(cur_index_)))
+        ++cur_index_;
+    if((unsigned int)cur_index_ >= BaseIter::mesh()->cells_.size()) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(CellHandle(cur_index_));
 }
 
 
 CellIter& CellIter::operator--() {
 
-	--cur_index_;
-	if(cur_index_ < 0) {
-		BaseIter::valid(false);
-	}
-	BaseIter::cur_handle(CellHandle(cur_index_));
-	return *this;
+    --cur_index_;
+    while (cur_index_ >= 0 && BaseIter::mesh()->is_deleted(CellHandle(cur_index_)))
+        --cur_index_;
+    if(cur_index_ < 0) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(CellHandle(cur_index_));
+    return *this;
 }
 
 
 CellIter& CellIter::operator++() {
 
-	++cur_index_;
-	if((unsigned int)cur_index_ >= BaseIter::mesh()->cells_.size()) {
-		BaseIter::valid(false);
-	}
-	BaseIter::cur_handle(CellHandle(cur_index_));
-	return *this;
+    ++cur_index_;
+    while ((unsigned int)cur_index_ < BaseIter::mesh()->cells_.size() && BaseIter::mesh()->is_deleted(CellHandle(cur_index_)))
+        ++cur_index_;
+    if((unsigned int)cur_index_ >= BaseIter::mesh()->cells_.size()) {
+        BaseIter::valid(false);
+    }
+    BaseIter::cur_handle(CellHandle(cur_index_));
+    return *this;
 }
 
 } // Namespace OpenVolumeMesh

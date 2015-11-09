@@ -468,6 +468,16 @@ public:
 
     virtual CellIter delete_cell(const CellHandle& _h);
 
+    virtual void collect_garbage();
+
+
+    virtual bool is_deleted(const VertexHandle& _h)   const { return vertex_deleted_[_h.idx()]; }
+    virtual bool is_deleted(const EdgeHandle& _h)     const { return edge_deleted_[_h.idx()];   }
+    virtual bool is_deleted(const HalfEdgeHandle& _h) const { return edge_deleted_[_h.idx()/2]; }
+    virtual bool is_deleted(const FaceHandle& _h)     const { return face_deleted_[_h.idx()];   }
+    virtual bool is_deleted(const HalfFaceHandle& _h) const { return face_deleted_[_h.idx()/2]; }
+    virtual bool is_deleted(const CellHandle& _h)     const { return cell_deleted_[_h.idx()];   }
+
 private:
 
     template <class ContainerT>
@@ -488,6 +498,14 @@ private:
     CellIter delete_cell_core(const CellHandle& _h);
 
 protected:
+
+    virtual void swap_cells(CellHandle _h1, CellHandle _h2);
+
+    virtual void swap_faces(FaceHandle _h1, FaceHandle _h2);
+
+    virtual void swap_edges(EdgeHandle _h1, EdgeHandle _h2);
+
+    virtual void swap_vertices(VertexHandle _h1, VertexHandle _h2);
 
     virtual void delete_multiple_vertices(const std::vector<bool>& _tag);
 
@@ -570,6 +588,10 @@ public:
         edges_.clear();
         faces_.clear();
         cells_.clear();
+        vertex_deleted_.clear();
+        edge_deleted_.clear();
+        face_deleted_.clear();
+        cell_deleted_.clear();
         outgoing_hes_per_vertex_.clear();
         incident_hfs_per_he_.clear();
         incident_cell_per_hf_.clear();
@@ -694,7 +716,16 @@ public:
 
     bool has_face_bottom_up_incidences() const { return f_bottom_up_; }
 
-private:
+
+    void enable_deferred_deletion(bool _enable = true) { deferred_deletion = _enable; }
+    bool deferred_deletion_enabled() const { return deferred_deletion; }
+
+
+    void enable_fast_deletion(bool _enable = true) { fast_deletion = _enable; }
+    bool fast_deletion_enabled() const { return fast_deletion; }
+
+
+protected:
 
     void compute_vertex_bottom_up_incidences();
 
@@ -713,11 +744,16 @@ private:
     // Incident cell (at most one) per halfface
     std::vector<CellHandle> incident_cell_per_hf_;
 
+private:
     bool v_bottom_up_;
 
     bool e_bottom_up_;
 
     bool f_bottom_up_;
+
+    bool deferred_deletion;
+
+    bool fast_deletion;
 
     //=====================================================================
     // Connectivity
@@ -894,6 +930,12 @@ protected:
 
     // List of cells
     std::vector<Cell> cells_;
+
+    std::vector<bool> vertex_deleted_;
+    std::vector<bool> edge_deleted_;
+    std::vector<bool> face_deleted_;
+    std::vector<bool> cell_deleted_;
+
 };
 
 }

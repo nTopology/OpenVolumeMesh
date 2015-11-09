@@ -83,6 +83,8 @@ public:
 
     virtual void delete_element(size_t _idx);
 
+    virtual void swap_elements(size_t _idx0, size_t _idx1);
+
     const_iterator begin() const { return ptr::shared_ptr<PropT>::get()->begin(); }
     iterator begin() { return ptr::shared_ptr<PropT>::get()->begin(); }
 

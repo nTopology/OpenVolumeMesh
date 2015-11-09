@@ -95,9 +95,39 @@ public:
 
         VertexIter nV = TopologyKernelT::delete_vertex(_h);
 
-        vertices_.erase(vertices_.begin() + _h.idx());
+        if (TopologyKernelT::deferred_deletion_enabled())
+        {
+
+        }
+        else
+            vertices_.erase(vertices_.begin() + _h.idx());
 
         return nV;
+    }
+
+    virtual void collect_garbage()
+    {
+        TopologyKernelT::collect_garbage();
+
+        for (unsigned int i = vertices_.size(); i > 0; --i)
+            if (TopologyKernelT::is_deleted(VertexHandle(i-1)))
+            {
+                vertices_.erase(vertices_.begin() + (i-1));
+            }
+
+    }
+
+    virtual void swap_vertices(VertexHandle _h1, VertexHandle _h2)
+    {
+        assert(_h1.idx() >= 0 && _h1.idx() < (int)vertices_.size());
+        assert(_h2.idx() >= 0 && _h2.idx() < (int)vertices_.size());
+
+        if (_h1 == _h2)
+            return;
+
+        std::swap(vertices_[_h1.idx()], vertices_[_h2.idx()]);
+
+        TopologyKernelT::swap_vertices(_h1, _h2);
     }
 
 protected:

@@ -100,7 +100,7 @@ public:
 		data_.reserve(_n);
 	}
 	virtual void resize(size_t _n) {
-		data_.resize(_n, def_);
+                data_.resize(_n, def_);
 	}
 	virtual void clear() {
 		data_.clear();
@@ -113,9 +113,9 @@ public:
 		std::swap(data_[_i0], data_[_i1]);
 	}
 
-	void delete_element(size_t _idx) {
-	    data_.erase(data_.begin() + _idx);
-	}
+        void delete_element(size_t _idx) {
+                data_.erase(data_.begin() + _idx);
+        }
 
 public:
 
