@@ -181,6 +181,50 @@ bool FileManager::isHexahedralMesh(const std::string& _filename) const {
   return true;
 }
 
+bool FileManager::isTetrahedralMesh(const std::string& _filename) const {
+
+  std::ifstream iff(_filename.c_str(), std::ios::in);
+
+  if(!iff.good()) {
+    std::cerr << "Could not open file " << _filename << " for reading!" << std::endl;
+    iff.close();
+    return false;
+  }
+
+  std::string s;
+  unsigned int n = 0u;
+
+  // Skip until we find polyhedra section
+  while (true || !iff.eof()) {
+    iff >> s;
+    if (s == "Polyhedra") {
+      break;
+    }
+  }
+
+  if (iff.eof()) {
+    // Polyhedra section not found in file. Defaulting to polyhedral type.
+    iff.close();
+    return false;
+  }
+
+  // Read in number of cells
+  iff >> n;
+  if(n == 0) return false;
+  unsigned int v = 0;
+  char tmp[256];
+  for (unsigned int i = 0; i < n; ++i) {
+    iff >> v;
+    iff.getline(tmp, 256);
+    if (v != 4u) {
+      iff.close();
+      return false;
+    }
+  }
+  iff.close();
+  return true;
+}
+
 //==================================================
 
 } // Namespace IO

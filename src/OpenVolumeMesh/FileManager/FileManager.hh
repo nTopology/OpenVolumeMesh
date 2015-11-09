@@ -105,6 +105,13 @@ public:
    */
   bool isHexahedralMesh(const std::string& _filename) const;
 
+  /**
+   * \brief Test whether given file contains a tetrahedral mesh
+   */
+  bool isTetrahedralMesh(const std::string& _filename) const;
+
+
+
 private:
 
   // Read property
