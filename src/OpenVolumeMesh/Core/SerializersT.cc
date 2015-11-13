@@ -45,28 +45,91 @@
 #include "Serializers.hh"
 
 
+
 namespace OpenVolumeMesh
 {
 
 
+template<typename T>
+T& decllval();
+
+template <bool B> class bool_type;
+template <>       class bool_type<true>  { char c[1]; };
+template <>       class bool_type<false> { char c[2]; };
+
+typedef bool_type<true>  true_type;
+typedef bool_type<false> false_type;
+
+template <typename Stream, typename T>
+class has_input_operator
+{
+private:
+  template<class U> static true_type  test(char(*)[sizeof(decllval<Stream>() >> decllval<U>())]);
+  template<class U> static false_type test(...);
+
+public:
+  enum { bool_value = sizeof(true_type) == sizeof(test<T>(0)) };
+  typedef bool_type<bool_value> type;
+  static type value;
+};
+
+template <typename Stream, typename T>
+class has_output_operator
+{
+private:
+  template<class U> static true_type  test(char(*)[sizeof(decllval<Stream>() << decllval<U>())]);
+  template<class U> static false_type test(...);
+
+public:
+  enum { bool_value = sizeof(true_type) == sizeof(test<T>(0)) };
+  typedef bool_type<bool_value> type;
+  static type value;
+};
+
+
+template <typename ValueT>
+std::ostream& serialize_helper(std::ostream& _ostr, ValueT& _rhs, true_type)
+{
+  _ostr << _rhs;
+  return _ostr;
+}
+
+template <typename ValueT>
+std::ostream& serialize_helper(std::ostream& _ostr, ValueT& _rhs, false_type)
+{
+  std::cout << "Warning: trying to serialize a type that does not have a serialize function" << std::endl;
+  return _ostr;
+}
+
 template <typename ValueT>
 std::ostream& serialize(std::ostream& _ostr, const ValueT& _rhs)
 {
-    _ostr << _rhs;
-    return _ostr;
+    return serialize_helper(_ostr, _rhs, has_output_operator<std::ostream, ValueT>::value);
 }
 
+
+template <typename ValueT>
+std::istream& deserialize_helper(std::istream& _istr, ValueT& _rhs, true_type)
+{
+  _istr >> _rhs;
+  return _istr;
+}
+
+template <typename ValueT>
+std::istream& deserialize_helper(std::istream& _istr, ValueT& _rhs, false_type)
+{
+  std::cout << "Warning: trying to deserialize a type that does not have a deserialize function" << std::endl;
+  return _istr;
+}
 
 template <typename ValueT>
 std::istream& deserialize(std::istream& _istr, ValueT& _rhs)
 {
-    _istr >> _rhs;
-    return _istr;
+  return deserialize_helper(_istr, _rhs, has_input_operator<std::istream, ValueT>::value);
 }
 
-
 template <typename KeyT, typename ValueT>
-std::ostream& operator<<(std::ostream& os, const std::map< KeyT, ValueT >& rhs)
+std::ostream& serialize(std::ostream& os, const std::map< KeyT, ValueT >& rhs)
 {
     os << rhs.size() << std::endl;
     for (typename std::map< KeyT, ValueT >::const_iterator it = rhs.begin();
@@ -81,7 +144,7 @@ std::ostream& operator<<(std::ostream& os, const std::map< KeyT, ValueT >& rhs)
 }
 
 template <typename KeyT, typename ValueT>
-std::istream& operator>>(std::istream& is, std::map< KeyT, ValueT >& rhs)
+std::istream& deserialize(std::istream& is, std::map< KeyT, ValueT >& rhs)
 {
 
     size_t size;
@@ -100,7 +163,7 @@ std::istream& operator>>(std::istream& is, std::map< KeyT, ValueT >& rhs)
 }
 
 template <typename ValueT>
-std::ostream& operator<<(std::ostream& _ostr, const std::vector< ValueT >& _rhs)
+std::ostream& serialize(std::ostream& _ostr, const std::vector< ValueT >& _rhs)
 {
     _ostr << _rhs.size() << std::endl;
     for (size_t i = 0; i < _rhs.size(); ++i)
@@ -109,7 +172,7 @@ std::ostream& operator<<(std::ostream& _ostr, const std::vector< ValueT >& _rhs)
 }
 
 template <typename ValueT>
-std::istream& operator>>(std::istream& _istr, std::vector< ValueT >& _rhs)
+std::istream& deserialize(std::istream& _istr, std::vector< ValueT >& _rhs)
 {
     size_t size;
     _istr >> size;
