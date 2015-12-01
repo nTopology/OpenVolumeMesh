@@ -47,7 +47,6 @@
 #include <queue>
 
 #include "TopologyKernel.hh"
-#include "../System/FunctionalInclude.hh"
 
 namespace OpenVolumeMesh {
 

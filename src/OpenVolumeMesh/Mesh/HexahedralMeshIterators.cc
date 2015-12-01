@@ -44,7 +44,6 @@
 
 #include "HexahedralMeshIterators.hh"
 #include "HexahedralMeshTopologyKernel.hh"
-#include "../Core/Iterators.hh"
 
 namespace OpenVolumeMesh {
 

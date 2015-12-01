@@ -48,7 +48,6 @@
 
 #include "Iterators.hh"
 #include "TopologyKernel.hh"
-#include "OpenVolumeMeshHandle.hh"
 
 namespace OpenVolumeMesh {
 
