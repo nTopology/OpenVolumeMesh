@@ -1,5 +1,3 @@
-#ifndef UNITTESTS_BASICS_HH_
-#define UNITTESTS_BASICS_HH_
 
 #include <iostream>
 
@@ -162,4 +160,3 @@ TEST_F(PolyhedralMeshBase, StatusTest) {
     StatusAttrib status(mesh_);
 }
 
-#endif /* UNITTESTS_BASICS_HH_ */

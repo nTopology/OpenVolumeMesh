@@ -1,10 +1,9 @@
-#ifndef INCLUDE_UNITTESTS_FILES_HH
-#define INCLUDE_UNITTESTS_FILES_HH
-
 #include <gtest/gtest.h>
 #include <Unittests/unittests_common.hh>
 
 #include <OpenVolumeMesh/FileManager/FileManager.hh>
+
+using namespace OpenVolumeMesh;
 
 TEST_F(PolyhedralMeshBase, LoadFile) {
 
@@ -293,4 +292,3 @@ TEST_F(PolyhedralMeshBase, SaveFileWithProps2) {
   EXPECT_EQ(0u, mesh_.n_cell_props());
 }
 
-#endif // INCLUDE GUARD

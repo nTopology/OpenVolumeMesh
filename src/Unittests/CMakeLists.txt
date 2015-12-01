@@ -14,10 +14,14 @@ if(GTEST_FOUND)
     include_directories(${GTEST_INCLUDE_DIRS})
     # set additional link directories
     link_directories(${GTEST_LIBRARY_DIR} )
-    # Create new target named unittests_hexmeshing
-    add_executable(unittests EXCLUDE_FROM_ALL unittests.cc unittests_common.cc)
+
+ 
+    # Create executable for all unittests
+    FILE(GLOB UNITTEST_SRC *.cc)
+    add_executable(unittests ${UNITTEST_SRC})
+
 	
-	if ( NOT WIN32)
+    if ( NOT WIN32)
       # Link against all necessary libraries
       target_link_libraries(unittests OpenVolumeMesh ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)
 	  

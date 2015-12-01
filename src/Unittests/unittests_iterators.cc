@@ -1,8 +1,8 @@
-#ifndef INCLUDE_UNITTESTS_ITERATORS_HH
-#define INCLUDE_UNITTESTS_ITERATORS_HH
-
 #include <gtest/gtest.h>
+
 #include <Unittests/unittests_common.hh>
+
+using namespace OpenVolumeMesh;
 
 TEST_F(HexahedralMeshBase, HexVertexIterTest) {
 
@@ -22,4 +22,3 @@ TEST_F(HexahedralMeshBase, HexVertexIterTest) {
     EXPECT_EQ(VertexHandle(5), *hv_it);
 }
 
-#endif // INCLUDE GUARD
