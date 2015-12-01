@@ -46,7 +46,6 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
-#include <cctype>
 #include <typeinfo>
 
 #include <OpenVolumeMesh/Geometry/VectorT.hh>

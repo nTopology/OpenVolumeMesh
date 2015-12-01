@@ -41,7 +41,6 @@
 \*===========================================================================*/
 
 #include <istream>
-#include <ostream>
 
 #include "OpenVolumeMeshHandle.hh"
 

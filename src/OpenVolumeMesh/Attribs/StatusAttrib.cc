@@ -46,11 +46,6 @@
 
 #include "StatusAttrib.hh"
 
-#include "../Core/TopologyKernel.hh"
-#include "../Core/PropertyDefines.hh"
-
-#include <map>
-
 namespace OpenVolumeMesh {
 
 StatusAttrib::StatusAttrib(TopologyKernel& _kernel) :

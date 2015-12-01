@@ -41,7 +41,6 @@
 \*===========================================================================*/
 
 #include "ResourceManager.hh"
-#include "BaseProperty.hh"
 
 namespace OpenVolumeMesh {
 
