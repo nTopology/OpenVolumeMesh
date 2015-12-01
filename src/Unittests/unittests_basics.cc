@@ -1,6 +1,3 @@
-#ifndef INCLUDE_UNITTESTS_BASICS_HH
-#define INCLUDE_UNITTESTS_BASICS_HH
-
 #include <gtest/gtest.h>
 #include <Unittests/unittests_common.hh>
 
@@ -2004,4 +2001,3 @@ TEST_F(PolyhedralMeshBase, SwapVertices) {
 	EXPECT_EQ(12u, mesh_.n_vertices());
 }
 
-#endif // INCLUDE GUARD
