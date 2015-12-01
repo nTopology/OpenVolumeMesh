@@ -48,7 +48,6 @@ cd Unittests
 cd ..
 cd ..
 
-
 #########################################
 # Build Debug version and Unittests
 #########################################
@@ -66,7 +65,6 @@ make
 
 #build the unit tests
 make unittests
-
 
 #########################################
 # Run Debug Unittests
