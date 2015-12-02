@@ -40,10 +40,9 @@
  *                                                                           *
 \*===========================================================================*/
 
-#define SERIALIZERST_CC
+
 
 #include "Serializers.hh"
-
 
 namespace OpenVolumeMesh
 {
