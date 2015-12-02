@@ -28,6 +28,8 @@ protected:
   virtual void SetUp() {
 
     // Do some initial stuff with the member data here...
+    mesh_.enable_deferred_deletion(false);
+    mesh_.enable_fast_deletion(false);
   }
 
   // This function is called after all tests are through
@@ -64,6 +66,8 @@ protected:
   virtual void SetUp() {
 
     // Do some initial stuff with the member data here...
+    mesh_.enable_deferred_deletion(false);
+    mesh_.enable_fast_deletion(false);
   }
 
   // This function is called after all tests are through
