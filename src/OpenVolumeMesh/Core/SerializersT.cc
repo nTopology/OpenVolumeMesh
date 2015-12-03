@@ -44,8 +44,6 @@
 
 #include "Serializers.hh"
 
-
-
 namespace OpenVolumeMesh
 {
 
@@ -64,7 +62,7 @@ template <typename Stream, typename T>
 class has_input_operator
 {
 private:
-  template<class U> static true_type  test(char(*)[sizeof(decllval<Stream>() >> decllval<U>())]);
+  template<class U> static true_type  test(char(*)[sizeof(decllval<Stream>() >> decllval<U>(), void(), 0)]);
   template<class U> static false_type test(...);
 
 public:
@@ -74,10 +72,14 @@ public:
 };
 
 template <typename Stream, typename T>
+typename has_input_operator<Stream, T>::type has_input_operator<Stream, T>::value = typename has_input_operator<Stream, T>::type();
+
+
+template <typename Stream, typename T>
 class has_output_operator
 {
 private:
-  template<class U> static true_type  test(char(*)[sizeof(decllval<Stream>() << decllval<U>())]);
+  template<class U> static true_type  test(char(*)[sizeof(decllval<Stream>() << decllval<U>(), void(), 0)]);
   template<class U> static false_type test(...);
 
 public:
@@ -85,6 +87,9 @@ public:
   typedef bool_type<bool_value> type;
   static type value;
 };
+
+template <typename Stream, typename T>
+typename has_output_operator<Stream, T>::type has_output_operator<Stream, T>::value = typename has_output_operator<Stream, T>::type();
 
 
 template <typename ValueT>
@@ -95,7 +100,7 @@ std::ostream& serialize_helper(std::ostream& _ostr, ValueT& _rhs, true_type)
 }
 
 template <typename ValueT>
-std::ostream& serialize_helper(std::ostream& _ostr, ValueT& _rhs, false_type)
+std::ostream& serialize_helper(std::ostream& _ostr, ValueT&, false_type)
 {
   std::cout << "Warning: trying to serialize a type that does not have a serialize function" << std::endl;
   return _ostr;
@@ -116,7 +121,7 @@ std::istream& deserialize_helper(std::istream& _istr, ValueT& _rhs, true_type)
 }
 
 template <typename ValueT>
-std::istream& deserialize_helper(std::istream& _istr, ValueT& _rhs, false_type)
+std::istream& deserialize_helper(std::istream& _istr, ValueT&, false_type)
 {
   std::cout << "Warning: trying to deserialize a type that does not have a deserialize function" << std::endl;
   return _istr;
