@@ -96,8 +96,12 @@ PropT ResourceManager::request_property(StdVecT& _vec, const std::string& _name,
         for(typename StdVecT::iterator it = _vec.begin();
                 it != _vec.end(); ++it) {
             if((*it)->name() == _name) {
+#if OVM_FORCE_STATIC_CAST
+                return *static_cast<PropT*>(*it);
+#else
                 PropT* prop = dynamic_cast<PropT*>(*it);
                 if(prop != NULL) return *prop;
+#endif
             }
         }
     }
