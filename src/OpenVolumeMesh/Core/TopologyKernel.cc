@@ -1363,7 +1363,7 @@ CellIter TopologyKernel::delete_cell_core(const CellHandle& _h) {
     assert(h.is_valid() && (size_t)h.idx() < cells_.size());
 
 
-    if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last not deleted vertex
+    if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last not deleted cell
     {
         CellHandle last_undeleted_cell = CellHandle(cells_.size()-1);
         swap_cells(h, last_undeleted_cell);
@@ -1482,6 +1482,7 @@ void TopologyKernel::swap_faces(FaceHandle _h1, FaceHandle _h2)
     // correct cells that contain a swapped faces
     if (has_face_bottom_up_incidences())
     {
+        std::set<unsigned int> processed_cells; // to ensure ids are only swapped once (in the case that the two swapped faces belong to a common cell)
         for (unsigned int i = 0; i < 2; ++i) // For both swapped faces
         {
             unsigned int id = ids[i];
@@ -1493,7 +1494,6 @@ void TopologyKernel::swap_faces(FaceHandle _h1, FaceHandle _h2)
                     continue;
 
 
-                std::set<unsigned int> processed_cells; // to ensure ids are only swapped once (in the case that the two swapped face belong to a common cell)
 
                 if (processed_cells.find(ch.idx()) == processed_cells.end())
                 {
@@ -1556,6 +1556,7 @@ void TopologyKernel::swap_faces(FaceHandle _h1, FaceHandle _h2)
 
     if (has_edge_bottom_up_incidences())
     {
+        std::set<unsigned int> processed_halfedges; // to ensure ids are only swapped once (in the case that a halfedge is incident to both swapped faces)
         for (unsigned int i = 0; i < 2; ++i) // For both swapped faces
         {
             unsigned int id = ids[i];
@@ -1568,6 +1569,9 @@ void TopologyKernel::swap_faces(FaceHandle _h1, FaceHandle _h2)
                 {
                     HalfEdgeHandle heh = hf.halfedges()[k];
 
+                    if (processed_halfedges.find(heh.idx()) != processed_halfedges.end())
+                      continue;
+
                     std::vector<HalfFaceHandle>& incident_halffaces = incident_hfs_per_he_[heh.idx()];
                     for (unsigned int l = 0; l < incident_halffaces.size(); ++l)
                     {
@@ -1578,6 +1582,8 @@ void TopologyKernel::swap_faces(FaceHandle _h1, FaceHandle _h2)
                         else if (hfh2.idx()/2 == (int)id2) // if halfface belongs to swapped face
                             hfh2 = HalfFaceHandle(2 * id1 + (hfh2.idx() % 2));
                     }
+
+                    processed_halfedges.insert(heh);
                 }
             }
         }
@@ -1588,6 +1594,8 @@ void TopologyKernel::swap_faces(FaceHandle _h1, FaceHandle _h2)
     bool tmp = face_deleted_[ids[0]];
     face_deleted_[ids[0]] = face_deleted_[ids[1]];
     face_deleted_[ids[1]] = tmp;
+    std::swap(incident_cell_per_hf_[2*ids[0]+0], incident_cell_per_hf_[2*ids[1]+0]);
+    std::swap(incident_cell_per_hf_[2*ids[0]+1], incident_cell_per_hf_[2*ids[1]+1]);
     swap_face_properties(_h1, _h2);
     swap_halfface_properties(halfface_handle(_h1, 0), halfface_handle(_h2, 0));
     swap_halfface_properties(halfface_handle(_h1, 1), halfface_handle(_h2, 1));
@@ -1611,12 +1619,12 @@ void TopologyKernel::swap_edges(EdgeHandle _h1, EdgeHandle _h2)
 
     if (has_edge_bottom_up_incidences())
     {
+        std::set<unsigned int> processed_faces; // to ensure ids are only swapped once (in the case that the two swapped edges belong to a common face)
 
         for (unsigned int i = 0; i < 2; ++i) // For both swapped edges
         {
-            HalfEdgeHandle heh = HalfEdgeHandle(2+ids[i]);
+            HalfEdgeHandle heh = HalfEdgeHandle(2*ids[i]);
 
-            std::set<unsigned int> processed_faces; // to ensure ids are only swapped once (in the case that the two swapped edges belong to a common face)
 
             std::vector<HalfFaceHandle>& incident_halffaces = incident_hfs_per_he_[heh.idx()];
             for (unsigned int j = 0; j < incident_halffaces.size(); ++j) // for each incident halfface
@@ -1691,7 +1699,7 @@ void TopologyKernel::swap_edges(EdgeHandle _h1, EdgeHandle _h2)
 
     if (has_vertex_bottom_up_incidences())
     {
-
+        std::set<int> processed_vertices;
         for (unsigned int i = 0; i < 2; ++i) // For both swapped edges
         {
             Edge e = edge(EdgeHandle(ids[i]));
@@ -1701,6 +1709,9 @@ void TopologyKernel::swap_edges(EdgeHandle _h1, EdgeHandle _h2)
 
             for (unsigned int j = 0; j < 2; ++j) // for both incident vertices
             {
+                if (processed_vertices.find(vhs[j].idx()) != processed_vertices.end())
+                    continue;
+
                 std::vector<HalfEdgeHandle>& outgoing_hes = outgoing_hes_per_vertex_[vhs[j].idx()];
                 for (unsigned int k = 0; k < outgoing_hes.size(); ++k)
                 {
@@ -1710,6 +1721,7 @@ void TopologyKernel::swap_edges(EdgeHandle _h1, EdgeHandle _h2)
                     else if (heh.idx() / 2 == (int)ids[1])
                         heh = HalfEdgeHandle(2 * ids[0] + (heh.idx() % 2));
                 }
+                processed_vertices.insert(vhs[j]);
             }
 
         }
@@ -1720,6 +1732,8 @@ void TopologyKernel::swap_edges(EdgeHandle _h1, EdgeHandle _h2)
     bool tmp = edge_deleted_[ids[0]];
     edge_deleted_[ids[0]] = edge_deleted_[ids[1]];
     edge_deleted_[ids[1]] = tmp;
+    std::swap(incident_hfs_per_he_[2*ids[0]+0], incident_hfs_per_he_[2*ids[1]+0]);
+    std::swap(incident_hfs_per_he_[2*ids[0]+1], incident_hfs_per_he_[2*ids[1]+1]);
     swap_edge_properties(_h1, _h2);
     swap_halfedge_properties(halfedge_handle(_h1, 0), halfedge_handle(_h2, 0));
     swap_halfedge_properties(halfedge_handle(_h1, 1), halfedge_handle(_h2, 1));
@@ -1793,6 +1807,7 @@ void TopologyKernel::swap_vertices(VertexHandle _h1, VertexHandle _h2)
     bool tmp = vertex_deleted_[ids[0]];
     vertex_deleted_[ids[0]] = vertex_deleted_[ids[1]];
     vertex_deleted_[ids[1]] = tmp;
+    std::swap(outgoing_hes_per_vertex_[ids[0]], outgoing_hes_per_vertex_[ids[1]]);
     swap_vertex_properties(_h1, _h2);
 }
 
