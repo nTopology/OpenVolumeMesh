@@ -2133,6 +2133,51 @@ HalfFaceHandle TopologyKernel::halfface(const std::vector<VertexHandle>& _vs) co
     return halfface(hes);
 }
 
+HalfFaceHandle TopologyKernel::halfface_extensive(const std::vector<VertexHandle>& _vs) const
+{
+  //TODO: schöner machen
+
+  assert(_vs.size() > 2);
+
+  VertexHandle v0 = _vs[0];
+  VertexHandle v1 = _vs[1];
+
+  assert(v0.is_valid() && v1.is_valid());
+
+  HalfEdgeHandle he0 = halfedge(v0, v1);
+  if(!he0.is_valid()) return InvalidHalfFaceHandle;
+
+  for(HalfEdgeHalfFaceIter hehf_it = hehf_iter(he0); hehf_it.valid(); ++hehf_it)
+  {
+    std::vector<HalfEdgeHandle> hes = halfface(*hehf_it).halfedges();
+
+    if (hes.size() != _vs.size())
+      continue;
+
+    int offset = 0;
+    for (unsigned int i = 0; i < hes.size(); ++i)
+      if (hes[i] == he0)
+        offset = i;
+
+    bool all_vertices_found = true;
+
+    for (unsigned int i = 0; i < hes.size(); ++i)
+    {
+      HalfEdgeHandle heh = hes[(i+offset)%hes.size()];
+      if (halfedge(heh).from_vertex() != _vs[i])
+      {
+        all_vertices_found = false;
+        break;
+      }
+    }
+
+    if (all_vertices_found)
+      return *hehf_it;
+  }
+
+  return InvalidHalfFaceHandle;
+}
+
 //========================================================================================
 
 HalfFaceHandle TopologyKernel::halfface(const std::vector<HalfEdgeHandle>& _hes) const {

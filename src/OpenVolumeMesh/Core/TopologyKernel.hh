@@ -412,6 +412,11 @@ public:
     /// \note Only the first three vertices are checked
     HalfFaceHandle halfface(const std::vector<VertexHandle>& _vs) const;
 
+    /// Get half-face from list of incident vertices (in connected order)
+    ///
+    /// \note All vertices are checked
+    HalfFaceHandle halfface_extensive(const std::vector<VertexHandle>& _vs) const;
+
     /// Get half-face from list of incident half-edges
     ///
     /// \note Only the first two half-edges are checked
