@@ -721,7 +721,7 @@ void TopologyKernel::collect_garbage()
     if (!deferred_deletion_enabled())
         return; // nothing todo
 
-    enable_deferred_deletion(false);
+    deferred_deletion = false;
 
     for (unsigned int i = n_cells(); i > 0; --i)
         if (is_deleted(CellHandle(i-1)))
@@ -752,7 +752,7 @@ void TopologyKernel::collect_garbage()
         }
 
 
-    enable_deferred_deletion();
+    deferred_deletion = true;
 
 }
 
@@ -912,6 +912,7 @@ VertexIter TopologyKernel::delete_vertex_core(const VertexHandle& _h) {
     if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last not deleted vertex
     {
         VertexHandle last_undeleted_vertex = VertexHandle(n_vertices()-1);
+        assert(!vertex_deleted_[last_undeleted_vertex.idx()]);
         swap_vertices(h, last_undeleted_vertex);
         h = last_undeleted_vertex;
     }
@@ -1016,6 +1017,7 @@ EdgeIter TopologyKernel::delete_edge_core(const EdgeHandle& _h) {
     if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last one
     {
         EdgeHandle last_edge = EdgeHandle(edges_.size()-1);
+        assert(!edge_deleted_[last_edge.idx()]);
         swap_edges(h, last_edge);
         h = last_edge;
     }
@@ -1199,6 +1201,7 @@ FaceIter TopologyKernel::delete_face_core(const FaceHandle& _h) {
     if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last one
     {
         FaceHandle last_face = FaceHandle(faces_.size()-1);
+        assert(!face_deleted_[last_face.idx()]);
         swap_faces(h, last_face);
         h = last_face;
     }
@@ -1366,6 +1369,7 @@ CellIter TopologyKernel::delete_cell_core(const CellHandle& _h) {
     if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last not deleted cell
     {
         CellHandle last_undeleted_cell = CellHandle(cells_.size()-1);
+        assert(!cell_deleted_[last_undeleted_cell.idx()]);
         swap_cells(h, last_undeleted_cell);
         h = last_undeleted_cell;
     }
@@ -1432,8 +1436,8 @@ void TopologyKernel::swap_cells(CellHandle _h1, CellHandle _h2)
     if (_h1 == _h2)
         return;
 
-    unsigned int id1 = _h1.idx();
-    unsigned int id2 = _h2.idx();
+    int id1 = _h1.idx();
+    int id2 = _h2.idx();
 
     Cell c1 = cells_[id1];
     Cell c2 = cells_[id2];
@@ -1443,14 +1447,16 @@ void TopologyKernel::swap_cells(CellHandle _h1, CellHandle _h2)
     for (unsigned int i = 0; i < hfhs1.size(); ++i)
     {
         HalfFaceHandle hfh = hfhs1[i];
-        incident_cell_per_hf_[hfh.idx()] = id2;
+        if (incident_cell_per_hf_[hfh.idx()] == id1)
+            incident_cell_per_hf_[hfh.idx()] = id2;
     }
 
     std::vector<HalfFaceHandle> hfhs2 = c2.halffaces();
     for (unsigned int i = 0; i < hfhs2.size(); ++i)
     {
         HalfFaceHandle hfh = hfhs2[i];
-        incident_cell_per_hf_[hfh.idx()] = id1;
+        if (incident_cell_per_hf_[hfh.idx()] == id2)
+            incident_cell_per_hf_[hfh.idx()] = id1;
     }
 
     // swap vector entries
@@ -1570,7 +1576,7 @@ void TopologyKernel::swap_faces(FaceHandle _h1, FaceHandle _h2)
                     HalfEdgeHandle heh = hf.halfedges()[k];
 
                     if (processed_halfedges.find(heh.idx()) != processed_halfedges.end())
-                      continue;
+                        continue;
 
                     std::vector<HalfFaceHandle>& incident_halffaces = incident_hfs_per_he_[heh.idx()];
                     for (unsigned int l = 0; l < incident_halffaces.size(); ++l)
@@ -1957,6 +1963,14 @@ CellIter TopologyKernel::delete_cell_range(const CellIter& _first, const CellIte
     }
 
     return CellIter(this, CellHandle(it - cells_.begin()));
+}
+
+void TopologyKernel::enable_deferred_deletion(bool _enable)
+{
+    if (deferred_deletion && !_enable)
+        collect_garbage();
+
+    deferred_deletion = _enable;
 }
 
 //========================================================================================

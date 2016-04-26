@@ -722,7 +722,7 @@ public:
     bool has_face_bottom_up_incidences() const { return f_bottom_up_; }
 
 
-    void enable_deferred_deletion(bool _enable = true) { deferred_deletion = _enable; }
+    void enable_deferred_deletion(bool _enable = true);
     bool deferred_deletion_enabled() const { return deferred_deletion; }
 
 

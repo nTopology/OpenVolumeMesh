@@ -340,20 +340,29 @@ VertexHandle TetrahedralMeshTopologyKernel::collapse_edge(HalfEdgeHandle _heh)
     VertexHandle from_vh = halfedge(_heh).from_vertex();
     VertexHandle to_vh   = halfedge(_heh).to_vertex();
 
+
+    // find cells that will collapse, i.e. are incident to the collapsing halfedge
     std::set<CellHandle> collapsingCells;
     for (HalfEdgeHalfFaceIter hehf_it = hehf_iter(_heh); hehf_it.valid(); ++hehf_it)
     {
         HalfFaceHandle hfh = *hehf_it;
         CellHandle ch = incident_cell(hfh);
-        collapsingCells.insert(ch);
+        if (ch.is_valid())
+            collapsingCells.insert(ch);
     }
 
+    std::vector<CellHandle> incidentCells;
     for (VertexCellIter vc_it = vc_iter(from_vh); vc_it.valid(); ++vc_it)
+        incidentCells.push_back(*vc_it);
+
+    for (unsigned int i = 0; i < incidentCells.size(); ++i)
     {
-        if (collapsingCells.find(*vc_it) != collapsingCells.end())
+        CellHandle ch = incidentCells[i];
+
+        if (collapsingCells.find(ch) != collapsingCells.end())
             continue;
 
-        Cell c = cell(*vc_it);
+        Cell c = cell(ch);
 
         std::vector<HalfFaceHandle> newHalffaces;
 
@@ -378,13 +387,14 @@ VertexHandle TetrahedralMeshTopologyKernel::collapse_edge(HalfEdgeHandle _heh)
             swap_halfface_properties(c.halffaces()[i], hfh);
         }
 
-        delete_cell(*vc_it);
+        delete_cell(ch);
 
         CellHandle newCell = add_cell(newHalffaces);
 
-        swap_cell_properties(*vc_it, newCell);
+        swap_cell_properties(ch, newCell);
 
     }
+
 
     VertexHandle survivingVertex = to_vh;
 
