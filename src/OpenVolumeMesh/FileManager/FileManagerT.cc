@@ -398,7 +398,6 @@ void FileManager::generateGenericProperty(const std::string& _entity_t, const st
 template<class MeshT>
 bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) const {
 
-    typedef typename MeshT::Face Face;
     std::ofstream off(_filename.c_str(), std::ios::out);
 
     if(!off.good()) {

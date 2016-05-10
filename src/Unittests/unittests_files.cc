@@ -166,8 +166,8 @@ TEST_F(PolyhedralMeshBase, SaveFileWithVectorProps) {
       EXPECT_DOUBLE_EQ((double)i/2.0, hfprop2[i][2]);
   }
   for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
-      EXPECT_EQ(i, vprop2[i][0]);
-      EXPECT_EQ(i, vprop2[i][1]);
+      EXPECT_EQ((int)i, vprop2[i][0]);
+      EXPECT_EQ((int)i, vprop2[i][1]);
   }
 }
 
@@ -231,8 +231,8 @@ TEST_F(PolyhedralMeshBase, SerializeVectorValuedProperties) {
       EXPECT_DOUBLE_EQ((double)i/2.0, hfprop[i][2]);
   }
   for(unsigned int i = 0; i < mesh_.n_vertices(); ++i) {
-      EXPECT_EQ(i, vprop[i][0]);
-      EXPECT_EQ(i, vprop[i][1]);
+      EXPECT_EQ((int)i, vprop[i][0]);
+      EXPECT_EQ((int)i, vprop[i][1]);
   }
 }
 
