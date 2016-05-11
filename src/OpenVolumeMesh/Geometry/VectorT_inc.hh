@@ -1,42 +1,51 @@
-/*===========================================================================*\
+/* ========================================================================= *
  *                                                                           *
  *                            OpenVolumeMesh                                 *
- *        Copyright (C) 2011 by Computer Graphics Group, RWTH Aachen         *
- *                        www.openvolumemesh.org                             *
+ *           Copyright (c) 2001-2016, RWTH-Aachen University                 *
+ *           Department of Computer Graphics and Multimedia                  *
+ *                          All rights reserved.                             *
+ *                         www.openvolumemesh.org                            *
  *                                                                           *
  *---------------------------------------------------------------------------*
- *  This file is part of OpenVolumeMesh.                                     *
+ * This file is part of OpenVolumeMesh.                                      *
+ * This file was originally taken from OpenMesh                              *
+ *---------------------------------------------------------------------------*
  *                                                                           *
- *  OpenVolumeMesh is free software: you can redistribute it and/or modify   *
- *  it under the terms of the GNU Lesser General Public License as           *
- *  published by the Free Software Foundation, either version 3 of           *
- *  the License, or (at your option) any later version with the              *
- *  following exceptions:                                                    *
+ * Redistribution and use in source and binary forms, with or without        *
+ * modification, are permitted provided that the following conditions        *
+ * are met:                                                                  *
  *                                                                           *
- *  If other files instantiate templates or use macros                       *
- *  or inline functions from this file, or you compile this file and         *
- *  link it with other files to produce an executable, this file does        *
- *  not by itself cause the resulting executable to be covered by the        *
- *  GNU Lesser General Public License. This exception does not however       *
- *  invalidate any other reasons why the executable file might be            *
- *  covered by the GNU Lesser General Public License.                        *
+ * 1. Redistributions of source code must retain the above copyright notice, *
+ *    this list of conditions and the following disclaimer.                  *
  *                                                                           *
- *  OpenVolumeMesh is distributed in the hope that it will be useful,        *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *  GNU Lesser General Public License for more details.                      *
+ * 2. Redistributions in binary form must reproduce the above copyright      *
+ *    notice, this list of conditions and the following disclaimer in the    *
+ *    documentation and/or other materials provided with the distribution.   *
  *                                                                           *
- *  You should have received a copy of the GNU LesserGeneral Public          *
- *  License along with OpenVolumeMesh.  If not,                              *
- *  see <http://www.gnu.org/licenses/>.                                      *
+ * 3. Neither the name of the copyright holder nor the names of its          *
+ *    contributors may be used to endorse or promote products derived from   *
+ *    this software without specific prior written permission.               *
  *                                                                           *
-\*===========================================================================*/
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       *
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED *
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A           *
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER *
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,  *
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,       *
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR        *
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF    *
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
+ *                                                                           *
+ * ========================================================================= */
+
+
 
 /*===========================================================================*\
  *                                                                           *
- *   $Revision$                                                          *
+ *   $Revision$                                                         *
  *   $Date$                   *
- *   $LastChangedBy$                                                *
  *                                                                           *
 \*===========================================================================*/
 
@@ -64,7 +73,7 @@ TEMPLATE_HEADER
 class CLASSNAME : public DERIVED
 {
 private:
-  typedef DERIVED Base;
+  typedef DERIVED                           Base;
 public:
 
   //---------------------------------------------------------------- class info
@@ -96,43 +105,50 @@ public:
     vectorize(v);
   }
 
+#if DIM == 2
   /// special constructor for 2D vectors
-  inline VectorT(const Scalar& v0, const Scalar& v1) {
-    assert(DIM==2);
+  inline VectorT(const Scalar v0, const Scalar v1) {
     Base::values_[0] = v0; Base::values_[1] = v1;
   }
+#endif
 
+#if DIM == 3
   /// special constructor for 3D vectors
-  inline VectorT(const Scalar& v0, const Scalar& v1, const Scalar& v2) {
-    assert(DIM==3);
+  inline VectorT(const Scalar v0, const Scalar v1, const Scalar v2) {
     Base::values_[0]=v0; Base::values_[1]=v1; Base::values_[2]=v2;
   }
+#endif
 
+#if DIM == 4
   /// special constructor for 4D vectors
-  inline VectorT(const Scalar& v0, const Scalar& v1,
-     const Scalar& v2, const Scalar& v3) {
-    assert(DIM==4);
+  inline VectorT(const Scalar v0, const Scalar v1,
+     const Scalar v2, const Scalar v3) {
     Base::values_[0]=v0; Base::values_[1]=v1; Base::values_[2]=v2; Base::values_[3]=v3;
   }
 
+  VectorT homogenized() const { return VectorT(Base::values_[0]/Base::values_[3], Base::values_[1]/Base::values_[3], Base::values_[2]/Base::values_[3], 1); }
+#endif
+
+#if DIM == 5
   /// special constructor for 5D vectors
-  inline VectorT(const Scalar& v0, const Scalar& v1, const Scalar& v2,
-     const Scalar& v3, const Scalar& v4) {
-    assert(DIM==5);
+  inline VectorT(const Scalar v0, const Scalar v1, const Scalar v2,
+     const Scalar v3, const Scalar v4) {
     Base::values_[0]=v0; Base::values_[1]=v1;Base::values_[2]=v2; Base::values_[3]=v3; Base::values_[4]=v4;
   }
+#endif
 
+#if DIM == 6
   /// special constructor for 6D vectors
-  inline VectorT(const Scalar& v0, const Scalar& v1, const Scalar& v2,
-     const Scalar& v3, const Scalar& v4, const Scalar& v5) {
-    assert(DIM==6);
+  inline VectorT(const Scalar v0, const Scalar v1, const Scalar v2,
+     const Scalar v3, const Scalar v4, const Scalar v5) {
     Base::values_[0]=v0; Base::values_[1]=v1; Base::values_[2]=v2;
     Base::values_[3]=v3; Base::values_[4]=v4; Base::values_[5]=v5;
   }
+#endif
 
   /// construct from a value array (explicit)
   explicit inline VectorT(const Scalar _values[DIM]) {
-    memcpy(Base::values_, _values, DIM*sizeof(Scalar));
+    memcpy(data(), _values, DIM*sizeof(Scalar));
   }
 
 
@@ -177,8 +193,6 @@ public:
 
   /// access to const Scalar array
   inline const Scalar*data() const { return Base::values_; }
-
-
 
 
    //----------------------------------------------------------- element access
@@ -403,7 +417,7 @@ public:
   inline Scalar length() const { return norm(); } // OpenSG interface
 
   /// compute squared euclidean norm
-  inline Scalar sqrnorm() const 
+  inline Scalar sqrnorm() const
   {
 #if DIM==N
     Scalar s(0);
@@ -421,15 +435,23 @@ public:
   /** normalize vector, return normalized vector
   */
 
-  inline vector_type& normalize() 
+  inline vector_type& normalize()
   {
     *this /= norm();
     return *this;
   }
-  
-  /** normalize vector, return normalized vector and avoids div by zero 
+
+  /** return normalized vector
   */
-  inline vector_type& normalize_cond() 
+
+  inline const vector_type normalized() const
+  {
+    return *this / norm();
+  }
+
+  /** normalize vector, return normalized vector and avoids div by zero
+  */
+  inline vector_type& normalize_cond()
   {
     Scalar n = norm();
     if (n != (Scalar)0.0)
@@ -438,25 +460,25 @@ public:
     }
     return *this;
   }
-  
+
   //@}
 
   //------------------------------------------------------------ euclidean norm
 
   /// \name Non-Euclidean norm calculations
   //@{
-  
+
   /// compute L1 (Manhattan) norm
   inline Scalar l1_norm() const
   {
 #if DIM==N
     Scalar s(0);
-#define expr(i) s += abs(Base::values_[i]);
+#define expr(i) s += std::abs(Base::values_[i]);
     unroll(expr);
 #undef expr
     return s;
 #else
-#define expr(i) abs(Base::values_[i])
+#define expr(i) std::abs(Base::values_[i])
     return (unroll_comb(expr, +));
 #undef expr
 #endif
@@ -476,7 +498,7 @@ public:
   //@{
 
   /// return the maximal component
-  inline Scalar max() const 
+  inline Scalar max() const
   {
     Scalar m(Base::values_[0]);
     for(int i=1; i<DIM; ++i) if(Base::values_[i]>m) m=Base::values_[i];
@@ -486,16 +508,16 @@ public:
   /// return the maximal absolute component
   inline Scalar max_abs() const
   {
-    Scalar m(abs(Base::values_[0]));
-    for(int i=1; i<DIM; ++i) 
-      if(abs(Base::values_[i])>m)
-        m=abs(Base::values_[i]);
+    Scalar m(std::abs(Base::values_[0]));
+    for(int i=1; i<DIM; ++i)
+      if(std::abs(Base::values_[i])>m)
+        m=std::abs(Base::values_[i]);
     return m;
   }
 
 
   /// return the minimal component
-  inline Scalar min() const 
+  inline Scalar min() const
   {
     Scalar m(Base::values_[0]);
     for(int i=1; i<DIM; ++i) if(Base::values_[i]<m) m=Base::values_[i];
@@ -503,12 +525,12 @@ public:
   }
 
   /// return the minimal absolute component
-  inline Scalar min_abs() const 
+  inline Scalar min_abs() const
   {
-    Scalar m(abs(Base::values_[0]));
-    for(int i=1; i<DIM; ++i) 
-      if(abs(Base::values_[i])<m)
-        m=abs(Base::values_[i]);
+    Scalar m(std::abs(Base::values_[0]));
+    for(int i=1; i<DIM; ++i)
+      if(std::abs(Base::values_[i])<m)
+        m=std::abs(Base::values_[i]);
     return m;
   }
 
@@ -521,14 +543,14 @@ public:
 
   /// return absolute arithmetic mean
   inline Scalar mean_abs() const {
-    Scalar m(abs(Base::values_[0]));
-    for(int i=1; i<DIM; ++i) m+=abs(Base::values_[i]);
+    Scalar m(std::abs(Base::values_[0]));
+    for(int i=1; i<DIM; ++i) m+=std::abs(Base::values_[i]);
     return m/Scalar(DIM);
   }
 
 
   /// minimize values: same as *this = min(*this, _rhs), but faster
-  inline vector_type minimize(const vector_type& _rhs) {
+  inline vector_type& minimize(const vector_type& _rhs) {
 #define expr(i) if (_rhs[i] < Base::values_[i]) Base::values_[i] = _rhs[i];
     unroll(expr);
 #undef expr
@@ -545,7 +567,7 @@ public:
   }
 
   /// maximize values: same as *this = max(*this, _rhs), but faster
-  inline vector_type maximize(const vector_type& _rhs) {
+  inline vector_type& maximize(const vector_type& _rhs) {
 #define expr(i) if (_rhs[i] > Base::values_[i]) Base::values_[i] = _rhs[i];
     unroll(expr);
 #undef expr
@@ -562,12 +584,12 @@ public:
   }
 
   /// component-wise min
-  inline vector_type min(const vector_type& _rhs) {
+  inline vector_type min(const vector_type& _rhs) const {
     return vector_type(*this).minimize(_rhs);
   }
 
   /// component-wise max
-  inline vector_type max(const vector_type& _rhs) {
+  inline vector_type max(const vector_type& _rhs) const {
     return vector_type(*this).maximize(_rhs);
   }
 

@@ -8,6 +8,7 @@
 #include <OpenVolumeMesh/Attribs/StatusAttrib.hh>
 
 using namespace OpenVolumeMesh;
+using namespace Geometry;
 
 TEST_F(PolyhedralMeshBase, PropertySmartPointerTestSimple) {
 

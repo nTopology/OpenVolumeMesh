@@ -41,28 +41,28 @@ if (NOT APPLE AND ${PROJECT_NAME} MATCHES "OpenVolumeMesh")
 
 # Install Header Files)
 install(DIRECTORY . 
-	DESTINATION include
+        DESTINATION include
         FILES_MATCHING 
-	PATTERN "*.hh"
+        PATTERN "*.hh"
         PATTERN "Unittests" EXCLUDE
         PATTERN "FileConverter" EXCLUDE
         PATTERN "CVS" EXCLUDE
         PATTERN ".svn" EXCLUDE
         PATTERN "tmp" EXCLUDE
-	PATTERN "Templates" EXCLUDE
+        PATTERN "Templates" EXCLUDE
         PATTERN "Debian*" EXCLUDE)
 
 #install Template cc files (required by headers)
 install(DIRECTORY . 
-	DESTINATION include
+        DESTINATION include
         FILES_MATCHING 
-	PATTERN "*T.cc"
+        PATTERN "*T.cc"
         PATTERN "Unittests" EXCLUDE
         PATTERN "FileConverter" EXCLUDE
         PATTERN "CVS" EXCLUDE
         PATTERN ".svn" EXCLUDE
-	PATTERN "tmp" EXCLUDE
-	PATTERN "Templates" EXCLUDE
+        PATTERN "tmp" EXCLUDE
+        PATTERN "Templates" EXCLUDE
         PATTERN "Debian*" EXCLUDE)
 
 endif ()

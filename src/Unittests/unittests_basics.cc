@@ -6,6 +6,7 @@
 #include <OpenVolumeMesh/Attribs/ColorAttrib.hh>
 
 using namespace OpenVolumeMesh;
+using namespace Geometry;
 
 /*
  * ====================================================================

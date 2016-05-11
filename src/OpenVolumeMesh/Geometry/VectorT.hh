@@ -1,48 +1,48 @@
-/*===========================================================================*\
+/* ========================================================================= *
  *                                                                           *
  *                            OpenVolumeMesh                                 *
- *        Copyright (C) 2011 by Computer Graphics Group, RWTH Aachen         *
- *                        www.openvolumemesh.org                             *
+ *           Copyright (c) 2001-2016, RWTH-Aachen University                 *
+ *           Department of Computer Graphics and Multimedia                  *
+ *                          All rights reserved.                             *
+ *                         www.openvolumemesh.org                            *
  *                                                                           *
  *---------------------------------------------------------------------------*
- *  This file is part of OpenVolumeMesh.                                     *
+ * This file is part of OpenVolumeMesh.                                      *
+ * This file was originally taken from OpenMesh                              *
+ *---------------------------------------------------------------------------*
  *                                                                           *
- *  OpenVolumeMesh is free software: you can redistribute it and/or modify   *
- *  it under the terms of the GNU Lesser General Public License as           *
- *  published by the Free Software Foundation, either version 3 of           *
- *  the License, or (at your option) any later version with the              *
- *  following exceptions:                                                    *
+ * Redistribution and use in source and binary forms, with or without        *
+ * modification, are permitted provided that the following conditions        *
+ * are met:                                                                  *
  *                                                                           *
- *  If other files instantiate templates or use macros                       *
- *  or inline functions from this file, or you compile this file and         *
- *  link it with other files to produce an executable, this file does        *
- *  not by itself cause the resulting executable to be covered by the        *
- *  GNU Lesser General Public License. This exception does not however       *
- *  invalidate any other reasons why the executable file might be            *
- *  covered by the GNU Lesser General Public License.                        *
+ * 1. Redistributions of source code must retain the above copyright notice, *
+ *    this list of conditions and the following disclaimer.                  *
  *                                                                           *
- *  OpenVolumeMesh is distributed in the hope that it will be useful,        *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *  GNU Lesser General Public License for more details.                      *
+ * 2. Redistributions in binary form must reproduce the above copyright      *
+ *    notice, this list of conditions and the following disclaimer in the    *
+ *    documentation and/or other materials provided with the distribution.   *
  *                                                                           *
- *  You should have received a copy of the GNU LesserGeneral Public          *
- *  License along with OpenVolumeMesh.  If not,                              *
- *  see <http://www.gnu.org/licenses/>.                                      *
+ * 3. Neither the name of the copyright holder nor the names of its          *
+ *    contributors may be used to endorse or promote products derived from   *
+ *    this software without specific prior written permission.               *
  *                                                                           *
-\*===========================================================================*/
-
-/*===========================================================================*\
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       *
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED *
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A           *
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER *
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,  *
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,       *
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR        *
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF    *
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
  *                                                                           *
- *   $Revision$                                                          *
- *   $Date$                   *
- *   $LastChangedBy$                                                *
- *                                                                           *
-\*===========================================================================*/
+ * ========================================================================= */
 
 //=============================================================================
 //
-//  CLASS VectorT originally taken from OpenMesh
+//  CLASS VectorT
 //
 //=============================================================================
 
@@ -51,7 +51,12 @@
 // bugreport: https://bugzilla.gnome.org/show_bug.cgi?id=629182)
 // macro expansion and preprocessor defines
 // don't work properly.
+
+#if (_MSC_VER >= 1900 || __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__)) && !defined(OPENVOLUMEMESH_VECTOR_LEGACY)
+#include "Vector11T.hh"
+#else
 #ifndef DOXYGEN
+
 
 #ifndef OPENVOLUMEMESH_VECTOR_HH
 #define OPENVOLUMEMESH_VECTOR_HH
@@ -59,25 +64,24 @@
 
 //== INCLUDES =================================================================
 
-#include <istream>
 #include <ostream>
-#include <cassert>
 #include <cmath>
-#include <string>
+#include <cassert>
+#include <cstring>
 
 #if defined(__GNUC__) && defined(__SSE__)
 #include <xmmintrin.h>
 #endif
 
-
 //== NAMESPACES ===============================================================
+
 
 namespace OpenVolumeMesh {
 
 namespace Geometry {
 
-//== CLASS DEFINITION =========================================================
 
+//== CLASS DEFINITION =========================================================
 
 
 /** The N values of the template Scalar type are the only data members
@@ -89,22 +93,21 @@ namespace Geometry {
     aligned, so that aligned SSE instructions can be used on these
     vectors.
 */
-template <typename Scalar,int N> struct VectorDataT
-{
-  Scalar values_[N];
+template<typename Scalar, int N> class VectorDataT {
+    public:
+        Scalar values_[N];
 };
 
 
 #if defined(__GNUC__) && defined(__SSE__)
 
 /// This specialization enables us to use aligned SSE instructions.
-template <> struct VectorDataT<float, 4>
-{
-  union
-  {
-    __m128  m128;
-    float   values_[4];
-  };
+template<> class VectorDataT<float, 4> {
+    public:
+        union {
+            __m128 m128;
+            float values_[4];
+        };
 };
 
 #endif
@@ -138,11 +141,9 @@ template <> struct VectorDataT<float, 4>
 
 
 //== PARTIAL TEMPLATE SPECIALIZATIONS =========================================
-#if OM_PARTIAL_SPECIALIZATION
-
 
 #define TEMPLATE_HEADER        template <typename Scalar>
-#define CLASSNAME              VectorT<Scalar,DIM>
+#define CLASSNAME              VectorT<Scalar,DIM> 
 #define DERIVED                VectorDataT<Scalar,DIM>
 
 
@@ -156,7 +157,6 @@ template <> struct VectorDataT<float, 4>
 #undef  unroll_comb
 #undef  unroll_csv
 
-
 #define DIM                    3
 #define unroll(expr)           expr(0) expr(1) expr(2)
 #define unroll_comb(expr, op)  expr(0) op expr(1) op expr(2)
@@ -167,7 +167,6 @@ template <> struct VectorDataT<float, 4>
 #undef  unroll_comb
 #undef  unroll_csv
 
-
 #define DIM                    4
 #define unroll(expr)           expr(0) expr(1) expr(2) expr(3)
 #define unroll_comb(expr, op)  expr(0) op expr(1) op expr(2) op expr(3)
@@ -177,42 +176,57 @@ template <> struct VectorDataT<float, 4>
 #undef  unroll
 #undef  unroll_comb
 #undef  unroll_csv
+    
+#define DIM                    5
+#define unroll(expr)           expr(0) expr(1) expr(2) expr(3) expr(4)
+#define unroll_comb(expr, op)  expr(0) op expr(1) op expr(2) op expr(3) op expr(4)
+#define unroll_csv(expr)       expr(0), expr(1), expr(2), expr(3), expr(4)
+#include "VectorT_inc.hh"
+#undef  DIM
+#undef  unroll
+#undef  unroll_comb
+#undef  unroll_csv
 
+#define DIM                    6
+#define unroll(expr)           expr(0) expr(1) expr(2) expr(3) expr(4) expr(5)
+#define unroll_comb(expr, op)  expr(0) op expr(1) op expr(2) op expr(3) op expr(4) op expr(5)
+#define unroll_csv(expr)       expr(0), expr(1), expr(2), expr(3), expr(4), expr(5)
+#include "VectorT_inc.hh"
+#undef  DIM
+#undef  unroll
+#undef  unroll_comb
+#undef  unroll_csv
+    
 
 #undef  TEMPLATE_HEADER
 #undef  CLASSNAME
 #undef  DERIVED
 
 
-
-
 //== FULL TEMPLATE SPECIALIZATIONS ============================================
-#else
 
 /// cross product for Vec3f
 template<>
 inline VectorT<float,3>
-VectorT<float,3>::operator%(const VectorT<float,3>& _rhs) const
+VectorT<float,3>::operator%(const VectorT<float,3>& _rhs) const 
 {
-   return
+   return 
      VectorT<float,3>(values_[1]*_rhs.values_[2]-values_[2]*_rhs.values_[1],
 		      values_[2]*_rhs.values_[0]-values_[0]*_rhs.values_[2],
 		      values_[0]*_rhs.values_[1]-values_[1]*_rhs.values_[0]);
 }
-
+  
 
 /// cross product for Vec3d
 template<>
 inline VectorT<double,3>
 VectorT<double,3>::operator%(const VectorT<double,3>& _rhs) const
 {
- return
+ return 
    VectorT<double,3>(values_[1]*_rhs.values_[2]-values_[2]*_rhs.values_[1],
 		     values_[2]*_rhs.values_[0]-values_[0]*_rhs.values_[2],
 		     values_[0]*_rhs.values_[1]-values_[1]*_rhs.values_[0]);
 }
-
-#endif
 
 
 
@@ -221,25 +235,25 @@ VectorT<double,3>::operator%(const VectorT<double,3>& _rhs) const
 
 /// \relates OpenVolumeMesh::VectorT
 /// scalar * vector
-template<typename Scalar,int N>
-inline VectorT<Scalar,N> operator*(Scalar _s, const VectorT<Scalar,N>& _v) {
-  return VectorT<Scalar,N>(_v) *= _s;
+template<typename Scalar1, typename Scalar2,int N>
+inline VectorT<Scalar1,N> operator*(Scalar2 _s, const VectorT<Scalar1,N>& _v) {
+  return _v*_s;
 }
 
 
 /// \relates OpenVolumeMesh::VectorT
 /// symmetric version of the dot product
 template<typename Scalar, int N>
-inline Scalar
+inline Scalar 
 dot(const VectorT<Scalar,N>& _v1, const VectorT<Scalar,N>& _v2) {
-  return (_v1 | _v2);
+  return (_v1 | _v2); 
 }
 
 
 /// \relates OpenVolumeMesh::VectorT
 /// symmetric version of the cross product
 template<typename Scalar, int N>
-inline VectorT<Scalar,N>
+inline VectorT<Scalar,N> 
 cross(const VectorT<Scalar,N>& _v1, const VectorT<Scalar,N>& _v2) {
   return (_v1 % _v2);
 }
@@ -299,6 +313,8 @@ typedef VectorT<unsigned int,3> Vec3ui;
 typedef VectorT<float,3> Vec3f;
 /** 3-double vector */
 typedef VectorT<double,3> Vec3d;
+/** 3-bool vector */
+typedef VectorT<bool,3> Vec3b;
 
 /** 4-byte signed vector */
 typedef VectorT<signed char,4> Vec4c;
@@ -316,6 +332,23 @@ typedef VectorT<unsigned int,4> Vec4ui;
 typedef VectorT<float,4> Vec4f;
 /** 4-double vector */
 typedef VectorT<double,4> Vec4d;
+
+/** 5-byte signed vector */
+typedef VectorT<signed char, 5> Vec5c;
+/** 5-byte unsigned vector */
+typedef VectorT<unsigned char, 5> Vec5uc;
+/** 5-short signed vector */
+typedef VectorT<signed short int, 5> Vec5s;
+/** 5-short unsigned vector */
+typedef VectorT<unsigned short int, 5> Vec5us;
+/** 5-int signed vector */
+typedef VectorT<signed int, 5> Vec5i;
+/** 5-int unsigned vector */
+typedef VectorT<unsigned int, 5> Vec5ui;
+/** 5-float vector */
+typedef VectorT<float, 5> Vec5f;
+/** 5-double vector */
+typedef VectorT<double, 5> Vec5d;
 
 /** 6-byte signed vector */
 typedef VectorT<signed char,6> Vec6c;
@@ -337,28 +370,27 @@ typedef VectorT<double,6> Vec6d;
 //=============================================================================
 } // namespace Geometry
 
-using namespace Geometry;
-
 template <class T>
 const std::string typeName();
 
-template <> const std::string typeName<Vec2f>();
-template <> const std::string typeName<Vec2d>();
-template <> const std::string typeName<Vec2i>();
-template <> const std::string typeName<Vec2ui>();
+template <> const std::string typeName<Geometry::Vec2f>();
+template <> const std::string typeName<Geometry::Vec2d>();
+template <> const std::string typeName<Geometry::Vec2i>();
+template <> const std::string typeName<Geometry::Vec2ui>();
 
-template <> const std::string typeName<Vec3f>();
-template <> const std::string typeName<Vec3d>();
-template <> const std::string typeName<Vec3i>();
-template <> const std::string typeName<Vec3ui>();
+template <> const std::string typeName<Geometry::Vec3f>();
+template <> const std::string typeName<Geometry::Vec3d>();
+template <> const std::string typeName<Geometry::Vec3i>();
+template <> const std::string typeName<Geometry::Vec3ui>();
 
-template <> const std::string typeName<Vec4f>();
-template <> const std::string typeName<Vec4d>();
-template <> const std::string typeName<Vec4i>();
-template <> const std::string typeName<Vec4ui>();
+template <> const std::string typeName<Geometry::Vec4f>();
+template <> const std::string typeName<Geometry::Vec4d>();
+template <> const std::string typeName<Geometry::Vec4i>();
+template <> const std::string typeName<Geometry::Vec4ui>();
 
 } // namespace OpenVolumeMesh
 //=============================================================================
 #endif // OPENVOLUMEMESH_VECTOR_HH defined
 //=============================================================================
 #endif // DOXYGEN
+#endif // C++11

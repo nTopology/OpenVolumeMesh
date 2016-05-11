@@ -36,7 +36,7 @@ if(GTEST_FOUND)
 
     
 	if ( NOT WIN32 )
-          set (TMP_FLAGS "-Wall -Wextra -Wuninitialized -Wunused -g -pedantic -ansi -Wno-long-long")
+          set (TMP_FLAGS "-Wall -Wextra -Wuninitialized -Wunused -g -pedantic -ansi -Wno-long-long -Wno-variadic-macros ${CMAKE_CXX_FLAGS}")
 
 	  # Set compiler flags
           set_target_properties(unittests PROPERTIES COMPILE_FLAGS "${TMP_FLAGS}")
