@@ -54,11 +54,13 @@
 #include <cassert>
 #include <cstdlib>
 
+namespace OpenVolumeMesh {
+
+namespace Geometry {
+
 /*
  * Helpers for VectorT
  */
-namespace {
-
 template<typename ... Ts>
 struct are_convertible_to;
 
@@ -71,11 +73,6 @@ struct are_convertible_to<To, From, Froms...> {
 template<typename To, typename From>
 struct are_convertible_to<To, From> : public std::is_convertible<From, To> {
 };
-}
-
-namespace OpenVolumeMesh {
-
-namespace Geometry {
 
 template<typename Scalar, int DIM>
 class VectorT {
