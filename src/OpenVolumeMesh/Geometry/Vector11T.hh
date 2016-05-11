@@ -840,22 +840,8 @@ template <> const std::string typeName<Vec4f>();
 template <> const std::string typeName<Vec4d>();
 template <> const std::string typeName<Vec4i>();
 template <> const std::string typeName<Vec4ui>();
+
 } // namespace OpenVolumeMesh
 
-/**
- * Literal operator for inline specification of colors in HTML syntax.
- *
- * Example:
- * \code{.cpp}
- * OpenVolumeMesh::Vec4f light_blue = 0x1FCFFFFF_htmlColor;
- * \endcode
- */
-constexpr OpenVolumeMesh::Geometry::Vec4f operator"" _htmlColor(unsigned long long raw_color) {
-    return OpenVolumeMesh::Geometry::Vec4f(
-            ((raw_color >> 24) & 0xFF) / 255.0f,
-            ((raw_color >> 16) & 0xFF) / 255.0f,
-            ((raw_color >>  8) & 0xFF) / 255.0f,
-            ((raw_color >>  0) & 0xFF) / 255.0f);
-}
 
 #endif /* OPENVOLUMEMESH_SRC_OPENVOLUMEMESH_GEOMETRY_VECTOR11T_HH_ */
