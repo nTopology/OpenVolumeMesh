@@ -4,6 +4,7 @@
 #include <OpenVolumeMesh/FileManager/FileManager.hh>
 
 using namespace OpenVolumeMesh;
+
 using namespace Geometry;
 
 TEST_F(PolyhedralMeshBase, LoadFile) {
