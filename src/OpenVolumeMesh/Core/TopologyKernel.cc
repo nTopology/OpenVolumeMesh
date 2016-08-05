@@ -354,12 +354,13 @@ void TopologyKernel::reorder_incident_halffaces(const EdgeHandle& _eh) {
 
                      if(cur_hf == start_hf) break;
 
-                     if(cur_hf != InvalidHalfFaceHandle)
-                         new_halffaces.insert(new_halffaces.begin(), cur_hf);
-                     else break;
                      // if one of the faces of the cell was already incident to another cell we need this check
                      // to prevent running into an infinite loop.
                      if(std::find(new_halffaces.begin(), new_halffaces.end(), cur_hf) != new_halffaces.end()) break;
+
+                     if(cur_hf != InvalidHalfFaceHandle)
+                         new_halffaces.insert(new_halffaces.begin(), cur_hf);
+                     else break;
                 }
             }
 
