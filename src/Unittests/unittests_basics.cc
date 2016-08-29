@@ -2002,3 +2002,22 @@ TEST_F(PolyhedralMeshBase, SwapVertices) {
 	EXPECT_EQ(12u, mesh_.n_vertices());
 }
 
+void testDeferredDelete(PolyhedralMesh &mesh) {
+	mesh.add_vertex(Vec3d(1,0,0));
+	mesh.add_vertex(Vec3d(0,1,0));
+	mesh.delete_vertex(VertexHandle(0));
+	mesh.collect_garbage();
+	EXPECT_DOUBLE_EQ(mesh.vertex(VertexHandle(0))[1], 1);
+}
+
+TEST_F(PolyhedralMeshBase, DeferredDelete) {
+	mesh_.enable_deferred_deletion(true);
+	mesh_.enable_fast_deletion(false);
+	testDeferredDelete(mesh_);
+}
+TEST_F(PolyhedralMeshBase, DeferredFastDelete) {
+	mesh_.enable_deferred_deletion(true);
+	mesh_.enable_fast_deletion(true);
+	testDeferredDelete(mesh_);
+}
+

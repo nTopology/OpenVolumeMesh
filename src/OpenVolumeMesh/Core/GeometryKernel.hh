@@ -107,13 +107,17 @@ public:
 
     virtual void collect_garbage()
     {
-        TopologyKernelT::collect_garbage();
-
-        for (unsigned int i = vertices_.size(); i > 0; --i)
-            if (TopologyKernelT::is_deleted(VertexHandle(i-1)))
-            {
-                vertices_.erase(vertices_.begin() + (i-1));
-            }
+        if (TopologyKernel::fast_deletion_enabled()) {
+            TopologyKernelT::collect_garbage();
+            vertices_.resize(TopologyKernel::n_vertices());
+        } else {
+            for (unsigned int i = vertices_.size(); i > 0; --i)
+                if (TopologyKernelT::is_deleted(VertexHandle(i-1)))
+                {
+                    vertices_.erase(vertices_.begin() + (i-1));
+                }
+            TopologyKernelT::collect_garbage();
+        }
 
     }
 
