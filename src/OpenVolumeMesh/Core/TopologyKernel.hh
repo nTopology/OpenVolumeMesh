@@ -925,6 +925,10 @@ public:
         return HalfFaceHandle(_h.idx() - 1);
     }
 
+    bool inline needs_garbage_collection() const {
+        return needs_garbage_collection_;
+    }
+
 protected:
 
     // List of edges
@@ -940,6 +944,7 @@ protected:
     std::vector<bool> edge_deleted_;
     std::vector<bool> face_deleted_;
     std::vector<bool> cell_deleted_;
+    bool needs_garbage_collection_;
 
 };
 
