@@ -107,7 +107,7 @@ public:
 
     virtual void collect_garbage()
     {
-        if (TopologyKernel::fast_deletion_enabled()) {
+        if (TopologyKernelT::fast_deletion_enabled()) {
             TopologyKernelT::collect_garbage();
             vertices_.resize(TopologyKernel::n_vertices());
         } else {
