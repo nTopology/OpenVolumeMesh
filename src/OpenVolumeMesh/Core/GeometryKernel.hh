@@ -91,7 +91,7 @@ public:
     }
 
     virtual VertexIter delete_vertex(const VertexHandle& _h) {
-        assert(_h.idx() < (int)TopologyKernel::n_vertices());
+        assert(_h.idx() < (int)TopologyKernelT::n_vertices());
 
         VertexIter nV = TopologyKernelT::delete_vertex(_h);
 
