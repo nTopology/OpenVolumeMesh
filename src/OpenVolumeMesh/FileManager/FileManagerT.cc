@@ -513,8 +513,15 @@ void FileManager::writeProps(std::ostream& _ostr, const IteratorT& _begin, const
             continue;
         }
 
+        std::string type_name;
+        try {
+            type_name = (*p_it)->typeNameWrapper();
+        } catch (std::runtime_error &e) { // type not serializable
+            std::cerr << "Failed to save property, skipping: " << e.what() << std::endl;
+            continue;
+        }
         _ostr << (*p_it)->entityType() << " ";
-        _ostr << (*p_it)->typeNameWrapper() << " ";
+        _ostr << type_name << " ";
         _ostr << "\"" << (*p_it)->name() << "\"" << std::endl;
 
         (*p_it)->serialize(_ostr);
