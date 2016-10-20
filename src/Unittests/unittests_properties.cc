@@ -161,3 +161,12 @@ TEST_F(PolyhedralMeshBase, StatusTest) {
     StatusAttrib status(mesh_);
 }
 
+TEST_F(PolyhedralMeshBase, PropValueCopyTest) {
+
+    generatePolyhedralMesh(mesh_);
+    VertexPropertyT<int> prop = mesh_.request_vertex_property<int>();
+    prop[0] = 1234;
+    prop[1] = 2345;
+    prop.copy(0, 1);
+    EXPECT_EQ(prop[1], 1234);
+}

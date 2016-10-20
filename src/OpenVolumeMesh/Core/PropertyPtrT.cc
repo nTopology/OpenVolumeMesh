@@ -89,6 +89,11 @@ void PropertyPtr<PropT,HandleT>::swap_elements(size_t _idx0, size_t _idx1) {
 }
 
 template <class PropT, class HandleT>
+void PropertyPtr<PropT,HandleT>::copy(size_t _src_idx, size_t _dst_idx) {
+    ptr::shared_ptr<PropT>::get()->copy(_src_idx, _dst_idx);
+}
+
+template <class PropT, class HandleT>
 void PropertyPtr<PropT,HandleT>::set_handle(const OpenVolumeMeshHandle& _handle) {
     return ptr::shared_ptr<PropT>::get()->set_handle(_handle);
 }
