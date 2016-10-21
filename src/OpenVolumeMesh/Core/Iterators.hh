@@ -142,14 +142,14 @@ using is_ovm_iterator = std::is_base_of<BaseIterator<typename std::remove_const<
 // so we can use range-for, e.g. for(const auto &vh: mesh.vertices()) works.
 template<class I>
 typename std::enable_if<is_ovm_iterator<I>::value, I>::type
-begin(const std::pair<I, I> &iterpair)
+begin(const std::pair<I, I>& iterpair)
 {
     return iterpair.first;
 }
 
 template<class I>
 typename std::enable_if<is_ovm_iterator<I>::value, I>::type
-end(const std::pair<I, I> &iterpair)
+end(const std::pair<I, I>& iterpair)
 {
     return iterpair.second;
 }
