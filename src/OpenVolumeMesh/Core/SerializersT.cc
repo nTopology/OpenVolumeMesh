@@ -47,9 +47,9 @@
 namespace OpenVolumeMesh
 {
 
-template <bool B> class bool_type;
-template <>       class bool_type<true>  { char c[1]; };
-template <>       class bool_type<false> { char c[2]; };
+template <bool B> struct bool_type;
+template <>       struct bool_type<true>  { char c[1]; };
+template <>       struct bool_type<false> { char c[2]; };
 
 typedef bool_type<true>  true_type;
 typedef bool_type<false> false_type;
