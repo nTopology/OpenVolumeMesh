@@ -22,3 +22,12 @@ TEST_F(HexahedralMeshBase, HexVertexIterTest) {
     EXPECT_EQ(VertexHandle(5), *hv_it);
 }
 
+#if __cplusplus >= 201103L // C++11
+TEST_F(HexahedralMeshBase, RangeForTest) {
+    // no EXPECTs here, if it compiles, it'll work.
+    generateHexahedralMesh(mesh_);
+    for (const auto& vh: mesh_.vertices()) {}
+    const auto& constref = mesh_;
+    for (const auto& vh: constref.vertices()) {}
+}
+#endif

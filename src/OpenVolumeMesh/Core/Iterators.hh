@@ -130,6 +130,32 @@ private:
 	const TopologyKernel* mesh_;
 };
 
+
+#if __cplusplus >= 201103L
+
+#include <type_traits>
+
+template<class I>
+using is_ovm_iterator = std::is_base_of<BaseIterator<typename std::remove_const<typename I::value_type>::type>, I>;
+
+// provide begin() and end() for the iterator pairs provided in TopologyKernel,
+// so we can use range-for, e.g. for(const auto &vh: mesh.vertices()) works.
+template<class I>
+typename std::enable_if<is_ovm_iterator<I>::value, I>::type
+begin(const std::pair<I, I>& iterpair)
+{
+    return iterpair.first;
+}
+
+template<class I>
+typename std::enable_if<is_ovm_iterator<I>::value, I>::type
+end(const std::pair<I, I>& iterpair)
+{
+    return iterpair.second;
+}
+
+#endif // C++11
+
 template <
 class IH /*  Input handle type */,
 class OH /* Output handle type */>
