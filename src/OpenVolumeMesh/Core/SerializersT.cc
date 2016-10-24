@@ -43,10 +43,12 @@
 #define SERIALIZERST_CC
 
 #include "Serializers.hh"
-#include <utility>
 
 namespace OpenVolumeMesh
 {
+
+template<typename T>
+T& decllval();
 
 template <bool B> struct bool_type;
 template <>       struct bool_type<true>  { char c[1]; };
@@ -59,7 +61,7 @@ template <typename Stream, typename T>
 class has_input_operator
 {
 private:
-  template<class U> static true_type  test(char(*)[sizeof(std::declval<Stream&>() >> std::declval<U&>(), void(), 0)]);
+  template<class U> static true_type  test(char(*)[sizeof(decllval<Stream>() >> decllval<U>(), void(), 0)]);
   template<class U> static false_type test(...);
 
 public:
@@ -76,7 +78,7 @@ template <typename Stream, typename T>
 class has_output_operator
 {
 private:
-  template<class U> static true_type  test(char(*)[sizeof(std::declval<Stream&>() << std::declval<U&>(), void(), 0)]);
+  template<class U> static true_type  test(char(*)[sizeof(decllval<Stream>() << decllval<U>(), void(), 0)]);
   template<class U> static false_type test(...);
 
 public:
