@@ -106,7 +106,7 @@ PropT ResourceManager::request_property(StdVecT& _vec, const std::string& _name,
         }
     }
 
-    HandleT handle(_vec.size());
+    HandleT handle((int)_vec.size());
 
     PropT* prop = new PropT(_name, *this, handle, _def);
     prop->resize(_size);
