@@ -207,7 +207,7 @@ public:
     }
 
     VertexIter vertices_end() const {
-        return VertexIter(this, VertexHandle(n_vertices()));
+        return VertexIter(this, VertexHandle((int)n_vertices()));
     }
 
     std::pair<VertexIter, VertexIter> vertices() const {
@@ -223,7 +223,7 @@ public:
     }
 
     EdgeIter edges_end() const {
-        return EdgeIter(this, EdgeHandle(edges_.size()));
+        return EdgeIter(this, EdgeHandle((int)edges_.size()));
     }
 
     std::pair<EdgeIter, EdgeIter> edges() const {
@@ -239,7 +239,7 @@ public:
     }
 
     HalfEdgeIter halfedges_end() const {
-        return HalfEdgeIter(this, HalfEdgeHandle(edges_.size() * 2));
+        return HalfEdgeIter(this, HalfEdgeHandle((int)edges_.size() * 2));
     }
 
     std::pair<HalfEdgeIter, HalfEdgeIter> halfedges() const {
@@ -255,7 +255,7 @@ public:
     }
 
     FaceIter faces_end() const {
-        return FaceIter(this, FaceHandle(faces_.size()));
+        return FaceIter(this, FaceHandle((int)faces_.size()));
     }
 
     std::pair<FaceIter, FaceIter> faces() const {
@@ -271,7 +271,7 @@ public:
     }
 
     HalfFaceIter halffaces_end() const {
-        return HalfFaceIter(this, HalfFaceHandle(faces_.size() * 2));
+        return HalfFaceIter(this, HalfFaceHandle((int)faces_.size() * 2));
     }
 
     std::pair<HalfFaceIter, HalfFaceIter> halffaces() const {
@@ -287,7 +287,7 @@ public:
     }
 
     CellIter cells_end() const {
-        return CellIter(this, CellHandle(cells_.size()));
+        return CellIter(this, CellHandle((int)cells_.size()));
     }
 
     std::pair<CellIter, CellIter> cells() const {
@@ -313,10 +313,10 @@ public:
 
     int genus() const {
 
-        int g = (1 - (n_vertices() -
-                      n_edges() +
-                      n_faces() -
-                      n_cells()));
+        int g = (1 - (int)(n_vertices() -
+                           n_edges() +
+                           n_faces() -
+                           n_cells()));
 
         if(g % 2 == 0) return (g / 2);
 

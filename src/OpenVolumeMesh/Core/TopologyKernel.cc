@@ -725,28 +725,28 @@ void TopologyKernel::collect_garbage()
 
     deferred_deletion = false;
 
-    for (unsigned int i = n_cells(); i > 0; --i)
+    for (int i = (int)n_cells(); i > 0; --i)
         if (is_deleted(CellHandle(i-1)))
         {
             cell_deleted_[i-1] = false;
             delete_cell_core(CellHandle(i-1));
         }
 
-    for (unsigned int i = n_faces(); i > 0; --i)
+    for (int i = (int)n_faces(); i > 0; --i)
         if (is_deleted(FaceHandle(i-1)))
         {
             face_deleted_[i-1] = false;
             delete_face_core(FaceHandle(i-1));
         }
 
-    for (unsigned int i = n_edges(); i > 0; --i)
+    for (int i = (int)n_edges(); i > 0; --i)
         if (is_deleted(EdgeHandle(i-1)))
         {
             edge_deleted_[i-1] = false;
             delete_edge_core(EdgeHandle(i-1));
         }
 
-    for (unsigned int i = n_vertices(); i > 0; --i)
+    for (int i = (int)n_vertices(); i > 0; --i)
         if (is_deleted(VertexHandle(i-1)))
         {
             vertex_deleted_[i-1] = false;
@@ -914,7 +914,7 @@ VertexIter TopologyKernel::delete_vertex_core(const VertexHandle& _h) {
 
     if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last not deleted vertex
     {
-        VertexHandle last_undeleted_vertex = VertexHandle(n_vertices()-1);
+        VertexHandle last_undeleted_vertex = VertexHandle((int)n_vertices()-1);
         assert(!vertex_deleted_[last_undeleted_vertex.idx()]);
         swap_vertices(h, last_undeleted_vertex);
         h = last_undeleted_vertex;
@@ -936,7 +936,7 @@ VertexIter TopologyKernel::delete_vertex_core(const VertexHandle& _h) {
         if(v_bottom_up_) {
 
             // Decrease all vertex handles >= _h in all edge definitions
-            for(int i = h.idx(), end = n_vertices(); i < end; ++i) {
+            for(int i = h.idx(), end = (int)n_vertices(); i < end; ++i) {
                 const std::vector<HalfEdgeHandle>& hes = outgoing_hes_per_vertex_[i];
                 for(std::vector<HalfEdgeHandle>::const_iterator he_it = hes.begin(),
                     he_end = hes.end(); he_it != he_end; ++he_it) {
@@ -1020,7 +1020,7 @@ EdgeIter TopologyKernel::delete_edge_core(const EdgeHandle& _h) {
 
     if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last one
     {
-        EdgeHandle last_edge = EdgeHandle(edges_.size()-1);
+        EdgeHandle last_edge = EdgeHandle((int)edges_.size()-1);
         assert(!edge_deleted_[last_edge.idx()]);
         swap_edges(h, last_edge);
         h = last_edge;
@@ -1205,7 +1205,7 @@ FaceIter TopologyKernel::delete_face_core(const FaceHandle& _h) {
 
     if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last one
     {
-        FaceHandle last_face = FaceHandle(faces_.size()-1);
+        FaceHandle last_face = FaceHandle((int)faces_.size()-1);
         assert(!face_deleted_[last_face.idx()]);
         swap_faces(h, last_face);
         h = last_face;
@@ -1374,7 +1374,7 @@ CellIter TopologyKernel::delete_cell_core(const CellHandle& _h) {
 
     if (fast_deletion_enabled() && !deferred_deletion_enabled()) // for fast deletion swap handle with last not deleted cell
     {
-        CellHandle last_undeleted_cell = CellHandle(cells_.size()-1);
+        CellHandle last_undeleted_cell = CellHandle((int)cells_.size()-1);
         assert(!cell_deleted_[last_undeleted_cell.idx()]);
         swap_cells(h, last_undeleted_cell);
         h = last_undeleted_cell;
@@ -1969,7 +1969,7 @@ CellIter TopologyKernel::delete_cell_range(const CellIter& _first, const CellIte
         enable_face_bottom_up_incidences(true);
     }
 
-    return CellIter(this, CellHandle(it - cells_.begin()));
+    return CellIter(this, CellHandle((int)(it - cells_.begin())));
 }
 
 void TopologyKernel::enable_deferred_deletion(bool _enable)
@@ -2327,8 +2327,8 @@ void TopologyKernel::compute_vertex_bottom_up_incidences() {
     outgoing_hes_per_vertex_.resize(n_vertices());
 
     // Store outgoing halfedges per vertex
-    size_t n_edges = edges_.size();
-    for(size_t i = 0; i < n_edges; ++i) {
+    int n_edges = (int)edges_.size();
+    for(int i = 0; i < n_edges; ++i) {
         if (edge_deleted_[i])
             continue;
 
@@ -2356,8 +2356,8 @@ void TopologyKernel::compute_edge_bottom_up_incidences() {
     incident_hfs_per_he_.resize(edges_.size() * 2u);
 
     // Store incident halffaces per halfedge
-    size_t n_faces = faces_.size();
-    for(size_t i = 0; i < n_faces; ++i) {
+    int n_faces = (int)faces_.size();
+    for(int i = 0; i < n_faces; ++i) {
         if (face_deleted_[i])
             continue;
 
@@ -2382,8 +2382,8 @@ void TopologyKernel::compute_face_bottom_up_incidences() {
     incident_cell_per_hf_.clear();
     incident_cell_per_hf_.resize(faces_.size() * 2u, InvalidCellHandle);
 
-    size_t n_cells = cells_.size();
-    for(size_t i = 0; i < n_cells; ++i) {
+    int n_cells = (int)cells_.size();
+    for(int i = 0; i < n_cells; ++i) {
         if (cell_deleted_[i])
             continue;
 

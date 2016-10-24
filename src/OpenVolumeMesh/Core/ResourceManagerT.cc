@@ -175,7 +175,7 @@ void ResourceManager::remove_property(StdVecT& _vec, size_t _idx) {
     _vec.erase(_vec.begin() + _idx);
     size_t n = _vec.size();
     for(size_t i = 0; i < n; ++i) {
-        _vec[i]->set_handle(OpenVolumeMeshHandle(i));
+        _vec[i]->set_handle(OpenVolumeMeshHandle((int)i));
     }
 }
 
