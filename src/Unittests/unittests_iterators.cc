@@ -26,8 +26,9 @@ TEST_F(HexahedralMeshBase, HexVertexIterTest) {
 TEST_F(HexahedralMeshBase, RangeForTest) {
     // no EXPECTs here, if it compiles, it'll work.
     generateHexahedralMesh(mesh_);
-    for (const auto& vh: mesh_.vertices()) {}
+    VertexHandle _dummy; // use vh to avoid compiler warnings
+    for (const auto& vh: mesh_.vertices()) { _dummy = vh;}
     const auto& constref = mesh_;
-    for (const auto& vh: constref.vertices()) {}
+    for (const auto& vh: constref.vertices()) { _dummy = vh;}
 }
 #endif
