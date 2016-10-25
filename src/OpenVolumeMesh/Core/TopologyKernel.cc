@@ -116,7 +116,7 @@ EdgeHandle TopologyKernel::add_edge(const VertexHandle& _fromVertex,
                 }
             }
         } else {
-            for(size_t i = 0; i < edges_.size(); ++i) {
+            for(int i = 0; i < (int)edges_.size(); ++i) {
                 if(edge(EdgeHandle(i)).from_vertex() == _fromVertex && edge(EdgeHandle(i)).to_vertex() == _toVertex) {
                     return EdgeHandle(i);
                 } else if(edge(EdgeHandle(i)).from_vertex() == _toVertex && edge(EdgeHandle(i)).to_vertex() == _fromVertex) {

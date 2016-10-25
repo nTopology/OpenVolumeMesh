@@ -69,7 +69,7 @@ PropertyPtr<PropT,HandleT>::~PropertyPtr() {
 }
 
 template <class PropT, class HandleT>
-void PropertyPtr<PropT,HandleT>::resize(unsigned int _size) {
+void PropertyPtr<PropT,HandleT>::resize(size_t _size) {
     ptr::shared_ptr<PropT>::get()->resize(_size);
 }
 

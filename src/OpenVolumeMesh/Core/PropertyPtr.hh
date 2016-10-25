@@ -107,7 +107,7 @@ protected:
 
     virtual void delete_multiple_entries(const std::vector<bool>& _tags);
 
-    virtual void resize(unsigned int _size);
+    virtual void resize(size_t _size);
 
     virtual void set_handle(const OpenVolumeMeshHandle& _handle);
 };
