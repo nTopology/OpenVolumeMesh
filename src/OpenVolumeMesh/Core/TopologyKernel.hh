@@ -140,7 +140,7 @@ public:
         return VertexCellIter(_h, this, _max_laps);
     }
 
-    std::pair<VertexCellIter, VertexCellIter> vertex_cells(const VertexHandle& _h, int _max_laps = 1){
+    std::pair<VertexCellIter, VertexCellIter> vertex_cells(const VertexHandle& _h, int _max_laps = 1) const {
         VertexCellIter begin = vc_iter(_h, _max_laps);
         return std::make_pair(begin, make_end_circulator(begin));
     }
@@ -149,7 +149,7 @@ public:
         return HalfEdgeCellIter(_h, this, _max_laps);
     }
 
-    std::pair<HalfEdgeCellIter, HalfEdgeCellIter> halfedge_cells(const HalfEdgeHandle& _h, int _max_laps = 1){
+    std::pair<HalfEdgeCellIter, HalfEdgeCellIter> halfedge_cells(const HalfEdgeHandle& _h, int _max_laps = 1) const {
         HalfEdgeCellIter begin = hec_iter(_h, _max_laps);
         return std::make_pair(begin, make_end_circulator(begin));
     }
