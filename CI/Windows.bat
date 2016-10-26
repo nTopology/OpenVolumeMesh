@@ -74,6 +74,7 @@ cd build-debug
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
+cd ..
 
 cd src\Unittests\TestFiles
 
