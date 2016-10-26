@@ -69,6 +69,8 @@ public:
 
     virtual void swap_elements(size_t _idx0, size_t _idx1) = 0;
 
+    virtual void copy(size_t _src_idx, size_t _dst_idx) = 0;
+
     virtual void serialize(std::ostream& _ostr) const = 0;
 
     virtual void deserialize(std::istream& _istr) = 0;

@@ -112,10 +112,12 @@ public:
 	virtual void swap(size_t _i0, size_t _i1) {
 		std::swap(data_[_i0], data_[_i1]);
 	}
-
-        void delete_element(size_t _idx) {
-                data_.erase(data_.begin() + _idx);
-        }
+	virtual void copy(size_t _src_idx, size_t _dst_idx) {
+		data_[_dst_idx] = data_[_src_idx];
+	}
+	void delete_element(size_t _idx) {
+		data_.erase(data_.begin() + _idx);
+	}
 
 public:
 
@@ -273,6 +275,9 @@ public:
         data_[_i0] = data_[_i1];
         data_[_i1] = t;
     }
+    virtual void copy(size_t _src_idx, size_t _dst_idx) {
+        data_[_dst_idx] = data_[_src_idx];
+    }
 
     void delete_element(size_t _idx) {
         data_.erase(data_.begin() + _idx);
@@ -408,7 +413,9 @@ public:
     virtual void swap(size_t _i0, size_t _i1) {
         std::swap(data_[_i0], data_[_i1]);
     }
-
+    virtual void copy(size_t _src_idx, size_t _dst_idx) {
+        data_[_dst_idx] = data_[_src_idx];
+    }
     virtual void delete_element(size_t _idx) {
         data_.erase(data_.begin() + _idx);
     }
