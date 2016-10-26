@@ -139,7 +139,7 @@ public:
 	virtual size_t size_of() const {
 		if (element_size() != OpenVolumeMeshBaseProperty::UnknownSize)
 			return this->OpenVolumeMeshBaseProperty::size_of(n_elements());
-		return std::accumulate(data_.begin(), data_.end(), 0, plus());
+    return std::accumulate(data_.begin(), data_.end(), size_t(0), plus());
 	}
 
 	virtual size_t size_of(size_t _n_elem) const {

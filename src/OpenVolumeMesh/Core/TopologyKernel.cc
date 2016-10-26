@@ -216,7 +216,7 @@ FaceHandle TopologyKernel::add_face(const std::vector<HalfEdgeHandle>& _halfedge
     face_deleted_.push_back(false);
 
     // Get added face's handle
-    FaceHandle fh(faces_.size() - 1);
+    FaceHandle fh((int)faces_.size() - 1);
 
     // Resize props
     resize_fprops(n_faces());

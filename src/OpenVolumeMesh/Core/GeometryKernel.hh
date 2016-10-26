@@ -114,7 +114,7 @@ public:
             TopologyKernelT::collect_garbage();
             vertices_.resize(TopologyKernel::n_vertices());
         } else {
-            for (unsigned int i = vertices_.size(); i > 0; --i)
+            for (int i = (int)vertices_.size(); i > 0; --i)
                 if (TopologyKernelT::is_deleted(VertexHandle(i-1)))
                 {
                     vertices_.erase(vertices_.begin() + (i-1));
