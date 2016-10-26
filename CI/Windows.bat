@@ -53,6 +53,11 @@ IF "%BUILD_PLATFORM%" == "VS2015" (
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
+
+src\Unittests\Release\unittests.exe
+
+IF %errorlevel% NEQ 0 exit /b %errorlevel%
+
 cd ..
 
 mkdir build-debug
@@ -62,5 +67,9 @@ cd build-debug
 "C:\Program Files (x86)\CMake\bin\cmake.exe" -DGTEST_PREFIX="%LIBPATH%\%ARCHITECTURE%\%GTESTVERSION%" -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Debug %CMAKE_CONFIGURATION% ..
 
 %VS_PATH% /Build "Debug" OpenVolumeMesh.sln /Project "ALL_BUILD"
+
+IF %errorlevel% NEQ 0 exit /b %errorlevel%
+
+src\Unittests\Debug\unittests.exe
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
