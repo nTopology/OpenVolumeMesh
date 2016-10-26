@@ -36,3 +36,10 @@ cppcheck:
     paths:
       - cppcheck.log
 
+VS2015-64-bit-shared-apps:
+  variables:
+    BUILD_PLATFORM: "VS2015"
+    ARCHITECTURE:   "x64"
+  script: "CI\\Windows.bat"
+  tags:
+    - VS2015
