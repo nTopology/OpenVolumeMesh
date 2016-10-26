@@ -53,12 +53,16 @@ IF "%BUILD_PLATFORM%" == "VS2015" (
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
+cd ..
 
-src\Unittests\Release\unittests.exe
+cd src\Unittests\TestFiles
+
+..\..\..\build-release\src\Unittests\Release\unittests.exe
+
+cd ..\..\..\
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
-cd ..
 
 mkdir build-debug
 
@@ -70,6 +74,10 @@ cd build-debug
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
-src\Unittests\Debug\unittests.exe
+
+cd src\Unittests\TestFiles
+
+..\..\..\build-debug\src\Unittests\Debug\unittests.exe
+
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
