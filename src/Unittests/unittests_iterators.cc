@@ -79,6 +79,63 @@ TEST_F(TetrahedralMeshBase, VertexVertexIteratorTest) {
 
 }
 
+TEST_F(TetrahedralMeshBase, VertexFaceIteratorTest) {
+
+    generateTetrahedralMesh(mesh_);
+
+    {
+
+        VertexFaceIter vf_it = mesh_.vf_iter(VertexHandle(0));
+
+        EXPECT_TRUE(vf_it.valid());
+
+        std::set<FaceHandle> incident_faces;
+        int valence = 0;
+
+        while (vf_it.valid())
+        {
+          ++valence;
+          incident_faces.insert(*vf_it);
+          ++vf_it;
+        }
+
+        // check that there have been three adjacent vertices
+        EXPECT_EQ(3, valence);
+
+        // check that no vertex was visited twice
+        EXPECT_EQ(3u, incident_faces.size());
+
+        // check that no invalid vertex was adjacent
+        EXPECT_EQ(incident_faces.end(), std::find(incident_faces.begin(), incident_faces.end(), FaceHandle(-1)));
+
+    }
+
+#if __cplusplus >= 201103L // C++11
+    {
+
+      std::set<VertexHandle> onering;
+      int valence = 0;
+
+      for (auto vh : mesh_.vertex_vertices(VertexHandle(0)))
+      {
+        ++valence;
+        onering.insert(vh);
+      }
+
+      // check that there have been three adjacent vertices
+      EXPECT_EQ(3, valence);
+
+      // check that no vertex was visited twice
+      EXPECT_EQ(3u, onering.size());
+
+      // check that no invalid vertex was adjacent
+      EXPECT_EQ(onering.end(), std::find(onering.begin(), onering.end(), VertexHandle(-1)));
+
+    }
+#endif
+
+}
+
 #if __cplusplus >= 201103L // C++11
 TEST_F(HexahedralMeshBase, RangeForTest) {
     // no EXPECTs here, if it compiles, it'll work.
