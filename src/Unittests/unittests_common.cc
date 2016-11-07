@@ -210,3 +210,19 @@ void HexahedralMeshBase::generateHexahedralMesh(HexahedralMesh& _mesh) {
     halffaces.push_back(_mesh.halfface_handle(f9, 0)); halffaces.push_back(_mesh.halfface_handle(f10, 1));
     _mesh.add_cell(halffaces);
 }
+
+void TetrahedralMeshBase::generateTetrahedralMesh(TetrahedralMesh& _mesh) {
+
+    Vec3d p1(0.0, 0.0, 0.0);
+    Vec3d p2(1.0, 0.0, 0.0);
+    Vec3d p3(1.0, 1.0, 0.0);
+    Vec3d p4(0.0, 1.0, 0.0);
+
+    VertexHandle v1 = _mesh.add_vertex(p1);
+    VertexHandle v2 = _mesh.add_vertex(p2);
+    VertexHandle v3 = _mesh.add_vertex(p3);
+    VertexHandle v4 = _mesh.add_vertex(p4);
+
+    // Add  cell
+    _mesh.add_cell(v1, v2, v3, v4);
+}

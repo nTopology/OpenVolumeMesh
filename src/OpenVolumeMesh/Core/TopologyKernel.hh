@@ -85,6 +85,7 @@ public:
     //=====================================================================
 
     friend class VertexOHalfEdgeIter;
+    friend class VertexVertexIter;
     friend class HalfEdgeHalfFaceIter;
     friend class VertexCellIter;
     friend class HalfEdgeCellIter;
@@ -124,6 +125,15 @@ public:
 
     std::pair<VertexOHalfEdgeIter, VertexOHalfEdgeIter> outgoing_halfedges(const VertexHandle& _h, int _max_laps = 1) const {
         VertexOHalfEdgeIter begin = voh_iter(_h, _max_laps);
+        return std::make_pair(begin, make_end_circulator(begin));
+    }
+
+    VertexVertexIter vv_iter(const VertexHandle& _h, int _max_laps = 1) const {
+        return VertexVertexIter(_h, this, _max_laps);
+    }
+
+    std::pair<VertexVertexIter, VertexVertexIter> vertex_vertices(const VertexHandle& _h, int _max_laps = 1) const {
+        VertexVertexIter begin = vv_iter(_h, _max_laps);
         return std::make_pair(begin, make_end_circulator(begin));
     }
 

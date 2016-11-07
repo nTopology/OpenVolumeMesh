@@ -5,6 +5,7 @@
 
 #include <OpenVolumeMesh/Mesh/PolyhedralMesh.hh>
 #include <OpenVolumeMesh/Mesh/HexahedralMesh.hh>
+#include <OpenVolumeMesh/Mesh/TetrahedralMesh.hh>
 #include <OpenVolumeMesh/Geometry/VectorT.hh>
 
 /*
@@ -82,6 +83,46 @@ protected:
   // This member will be accessible in all tests
   HexahedralMesh mesh_;
 };
+
+
+/*
+ * Simple test setting for tetrahedral meshes
+ */
+
+typedef OpenVolumeMesh::GeometricTetrahedralMeshV3d TetrahedralMesh;
+
+class TetrahedralMeshBase: public testing::Test {
+
+protected:
+
+  typedef OpenVolumeMesh::VertexHandle    VertexHandle;
+  typedef OpenVolumeMesh::HalfEdgeHandle  HalfEdgeHandle;
+  typedef OpenVolumeMesh::EdgeHandle      EdgeHandle;
+  typedef OpenVolumeMesh::HalfFaceHandle  HalfFaceHandle;
+  typedef OpenVolumeMesh::FaceHandle      FaceHandle;
+  typedef OpenVolumeMesh::CellHandle      CellHandle;
+
+  // This function is called before each test is run
+  virtual void SetUp() {
+
+    // Do some initial stuff with the member data here...
+    mesh_.enable_deferred_deletion(false);
+    mesh_.enable_fast_deletion(false);
+  }
+
+  // This function is called after all tests are through
+  virtual void TearDown() {
+
+    // Do some final stuff with the member data here...
+  }
+
+  // Generate a basic hexahedral mesh
+  void generateTetrahedralMesh(TetrahedralMesh& _mesh);
+
+  // This member will be accessible in all tests
+  TetrahedralMesh mesh_;
+};
+
 
 // Printer class (for STL compliance test)
 class Print {
