@@ -318,14 +318,14 @@ public:
 public:
 
     /// Access the i'th element. No range check is performed!
-    reference operator[](int _idx) {
-        assert(size_t(_idx) < data_.size());
+    reference operator[](size_t _idx) {
+        assert(_idx < data_.size());
         return data_[_idx];
     }
 
     /// Const access to the i'th element. No range check is performed!
-    const_reference operator[](int _idx) const {
-        assert(size_t(_idx) < data_.size());
+    const_reference operator[](size_t _idx) const {
+        assert(_idx < data_.size());
         return data_[_idx];
     }
 

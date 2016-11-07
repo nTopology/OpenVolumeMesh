@@ -48,6 +48,7 @@
 #include <algorithm>
 #include <cctype>
 #include <typeinfo>
+#include <stdint.h>
 
 #include <OpenVolumeMesh/Geometry/VectorT.hh>
 #include <OpenVolumeMesh/Mesh/PolyhedralMesh.hh>
@@ -77,7 +78,7 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
     std::stringstream sstr;
     std::string line;
     std::string s_tmp;
-    unsigned int c = 0u;
+    uint64_t c = 0u;
     typedef typename MeshT::PointT Point;
     Point v = Point(0.0, 0.0, 0.0);
 
@@ -143,7 +144,7 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
         sstr >> c;
 
         // Read in vertices
-        for(unsigned int i = 0u; i < c; ++i) {
+        for(uint64_t i = 0u; i < c; ++i) {
 
             getCleanLine(iff, line);
             sstr.clear();
@@ -176,10 +177,10 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
         sstr >> c;
 
         // Read in edges
-        for(unsigned int i = 0u; i < c; ++i) {
+        for(uint64_t i = 0u; i < c; ++i) {
 
-        	unsigned int v1 = 0;
-        	unsigned int v2 = 0;
+            unsigned int v1 = 0;
+            unsigned int v2 = 0;
             getCleanLine(iff, line);
             sstr.clear();
             sstr.str(line);
@@ -210,7 +211,7 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
         sstr >> c;
 
         // Read in faces
-        for(unsigned int i = 0u; i < c; ++i) {
+        for(uint64_t i = 0u; i < c; ++i) {
 
             getCleanLine(iff, line);
             sstr.clear();
@@ -219,7 +220,7 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
             std::vector<HalfEdgeHandle> hes;
 
             // Get face valence
-            unsigned int val = 0u;
+            uint64_t val = 0u;
             sstr >> val;
 
             // Read half-edge indices
@@ -255,7 +256,7 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
         sstr >> c;
 
         // Read in cells
-        for(unsigned int i = 0u; i < c; ++i) {
+        for(uint64_t i = 0u; i < c; ++i) {
 
             getCleanLine(iff, line);
             sstr.clear();
@@ -264,7 +265,7 @@ bool FileManager::readFile(const std::string& _filename, MeshT& _mesh,
             std::vector<HalfFaceHandle> hfs;
 
             // Get cell valence
-            unsigned int val = 0u;
+            uint64_t val = 0u;
             sstr >> val;
 
             // Read half-face indices
@@ -409,7 +410,7 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
     // Write header
     off << "OVM ASCII" << std::endl;
 
-    unsigned int n_vertices(_mesh.n_vertices());
+    uint64_t n_vertices(_mesh.n_vertices());
     off << "Vertices" << std::endl;
     off << n_vertices << std::endl;
 
@@ -422,7 +423,7 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
         off << v[0] << " " << v[1] << " " << v[2] << std::endl;
     }
 
-    unsigned int n_edges(_mesh.n_edges());
+    uint64_t n_edges(_mesh.n_edges());
     off << "Edges" << std::endl;
     off << n_edges << std::endl;
 
@@ -434,14 +435,14 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
         off << from_vertex << " " << to_vertex << std::endl;
     }
 
-    unsigned int n_faces(_mesh.n_faces());
+    uint64_t n_faces(_mesh.n_faces());
     off << "Faces" << std::endl;
     off << n_faces << std::endl;
 
     // write faces
     for(FaceIter f_it = _mesh.f_iter(); f_it; ++f_it) {
 
-        off << _mesh.face(*f_it).halfedges().size() << " ";
+        off << static_cast<uint64_t>(_mesh.face(*f_it).halfedges().size()) << " ";
 
         std::vector<HalfEdgeHandle> halfedges = _mesh.face(*f_it).halfedges();
 
@@ -457,13 +458,13 @@ bool FileManager::writeFile(const std::string& _filename, const MeshT& _mesh) co
         off << std::endl;
     }
 
-    unsigned int n_cells(_mesh.n_cells());
+    uint64_t n_cells(_mesh.n_cells());
     off << "Polyhedra" << std::endl;
     off << n_cells << std::endl;
 
     for(CellIter c_it = _mesh.c_iter(); c_it; ++c_it) {
 
-        off << _mesh.cell(*c_it).halffaces().size() << " ";
+        off << static_cast<uint64_t>(_mesh.cell(*c_it).halffaces().size()) << " ";
 
         std::vector<HalfFaceHandle> halffaces = _mesh.cell(*c_it).halffaces();
 
