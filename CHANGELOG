@@ -1,3 +1,7 @@
+Version ? (?)
+
+- Break compatiblity with C++98, require C++11 as mininum.
+
 Version 1.2 (2015/10/01)
 
 - Status Attribute offers a garbage collection which removes all elements previously tagged as deleted.

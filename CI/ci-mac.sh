@@ -10,9 +10,7 @@ export PATH
 
 OPTIONS=""
 
-if [ "$LANGUAGE" == "C++98" ]; then
-  echo "Building with C++98";
-elif [ "$LANGUAGE" == "C++11" ]; then
+if [ "$LANGUAGE" == "C++11" ]; then
   echo "Building with C++11";
   OPTIONS="$OPTIONS -DCMAKE_CXX_FLAGS='-std=c++11' "
 fi
