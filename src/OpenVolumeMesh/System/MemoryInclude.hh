@@ -32,59 +32,36 @@
  *                                                                           *
 \*===========================================================================*/
 
-/*===========================================================================*\
- *                                                                           *
- *   $Revision: 36 $                                                         *
- *   $Date: 2012-01-10 18:00:06 +0100 (Di, 10 Jan 2012) $                    *
- *   $LastChangedBy: kremer $                                                *
- *                                                                           *
-\*===========================================================================*/
 
-#ifndef MEMORYINCLUDE_HH_
-#define MEMORYINCLUDE_HH_
+#ifndef ACG_UTILS_SMARTPOINTER_HH
+#define ACG_UTILS_SMARTPOINTER_HH
 
-/** This set of defines maps the pointer namespaces to the namespace ptr depending on
- *  the current architecture and compilers.
- */
-#if (__cplusplus >= 201103L)
-   // C++11:
-   #include <memory>
-   namespace ptr = std;
-   #define ACG_UNIQUE_POINTER_SUPPORTED 1
-#elif defined(__GXX_EXPERIMENTAL_CXX0X__)
-   // C++11 via -std=c++0x on gcc:
-   #include <memory>
-   namespace ptr = std;
-   #define ACG_UNIQUE_POINTER_SUPPORTED 1
+/**********************************************
+ * Warning! This header file is duplicated in *
+ * OpenFlipper with the same header guard, as *
+ * ACG/Utils/SmartPointer.hh.                 *
+ * If you change this file, you should change *
+ * that file as well.                         *
+ **********************************************/
+
+#include <memory>
+
+// legacy code may depend on this define:
+#define ACG_UNIQUE_POINTER_SUPPORTED 1
+
+namespace ptr {
+    using std::shared_ptr;
+    using std::make_shared;
+    using std::unique_ptr;
+#if __cplusplus >= 201402L
+    using std::make_unique;
 #else
-   // C++98 and TR1:
-   #if (_MSC_VER >= 1600)
-     // VStudio 2010 supports some C++11 features
-     #include <memory>
-     namespace ptr = std;
-     #define ACG_UNIQUE_POINTER_SUPPORTED 1
-   #elif (_MSC_VER >= 1500)
-     // hope for TR1 equivalents
-    #if(_HAS_TR1)
-     #include <memory>
-     namespace ptr = std::tr1;
-     #define ACG_UNIQUE_POINTER_SUPPORTED 0
-    #else
-     #pragma warning "TR1 not available! Please install Visual Studio Service Pack 1!"
-    #endif
-   #else
-    // hope for TR1 equivalents
-     // check for clang5 but switch to tr1 if clang uses libstdc++
-    #if defined(__clang_major__) && (__clang_major__ >= 5) && !defined(__GLIBCXX__ )
-      // Mavericks special treatment
-      #include <memory>
-      namespace ptr = std;
-    #else
-      #include <tr1/memory>
-      namespace ptr = std::tr1;
-    #endif
-    #define ACG_UNIQUE_POINTER_SUPPORTED 0
-   #endif
-#endif
+    template<typename T, typename... Args>
+    std::unique_ptr<T>
+    make_unique(Args&&... args) {
+        return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+    }
+#endif // C++14
+} // namespace ptr
 
-#endif /* MEMORYINCLUDE_HH_ */
+#endif // ACG_UTILS_SMARTPOINTER_HH
