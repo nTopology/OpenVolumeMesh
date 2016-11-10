@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#if __cplusplus >= 201103L
+
 #include <OpenVolumeMesh/System/MemoryInclude.hh>
 
 TEST(MakeUniqueTest, MakeUniqueTest) {
@@ -11,3 +13,4 @@ TEST(MakeUniqueTest, MakeUniqueTest) {
   EXPECT_EQ(bar.get(), nullptr);
 }
 
+#endif
