@@ -73,6 +73,8 @@
     }
   #endif // C++14
 
+  } // namespace ptr
+
 
 #else // deprecated things
 
@@ -122,7 +124,7 @@
 #endif
 
 
-} // namespace ptr
+
 
 #endif // ACG_UTILS_SMARTPOINTER_HH
 
